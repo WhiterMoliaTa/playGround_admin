@@ -25,7 +25,8 @@
     <div class="progress-line"></div>
 
     <!-- 主進度條 -->
-    <div class="main-step-progress-bar" :style="{ width: progressPercent + '%', backgroundColor: getColorByDiff }"></div>
+    <div class="main-step-progress-bar" :style="{ width: progressPercent + '%', backgroundColor: getColorByDiff }">
+    </div>
 
     <!-- 主節點 -->
     <div v-for="(label, index) in mainFields" :key="'main-' + index">
@@ -69,9 +70,8 @@
     </div>
   </div>
 </template>
-
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import dayjs from 'dayjs'
 
 const props = defineProps({
@@ -112,12 +112,19 @@ const props = defineProps({
       'diseaseReviewMeetingAddition'
     ]
   }
+});
+
+
+
+const deadLine = computed(() => {
+  const start = startDate.value
+  const dead = deadLineDays.value
+  return start.add(dead, 'day')
 })
 
 const mainDates = computed(() => props.mainFields.map(f => props.caseItem[f] ? dayjs(props.caseItem[f]) : null))
 const secondaryDates = computed(() => props.secondaryFields.map(f => props.caseItem[f] ? dayjs(props.caseItem[f]) : null))
-const secondaryAddition = computed(() => props.additionArray.map(f => !!props.caseItem[f]))
-
+const secondaryAddition = computed(() => props.additionArray.map(f => props.caseItem[f] ? props.caseItem[f] : false))
 const startDate = computed(() => {
   for (const d of mainDates.value) {
     if (d) return d
@@ -125,27 +132,9 @@ const startDate = computed(() => {
   return dayjs()
 })
 
-// 起始日期 + 60 天（基本死線） + 加班時程天數（secondaryAddition）
-const deadLineDays = computed(() => {
-  let baseDays = 60
-  secondaryAddition.value.forEach((add, i) => {
-    if (add) {
-      const start = secondaryDates.value[i * 2]
-      const end = secondaryDates.value[i * 2 + 1]
-      if (start && end) {
-        const diff = end.diff(start, 'day')
-        baseDays += diff
-      }
-    }
-  })
-  return baseDays
-})
-
-const deadLine = computed(() => startDate.value.add(deadLineDays.value, 'day'))
-
 const maxCompleteDate = computed(() => {
-  const allDates = [...mainDates.value, ...secondaryDates.value]
   let max = null
+  const allDates = [...mainDates.value, ...secondaryDates.value]
   for (const d of allDates) {
     if (d && (!max || d.isAfter(max))) max = d
   }
@@ -154,7 +143,7 @@ const maxCompleteDate = computed(() => {
 
 const maxDays = computed(() => {
   const diff = maxCompleteDate.value.diff(startDate.value, 'day')
-  // 最少保留 60 天基準
+  console.log(`目前進程天數: ${diff} 天`)
   return Math.max(diff, 60)
 })
 
@@ -162,7 +151,6 @@ const progressPercent = computed(() => {
   const diff = maxCompleteDate.value.diff(startDate.value, 'day')
   return Math.min(100, (diff / maxDays.value) * 100)
 })
-
 const nodeLeftPercents = computed(() => {
   const completed = []
   const pending = []
@@ -207,48 +195,82 @@ const secondaryLeftPercents = computed(() => {
   completed.forEach((idx, i) => {
     result[idx] = completedPercs[i]
   })
-
-  // 依據目前主進度條進度分配剩餘 pending 節點位置
   const pendingGap = (100 - progressPercent.value) / (pending.length + 1)
   pending.forEach((idx, i) => {
     result[idx] = progressPercent.value + pendingGap * (i + 1)
   })
-
   return result
 })
-
+const deadLineDays = ref(60)
+const scanAddition = () => {
+  for (let i = 0; i < secondaryAddition.value.length; i++) {
+    if (secondaryAddition.value[i]) {
+      const start = secondaryDates.value[i * 2]
+      const end = secondaryDates.value[i * 2 + 1]
+      if (start && end) {
+        const diff = end.diff(start, 'day')
+        // console.log(`次節點 ${i + 1} 的時間差: ${diff} 天`)
+        deadLineDays.value += diff
+      }
+    }
+  }
+  console.log(`死線: ${deadLineDays.value} 天`)
+}
+watch(() => secondaryAddition, (val) => {
+  scanAddition()
+}, { immediate: true })
 const lastStatus = computed(() => {
-  let diff = deadLine.value.diff(dayjs(), 'day')
-  const over = deadLine.value.isBefore(dayjs())
-
+  var diff = deadLine.value.diff(dayjs(), 'day')
+  var over = deadLine.value.isBefore(dayjs())
   if (mainDates.value[mainDates.value.length - 1]) {
-    const lastDate = mainDates.value[mainDates.value.length - 1]
+    var lastDate = mainDates.value[mainDates.value.length - 1]
     if (lastDate) {
       diff = lastDate.diff(startDate.value, 'day')
     }
-    if (diff > deadLineDays.value) diff = deadLineDays.value
+    if (diff > deadLineDays.value) {
+      return '已完成，逾期 ' + (diff - deadLineDays.value) + ' 天'
+    }
+    return '已完成'
   }
-
-  if (diff < 0) {
-    diff = -diff
+  if (diff === 0) {
+    return '今天截止'
   }
-  return (over ? '超過截止日 ' : '剩餘 ') + diff + ' 天'
+  if (over) {
+    diff = Math.abs(diff)
+    return `已逾期 ${diff} 天`
+  }
+  return `剩餘:  ${diff} 天`
 })
 
 const getColorByDiff = computed(() => {
-  const diff = deadLine.value.diff(dayjs(), 'day')
-  if (diff > 5) return 'green'
-  if (diff > 0) return 'orange'
-  return 'red'
+  var diff = deadLine.value.diff(dayjs(), 'day')
+  if (mainDates.value[mainDates.value.length - 1]) {
+    var lastDate = mainDates.value[mainDates.value.length - 1]
+    if (lastDate) {
+      diff = lastDate.diff(startDate.value, 'day')
+    }
+    if (diff > deadLineDays.value) {
+      return '#588157'
+    }
+    return '#4caf50'
+  }
+  if (diff < 0) return '#f44336'
+  if (diff === 0) return '#f19143'
+  if (diff <= 3) return '#fabc3c'
+  return '#4caf50'
 })
 
 function formatToROC(date) {
   if (!date) return ''
-  const year = date.year() - 1911
-  const m = date.month() + 1
-  const d = date.date()
-  return `${year}年${m}月${d}日`
+  const d = new Date(date)
+  if (isNaN(d)) return ''
+  const year = d.getFullYear() - 1911
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}/${month}/${day}`
 }
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -439,13 +461,11 @@ $progress-height: 6px;
         bottom: -48px;
         width: 2px;
         height: 48px;
-        background: repeating-linear-gradient(
-          to bottom,
-          $color-primary,
-          $color-primary 4px,
-          transparent 4px,
-          transparent 8px
-        );
+        background: repeating-linear-gradient(to bottom,
+            $color-primary,
+            $color-primary 4px,
+            transparent 4px,
+            transparent 8px);
         transform: translateX(-50%);
       }
     }
@@ -464,17 +484,14 @@ $progress-height: 6px;
         top: -48px;
         width: 2px;
         height: 48px;
-        background: repeating-linear-gradient(
-          to bottom,
-          $color-primary,
-          $color-primary 4px,
-          transparent 4px,
-          transparent 8px
-        );
+        background: repeating-linear-gradient(to bottom,
+            $color-primary,
+            $color-primary 4px,
+            transparent 4px,
+            transparent 8px);
         transform: translateX(-50%);
       }
     }
   }
 }
 </style>
-

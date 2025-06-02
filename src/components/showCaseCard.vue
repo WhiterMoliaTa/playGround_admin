@@ -1,213 +1,110 @@
+<template>
+  <v-container fluid>
+    <!-- 基本資料 -->
+    <section class="section-block">
+      <h3 class="section-title">基本資料</h3>
+      <v-row dense>
+        <v-col cols="12" md="4"><strong>來文號：</strong> {{ caseData.docId }}</v-col>
+        <v-col cols="12" md="4"><strong>來文日期：</strong> {{ formatDate(caseData.docDate) }}</v-col>
+        <v-col cols="12" md="4"><strong>收文日期：</strong> {{ formatDate(caseData.receivedDate) }}</v-col>
+        <v-col cols="12" md="4"><strong>案件編號：</strong> {{ caseData.caseNumber }}</v-col>
+        <v-col cols="12" md="4"><strong>姓名：</strong> {{ caseData.name }}</v-col>
+        <v-col cols="12" md="4"><strong>年齡：</strong> {{ caseData.age }}</v-col>
+        <v-col cols="12" md="4"><strong>性別：</strong> {{ caseData.gender }}</v-col>
+        <v-col cols="12" md="8"><strong>案名：</strong> {{ caseData.caseName }}</v-col>
+        <v-col cols="12"><strong>備註：</strong> {{ caseData.remarks }}</v-col>
+        <v-col cols="12"><strong>診斷結果：</strong> {{ caseData.diagnosis }}</v-col>
+        <v-col cols="12"><strong>中心承辦人：</strong> {{ caseData.centerHandler }}</v-col>
+      </v-row>
+    </section>
+
+    <v-divider class="my-6"></v-divider>
+
+    <!-- 派案資料 -->
+    <section class="section-block">
+      <h3 class="section-title">派案資料</h3>
+      <v-row dense>
+        <v-col cols="12" md="4"><strong>派案日期：</strong> {{ formatDate(caseData.dispatchDate) }}</v-col>
+        <v-col cols="12" md="8"><strong>派案醫院：</strong> {{ caseData.dispatchHospital.name }}</v-col>
+        <v-col cols="12" md="6"><strong>醫院電話：</strong> {{ caseData.dispatchHospital.contact }}</v-col>
+        <v-col cols="12" md="6"><strong>醫院地址：</strong> {{ caseData.dispatchHospital.address }}</v-col>
+        <v-col cols="12" md="6"><strong>派案醫生：</strong> {{ caseData.dispatchDoctor.name }}</v-col>
+        <v-col cols="12" md="6"><strong>醫生電話：</strong> {{ caseData.dispatchDoctor.contact }}</v-col>
+        <v-col cols="12" md="4"><strong>專科：</strong> {{ caseData.dispatchDoctor.specialty }}</v-col>
+        <v-col cols="12" class="dispatch-letter" v-html="caseData.dispatchLetter"></v-col>
+      </v-row>
+    </section>
+
+    <v-divider class="my-6"></v-divider>
+
+    <!-- 雇主資料 -->
+    <section class="section-block">
+      <h3 class="section-title">雇主資料</h3>
+      <v-row dense>
+        <v-col cols="12" md="6"><strong>雇主名稱：</strong> {{ caseData.employer.name }}</v-col>
+        <v-col cols="12" md="6"><strong>聯絡電話：</strong> {{ caseData.employer.contact }}</v-col>
+        <v-col cols="12"><strong>地址：</strong> {{ caseData.employer.address }}</v-col>
+      </v-row>
+    </section>
+
+    <v-divider class="my-6"></v-divider>
+
+    <!-- 勞檢資料 -->
+    <section class="section-block">
+      <h3 class="section-title">勞檢資料</h3>
+      <v-row dense>
+        <v-col cols="12" md="4"><strong>職安署承辦人：</strong> {{ caseData.oshaHandler }}</v-col>
+        <v-col cols="12" md="4"><strong>勞檢機關：</strong> {{ caseData.laborInspection.name }}</v-col>
+        <v-col cols="12" md="4"><strong>聯絡電話：</strong> {{ caseData.laborInspection.contact }}</v-col>
+        <v-col cols="12"><strong>機關地址：</strong> {{ caseData.laborInspection.address }}</v-col>
+      </v-row>
+    </section>
+  </v-container>
+</template>
+
+<script setup>
+defineProps({
+  caseData: {
+    type: Object,
+    required: true,
+  },
+})
+
+function formatDate(date) {
+  if (!date) return ''
+  const d = new Date(date)
+  if (isNaN(d)) return ''
+  const year = d.getFullYear() - 1911
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}/${month}/${day}`
+}
+</script>
+
 <style scoped>
-.step-progress-container {
-  position: relative;
-  height: 150px;
-  margin-top: 20px;
+.section-block {
+  margin-bottom: 1.5rem;
 }
 
-.progress-line {
-  position: absolute;
-  top: 50px;
-  left: 0;
-  width: 100%;
-  height: 6px;
-  background-color: #ddd;
-  z-index: 1;
-  border-radius: 3px;
+.section-title {
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #3f51b5;
+  /* Vuetify primary color */
 }
 
-/* 主進度條 */
-.main-step-progress-bar {
-  position: absolute;
-  top: 50px;
-  left: 8px;
-  height: 6px;
-  border-radius: 3px;
-  z-index: 2;
-  transition: width 0.3s ease;
+strong {
+  color: #333;
 }
 
-/* 次進度條（每兩個節點一段） */
-.secondary-step-progress-bar {
-  position: absolute;
-  height: 6px;
-  background-color: #2196f3;
-  border-radius: 3px;
-  z-index: 2;
-}
-
-/* 主節點 */
-.main-step-node-circle {
-  position: absolute;
-  top: 46px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background-color: white;
-  border: 3px solid #bbb;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.main-step-node-circle.completed {
-  font-size: 10px;
-  font-weight: bold;
-}
-
-.main-step-checkmark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 8px;
-  pointer-events: none;
-}
-
-.main-step-node-label {
-  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-  position: absolute;
-  white-space: nowrap;
-  font-size: 12px;
-  text-align: center;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-/* 次節點 */
-.secondary-step-node-circle {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: white;
-  border: 2px solid #2196f3;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.secondary-step-node-circle.addition {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: #6cbdff;
-  border: 2px solid #2196f3;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.secondary-step-node-label {
-  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-  color: #2196f3;
-  position: absolute;
-  white-space: nowrap;
-  font-size: 12px;
-  text-align: center;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-/* 共用 label 樣式 */
-.main-step-label-top {
-  bottom: 100%;
-  margin-bottom: 8px;
-  border-bottom: 2px solid var(--line-color);
-}
-
-.main-step-label-bottom {
-  top: 100%;
-  margin-top: 8px;
-  border-top: 2px solid var(--line-color);
-}
-
-.main-step-label-top {
-  bottom: 100%;
-  margin-bottom: 8px;
-  border-bottom: 2px solid var(--line-color);
-}
-
-.main-step-label-bottom {
-  top: 100%;
-  margin-top: 8px;
-  border-top: 2px solid var(--line-color);
-}
-
-.main-step-label-top::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -8px;
-  width: 2px;
-  height: 8px;
-  background-color: var(--line-color, #bbb);
-  transform: translateX(-50%);
-}
-
-.main-step-label-bottom::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -8px;
-  width: 2px;
-  height: 8px;
-  background-color: var(--line-color, #bbb);
-  transform: translateX(-50%);
-}
-
-.secondary-step-label-top {
-  bottom: auto;
-}
-
-.secondary-step-label-bottom {
-  top: auto;
-}
-
-.secondary-step-label-top.addition {
-  border-bottom: 2px solid #2196f3;
-}
-
-.secondary-step-label-bottom.addition {
-  border-top: 2px solid #2196f3;
-}
-
-.secondary-step-label-top.addition::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -48px;
-  width: 2px;
-  height: 48px;
-  background: repeating-linear-gradient(to bottom,
-      #2196f3,
-      #2196f3 4px,
-      transparent 4px,
-      transparent 8px);
-  transform: translateX(-50%);
-}
-
-
-
-.secondary-step-label-bottom.addition::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -48px;
-  width: 2px;
-  height: 48px;
-  background: repeating-linear-gradient(to bottom,
-      #2196f3,
-      #2196f3 4px,
-      transparent 4px,
-      transparent 8px);
-  transform: translateX(-50%);
+.dispatch-letter {
+  background-color: #f5f5f5;
+  padding: 1rem;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  font-family: 'Noto Sans TC', sans-serif;
+  color: #555;
+  box-shadow: inset 0 0 5px #ccc;
 }
 </style>

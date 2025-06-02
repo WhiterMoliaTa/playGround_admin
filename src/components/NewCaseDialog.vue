@@ -117,14 +117,17 @@
                                             <div v-bind="props" style="position: relative;">
                                                 <v-select label="派案醫院" :items="hospitals" item-title="name"
                                                     item-value="uuid" v-model="caseData.dispatchHospital.uuid"
-                                                    density="compact" hide-details clearable />
+                                                    density="compact" hide-details clearable
+                                                    @update:model-value="onHospitalChange" />
                                                 <v-slide-y-transition>
-                                                    <v-card v-if="selectedHospital && isHovering" class="pa-3"
+                                                    <v-card v-if="caseData.dispatchHospital.uuid && isHovering"
+                                                        class="pa-3"
                                                         style="position: absolute; top: 100%; left: 0; z-index: 10; background-color: #f9f9f9; min-width: 100%;"
                                                         elevation="2">
-                                                        <div><strong>地址：</strong>{{ selectedHospital.address }}
+                                                        <div><strong>地址：</strong>{{ caseData.dispatchHospital.address }}
                                                         </div>
-                                                        <div><strong>聯絡電話：</strong>{{ selectedHospital.contact }}
+                                                        <div><strong>聯絡電話：</strong>{{ caseData.dispatchHospital.contact
+                                                        }}
                                                         </div>
                                                     </v-card>
                                                 </v-slide-y-transition>
@@ -137,14 +140,18 @@
                                             <div v-bind="props" style="position: relative;">
                                                 <v-select label="派案醫生" :items="doctors" item-title="name"
                                                     item-value="uuid" v-model="caseData.dispatchDoctor.uuid"
-                                                    density="compact" hide-details clearable />
+                                                    density="compact" hide-details clearable
+                                                    @update:model-value="onDoctorChange" />
 
                                                 <v-slide-y-transition>
-                                                    <v-card v-if="selectedDoctor && isHovering" class="pa-3"
+                                                    <v-card v-if="caseData.dispatchDoctor.uuid && isHovering"
+                                                        class="pa-3"
                                                         style="position: absolute; top: 100%; left: 0; z-index: 10; background-color: #f9f9f9; min-width: 100%;"
                                                         elevation="2">
-                                                        <div><strong>專科：</strong>{{ selectedDoctor.specialty }}</div>
-                                                        <div><strong>聯絡電話：</strong>{{ selectedDoctor.contact }}</div>
+                                                        <div><strong>專科：</strong>{{ caseData.dispatchDoctor.specialty }}
+                                                        </div>
+                                                        <div><strong>聯絡電話：</strong>{{ caseData.dispatchDoctor.contact }}
+                                                        </div>
                                                     </v-card>
                                                 </v-slide-y-transition>
                                             </div>
@@ -274,6 +281,7 @@
                             <!-- Step 4: 案件確認 -->
                             <v-stepper-window-item :value="4">
 
+                                <showCaseCard :caseData="caseData" />
 
                                 <div class="text-right mt-4">
                                     <v-btn @click="step--" class="me-2">上一步</v-btn>
@@ -294,7 +302,8 @@ import { ref, computed, watch, toRaw, onBeforeMount, onBeforeUnmount } from 'vue
 import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
-
+import cloneDeep from 'lodash/cloneDeep'
+import showCaseCard from '../components/showCaseCard.vue'
 
 const step = ref(0)
 const stepItems = [
@@ -314,7 +323,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'save'])
 
-const caseData = ref({ ...props.model })
+const caseData = ref(cloneDeep(props.model))
 
 const docDateMenu = ref(false)
 const docDateRaw = ref(caseData.value.docDate || null)
@@ -387,9 +396,11 @@ watch(
     () => props.modelValue,
     (newVal) => {
         if (newVal) {
-            caseData.value = { ...props.model }
+            // console.log('Dialog 開啟，重置資料，props.model:', props.model)
+            caseData.value = cloneDeep(props.model)
             docDateRaw.value = caseData.value.docDate || null
             receivedDateRaw.value = new Date()
+            caseData.value.receivedDate = formatDateToDB(receivedDateRaw.value)
             dispatchDateRaw.value = caseData.value.dispatchDate || null
             caseData.value.caseNumber = formatToROC(formatDateToDB(new Date())).replace(/\//g, '') + '000'
             caseData.value.dispatchDoctor.uuid = null
@@ -401,8 +412,6 @@ watch(
 )
 
 function emitSave() {
-    caseData.value.dispatchDoctor = selectedDoctor.value || { uuid: null, name: '', address: '', contact: '' }
-    caseData.value.dispatchHospital = selectedHospital.value || { uuid: null, name: '', address: '', contact: '' }
     emit('save', caseData.value)
     emit('update:modelValue', false)
 }
@@ -513,13 +522,24 @@ const doctors = ref([
         contact: '02-1234-5678'
     },
 ])
-const selectedHospital = computed(() =>
-    hospitals.value.find(h => h.uuid === caseData.value.dispatchHospital.uuid) || null
-)
 
-const selectedDoctor = computed(() =>
-    doctors.value.find(d => d.uuid === caseData.value.dispatchDoctor.uuid) || null
-)
+const onHospitalChange = (selectedUuid) => {
+    const selected = hospitals.value.find(h => h.uuid === selectedUuid)
+    if (selected) {
+        caseData.value.dispatchHospital = { ...selected }
+    } else {
+        caseData.value.dispatchHospital = { uuid: null, name: '', address: '', contact: '' }
+    }
+}
+
+const onDoctorChange = (selectedUuid) => {
+    const selected = doctors.value.find(d => d.uuid === selectedUuid)
+    if (selected) {
+        caseData.value.dispatchDoctor = { ...selected }
+    } else {
+        caseData.value.dispatchDoctor = { uuid: '', name: '', phone: '' }
+    }
+}
 
 const laborInspections = ref([
     {

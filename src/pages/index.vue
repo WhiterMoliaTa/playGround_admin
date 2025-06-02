@@ -47,7 +47,7 @@
                       {{ formatToROC(item.dispatchDate) }}
                     </template>
                     <template v-else-if="column.key === 'actions'">
-                      <v-btn variant="text" size="small" icon>
+                      <v-btn variant="text" size="small" icon @click="viewItem(item)">
                         <v-icon>mdi-eye</v-icon>
                       </v-btn>
                       <v-btn variant="text" size="small" icon>
@@ -86,7 +86,19 @@
   </v-card>
   <NewCaseDialog :model-value="newCaseDialog" @update:model-value="newCaseDialog = $event" :model="newCase"
     @save="saveCase" />
+  <v-dialog v-model="viewCaseModel">
+    <v-card>
+      <v-card-title class="text-h5">
+        <v-col class="d-flex align-center">
+          <span>案件詳情</span>
+          <v-spacer />
+          <v-icon icon="mdi-close" @click="viewCaseModel = false" style="cursor: pointer;" color="error"/>
+        </v-col>
+      </v-card-title>
 
+      <showCaseCard :caseData="viewCaseData" />
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
@@ -94,7 +106,8 @@ import { ref, toRaw } from 'vue'
 import StepProgress from '../components/StepProgress.vue'
 import TruncateText from '../components/TruncateText.vue'
 import NewCaseDialog from '../components/NewCaseDialog.vue'
-import dayjs from 'dayjs'
+import showCaseCard from '../components/showCaseCard.vue'
+
 const headers = [
   { title: '案件編號', key: 'caseNumber' },
   { title: '案名', key: 'caseName' },
@@ -171,7 +184,7 @@ const newCase = ref({
     contact: ''
   },
   laborInspection: {
-    uuid: '',
+    uuid: null,
     name: '',
     address: '',
     contact: ''
@@ -210,6 +223,13 @@ const itemStatusText = (item) => {
   } else {
     return '處理中'
   }
+}
+const viewCaseModel = ref(false)
+const viewCaseData = ref(null)
+const viewItem = (item) => {
+  // console.log('查看案件', item)
+  viewCaseData.value = item
+  viewCaseModel.value = true
 }
 </script>
 

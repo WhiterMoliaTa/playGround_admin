@@ -64,7 +64,7 @@ export const testCases = [
     diseaseReviewMeetingAddition: false,
   },
 
-  // 第二筆
+  // 第二筆（已補 dispatchLetter 與 dispatchDoctor）
   {
     docId: '勞動部職安字第123460號',
     docDate: '2025-04-01',
@@ -84,7 +84,13 @@ export const testCases = [
       address: '台北市中正區中山南路7號',
       contact: '02-2312-3456'
     },
-    dispatchDoctor: null,
+    dispatchDoctor: {
+      uuid: 'doctor-002',
+      name: '李醫師',
+      specialty: '胸腔內科',
+      contact: '02-2312-3456'
+    },
+    dispatchLetter: '這是派遣信件的內容，包含醫院和醫生的詳細資訊。',
     employer: {
       name: '中鋼',
       address: '高雄市前鎮區中山三路1號',
@@ -124,7 +130,7 @@ export const testCases = [
     diseaseReviewMeetingAddition: true
   },
 
-  // 第三筆（原本就是正確格式）
+  // 第三筆（已補 dispatchDoctor 與 dispatchLetter）
   {
     docId: '勞動部職安字第123458號',
     docDate: '2025-04-28',
@@ -144,7 +150,13 @@ export const testCases = [
       address: '新北市林口區文化路123號',
       contact: '03-3278-9123'
     },
-    dispatchDoctor: null,
+    dispatchDoctor: {
+      uuid: 'doctor-003',
+      name: '黃醫師',
+      specialty: '耳鼻喉科',
+      contact: '03-3278-9123'
+    },
+    dispatchLetter: '這是派遣信件的內容，包含醫院和醫生的詳細資訊。',
     employer: {
       name: '台灣鋼鐵',
       address: '台北市大同區重慶北路一段100號',
@@ -204,7 +216,13 @@ export const testCases = [
       address: '彰化市中山路二段456號',
       contact: '04-1234-5678'
     },
-    dispatchDoctor: null,
+    dispatchDoctor: {
+      uuid: 'doctor-004',
+      name: '吳醫師',
+      specialty: '皮膚科',
+      contact: '04-1234-5678'
+    },
+    dispatchLetter: '這是派遣信件的內容，包含醫院和醫生的詳細資訊。',
     employer: {
       name: '台灣化工',
       address: '台中市西屯區工業一路88號',
@@ -247,7 +265,13 @@ export const testCases = [
       address: '高雄市三民區九如一路100號',
       contact: '07-123-4567'
     },
-    dispatchDoctor: null,
+    dispatchDoctor: {
+      uuid: 'doctor-005',
+      name: '張醫師',
+      specialty: '急診醫學',
+      contact: '07-123-4567'
+    },
+    dispatchLetter: '這是派遣信件的內容，包含醫院和醫生的詳細資訊。',
     employer: {
       name: '聯華電子',
       address: '新竹市東區新安路88號',
@@ -284,7 +308,13 @@ export const testCases = [
       address: '台南市東區大學路1號',
       contact: '06-123-4567'
     },
-    dispatchDoctor: null,
+    dispatchDoctor: {
+      uuid: 'doctor-006',
+      name: '鄭醫師',
+      specialty: '職業醫學科',
+      contact: '06-123-4567'
+    },
+    dispatchLetter: '這是派遣信件的內容，包含醫院和醫生的詳細資訊。',
     employer: {
       name: '大同公司',
       address: '台北市中山區中山北路三段22號',
