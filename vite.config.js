@@ -10,10 +10,17 @@ export default defineConfig({
       dts: 'src/typed-router.d.ts' // 自動產生型別
     }),
     vue(),
-    VueDevTools()
+    // VueDevTools()
   ],
   optimizeDeps: {
     exclude: ['pdfjs-dist/build/pdf.worker.mjs']
-  }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: "modern-compiler" // or 'modern'
+      }
+    }
+  },
 })
 

@@ -21,13 +21,11 @@
       {{ lastStatus }}
     </div>
 
-
     <!-- 共用的底線 -->
     <div class="progress-line"></div>
 
     <!-- 主進度條 -->
-    <div class="main-step-progress-bar" :style="{ width: progressPercent + '%', backgroundColor: getColorByDiff }">
-    </div>
+    <div class="main-step-progress-bar" :style="{ width: progressPercent + '%', backgroundColor: getColorByDiff }"></div>
 
     <!-- 主節點 -->
     <div v-for="(label, index) in mainFields" :key="'main-' + index">
@@ -43,7 +41,6 @@
         <span v-if="mainDates[index]" class="main-step-checkmark" :style="{ color: getColorByDiff }">✔</span>
       </div>
     </div>
-
 
     <!-- 次節點 -->
     <div v-for="(label, index) in secondaryLabels" :key="'secondary-group-' + index" style="position: relative;">
@@ -64,19 +61,17 @@
       <div class="secondary-step-node-label" v-if="secondaryDates[index * 2] && secondaryDates[index * 2 + 1]"
         :class="{ addition: secondaryAddition[index], 'secondary-step-label-top': index % 2 === 0, 'secondary-step-label-bottom': index % 2 === 1 }"
         :style="{
-          left: `calc(${(secondaryLeftPercents[index * 2] + secondaryLeftPercents[index * 2 + 1]) / 2}% + 6px)`
-          , top: index % 2 === 0 ? `calc(${secondaryTop} - 20px)` : `calc(${secondaryBottom} + 12px)`
+          left: `calc(${(secondaryLeftPercents[index * 2] + secondaryLeftPercents[index * 2 + 1]) / 2}% + 6px)`,
+          top: index % 2 === 0 ? `calc(${secondaryTop} - 20px)` : `calc(${secondaryBottom} + 12px)`
         }">
         {{ label }}
       </div>
     </div>
-
-
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed } from 'vue'
 import dayjs from 'dayjs'
 
 const props = defineProps({
@@ -117,19 +112,12 @@ const props = defineProps({
       'diseaseReviewMeetingAddition'
     ]
   }
-});
-
-
-
-const deadLine = computed(() => {
-  const start = startDate.value
-  const dead = deadLineDays.value
-  return start.add(dead, 'day')
 })
 
 const mainDates = computed(() => props.mainFields.map(f => props.caseItem[f] ? dayjs(props.caseItem[f]) : null))
 const secondaryDates = computed(() => props.secondaryFields.map(f => props.caseItem[f] ? dayjs(props.caseItem[f]) : null))
-const secondaryAddition = computed(() => props.additionArray.map(f => props.caseItem[f] ? props.caseItem[f] : false))
+const secondaryAddition = computed(() => props.additionArray.map(f => !!props.caseItem[f]))
+
 const startDate = computed(() => {
   for (const d of mainDates.value) {
     if (d) return d
@@ -137,9 +125,27 @@ const startDate = computed(() => {
   return dayjs()
 })
 
+// 起始日期 + 60 天（基本死線） + 加班時程天數（secondaryAddition）
+const deadLineDays = computed(() => {
+  let baseDays = 60
+  secondaryAddition.value.forEach((add, i) => {
+    if (add) {
+      const start = secondaryDates.value[i * 2]
+      const end = secondaryDates.value[i * 2 + 1]
+      if (start && end) {
+        const diff = end.diff(start, 'day')
+        baseDays += diff
+      }
+    }
+  })
+  return baseDays
+})
+
+const deadLine = computed(() => startDate.value.add(deadLineDays.value, 'day'))
+
 const maxCompleteDate = computed(() => {
-  let max = null
   const allDates = [...mainDates.value, ...secondaryDates.value]
+  let max = null
   for (const d of allDates) {
     if (d && (!max || d.isAfter(max))) max = d
   }
@@ -148,7 +154,7 @@ const maxCompleteDate = computed(() => {
 
 const maxDays = computed(() => {
   const diff = maxCompleteDate.value.diff(startDate.value, 'day')
-  console.log(`目前進程天數: ${diff} 天`)
+  // 最少保留 60 天基準
   return Math.max(diff, 60)
 })
 
@@ -156,6 +162,7 @@ const progressPercent = computed(() => {
   const diff = maxCompleteDate.value.diff(startDate.value, 'day')
   return Math.min(100, (diff / maxDays.value) * 100)
 })
+
 const nodeLeftPercents = computed(() => {
   const completed = []
   const pending = []
@@ -200,294 +207,274 @@ const secondaryLeftPercents = computed(() => {
   completed.forEach((idx, i) => {
     result[idx] = completedPercs[i]
   })
+
+  // 依據目前主進度條進度分配剩餘 pending 節點位置
   const pendingGap = (100 - progressPercent.value) / (pending.length + 1)
   pending.forEach((idx, i) => {
     result[idx] = progressPercent.value + pendingGap * (i + 1)
   })
+
   return result
 })
-const deadLineDays = ref(60)
-const scanAddition = () => {
-  for (let i = 0; i < secondaryAddition.value.length; i++) {
-    if (secondaryAddition.value[i]) {
-      const start = secondaryDates.value[i * 2]
-      const end = secondaryDates.value[i * 2 + 1]
-      if (start && end) {
-        const diff = end.diff(start, 'day')
-        // console.log(`次節點 ${i + 1} 的時間差: ${diff} 天`)
-        deadLineDays.value += diff
-      }
-    }
-  }
-  console.log(`死線: ${deadLineDays.value} 天`)
-}
-watch(() => secondaryAddition, (val) => {
-  scanAddition()
-}, { immediate: true })
+
 const lastStatus = computed(() => {
-  var diff = deadLine.value.diff(dayjs(), 'day')
-  var over = deadLine.value.isBefore(dayjs())
+  let diff = deadLine.value.diff(dayjs(), 'day')
+  const over = deadLine.value.isBefore(dayjs())
+
   if (mainDates.value[mainDates.value.length - 1]) {
-    var lastDate = mainDates.value[mainDates.value.length - 1]
+    const lastDate = mainDates.value[mainDates.value.length - 1]
     if (lastDate) {
       diff = lastDate.diff(startDate.value, 'day')
     }
-    if (diff > deadLineDays.value) {
-      return '已完成，逾期 ' + (diff - deadLineDays.value) + ' 天'
-    }
-    return '已完成'
+    if (diff > deadLineDays.value) diff = deadLineDays.value
   }
-  if (diff === 0) {
-    return '今天截止'
+
+  if (diff < 0) {
+    diff = -diff
   }
-  if (over) {
-    diff = Math.abs(diff)
-    return `已逾期 ${diff} 天`
-  }
-  return `剩餘:  ${diff} 天`
+  return (over ? '超過截止日 ' : '剩餘 ') + diff + ' 天'
 })
 
 const getColorByDiff = computed(() => {
-  var diff = deadLine.value.diff(dayjs(), 'day')
-  if (mainDates.value[mainDates.value.length - 1]) {
-    var lastDate = mainDates.value[mainDates.value.length - 1]
-    if (lastDate) {
-      diff = lastDate.diff(startDate.value, 'day')
-    }
-    if (diff > deadLineDays.value) {
-      return '#588157'
-    }
-    return '#4caf50'
-  }
-  if (diff < 0) return '#f44336'
-  if (diff === 0) return '#f19143'
-  if (diff <= 3) return '#fabc3c'
-  return '#4caf50'
+  const diff = deadLine.value.diff(dayjs(), 'day')
+  if (diff > 5) return 'green'
+  if (diff > 0) return 'orange'
+  return 'red'
 })
 
 function formatToROC(date) {
   if (!date) return ''
-  const d = new Date(date)
-  if (isNaN(d)) return ''
-  const year = d.getFullYear() - 1911
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${year}/${month}/${day}`
+  const year = date.year() - 1911
+  const m = date.month() + 1
+  const d = date.date()
+  return `${year}年${m}月${d}日`
 }
-
-
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+$color-border-default: #bbb;
+$color-primary: #2196f3;
+$color-primary-light: #6cbdff;
+$color-bg: white;
+$color-progress-bg: #ddd;
+$font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+
+$size-main-node: 14px;
+$size-secondary-node: 10px;
+$size-secondary-node-addition: 12px;
+$progress-height: 6px;
+
 .step-progress-container {
   position: relative;
   height: 150px;
   margin-top: 20px;
-}
 
-.progress-line {
-  position: absolute;
-  top: 50px;
-  left: 0;
-  width: 100%;
-  height: 6px;
-  background-color: #ddd;
-  z-index: 1;
-  border-radius: 3px;
-}
+  .progress-line {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    height: $progress-height;
+    background-color: $color-progress-bg;
+    z-index: 1;
+    border-radius: 3px;
+  }
 
-/* 主進度條 */
-.main-step-progress-bar {
-  position: absolute;
-  top: 50px;
-  left: 8px;
-  height: 6px;
-  border-radius: 3px;
-  z-index: 2;
-  transition: width 0.3s ease;
-}
+  /* 主進度條 */
+  .main-step-progress-bar {
+    position: absolute;
+    top: 50px;
+    left: 8px;
+    height: $progress-height;
+    border-radius: 3px;
+    z-index: 2;
+    transition: width 0.3s ease;
+  }
 
-/* 次進度條（每兩個節點一段） */
-.secondary-step-progress-bar {
-  position: absolute;
-  height: 6px;
-  background-color: #2196f3;
-  border-radius: 3px;
-  z-index: 2;
-}
+  /* 次進度條（每兩個節點一段） */
+  .secondary-step-progress-bar {
+    position: absolute;
+    height: $progress-height;
+    background-color: $color-primary;
+    border-radius: 3px;
+    z-index: 2;
+  }
 
-/* 主節點 */
-.main-step-node-circle {
-  position: absolute;
-  top: 46px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background-color: white;
-  border: 3px solid #bbb;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
+  /* 主節點 */
+  .main-step-node-circle {
+    position: absolute;
+    top: 46px;
+    width: $size-main-node;
+    height: $size-main-node;
+    border-radius: 50%;
+    background-color: $color-bg;
+    border: 3px solid $color-border-default;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 
-.main-step-node-circle.completed {
-  font-size: 10px;
-  font-weight: bold;
-}
+    &.completed {
+      font-size: 10px;
+      font-weight: bold;
+    }
 
-.main-step-checkmark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 8px;
-  pointer-events: none;
-}
+    .main-step-checkmark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 8px;
+      pointer-events: none;
+    }
+  }
 
-.main-step-node-label {
-  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-  position: absolute;
-  white-space: nowrap;
-  font-size: 12px;
-  text-align: center;
-  left: 50%;
-  transform: translateX(-50%);
-}
+  .main-step-node-label {
+    font-family: $font-family;
+    position: absolute;
+    white-space: nowrap;
+    font-size: 12px;
+    text-align: center;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 
-/* 次節點 */
-.secondary-step-node-circle {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: white;
-  border: 2px solid #2196f3;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
+  /* 次節點 */
+  .secondary-step-node-circle {
+    position: absolute;
+    width: $size-secondary-node;
+    height: $size-secondary-node;
+    border-radius: 50%;
+    background-color: $color-bg;
+    border: 2px solid $color-primary;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 
-.secondary-step-node-circle.addition {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: #6cbdff;
-  border: 2px solid #2196f3;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
+    &.addition {
+      width: $size-secondary-node-addition;
+      height: $size-secondary-node-addition;
+      background-color: $color-primary-light;
+      border: 2px solid $color-primary;
+    }
+  }
 
-.secondary-step-node-label {
-  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-  color: #2196f3;
-  position: absolute;
-  white-space: nowrap;
-  font-size: 12px;
-  text-align: center;
-  left: 50%;
-  transform: translateX(-50%);
-}
+  .secondary-step-node-label {
+    font-family: $font-family;
+    color: $color-primary;
+    position: absolute;
+    white-space: nowrap;
+    font-size: 12px;
+    text-align: center;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 
-/* 共用 label 樣式 */
-.main-step-label-top {
-  bottom: 100%;
-  margin-bottom: 8px;
-  border-bottom: 2px solid var(--line-color);
-}
+  /* 共用 label 樣式 */
+  .main-step-label-top,
+  .main-step-label-bottom {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: $font-family;
+    font-size: 12px;
+    text-align: center;
+    white-space: nowrap;
+  }
 
-.main-step-label-bottom {
-  top: 100%;
-  margin-top: 8px;
-  border-top: 2px solid var(--line-color);
-}
+  .main-step-label-top {
+    bottom: 100%;
+    margin-bottom: 8px;
+    border-bottom: 2px solid var(--line-color, $color-border-default);
 
-.main-step-label-top {
-  bottom: 100%;
-  margin-bottom: 8px;
-  border-bottom: 2px solid var(--line-color);
-}
+    &::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -8px;
+      width: 2px;
+      height: 8px;
+      background-color: var(--line-color, $color-border-default);
+      transform: translateX(-50%);
+    }
+  }
 
-.main-step-label-bottom {
-  top: 100%;
-  margin-top: 8px;
-  border-top: 2px solid var(--line-color);
-}
+  .main-step-label-bottom {
+    top: 100%;
+    margin-top: 8px;
+    border-top: 2px solid var(--line-color, $color-border-default);
 
-.main-step-label-top::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -8px;
-  width: 2px;
-  height: 8px;
-  background-color: var(--line-color, #bbb);
-  transform: translateX(-50%);
-}
+    &::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: -8px;
+      width: 2px;
+      height: 8px;
+      background-color: var(--line-color, $color-border-default);
+      transform: translateX(-50%);
+    }
+  }
 
-.main-step-label-bottom::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -8px;
-  width: 2px;
-  height: 8px;
-  background-color: var(--line-color, #bbb);
-  transform: translateX(-50%);
-}
+  .secondary-step-label-top,
+  .secondary-step-label-bottom {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 
-.secondary-step-label-top {
-  bottom: auto;
-}
+  .secondary-step-label-top {
+    bottom: auto;
 
-.secondary-step-label-bottom {
-  top: auto;
-}
+    &.addition {
+      border-bottom: 2px solid $color-primary;
 
-.secondary-step-label-top.addition {
-  border-bottom: 2px solid #2196f3;
-}
+      &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: -48px;
+        width: 2px;
+        height: 48px;
+        background: repeating-linear-gradient(
+          to bottom,
+          $color-primary,
+          $color-primary 4px,
+          transparent 4px,
+          transparent 8px
+        );
+        transform: translateX(-50%);
+      }
+    }
+  }
 
-.secondary-step-label-bottom.addition {
-  border-top: 2px solid #2196f3;
-}
+  .secondary-step-label-bottom {
+    top: auto;
 
-.secondary-step-label-top.addition::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -48px;
-  width: 2px;
-  height: 48px;
-  background: repeating-linear-gradient(to bottom,
-      #2196f3,
-      #2196f3 4px,
-      transparent 4px,
-      transparent 8px);
-  transform: translateX(-50%);
-}
+    &.addition {
+      border-top: 2px solid $color-primary;
 
-
-
-.secondary-step-label-bottom.addition::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -48px;
-  width: 2px;
-  height: 48px;
-  background: repeating-linear-gradient(to bottom,
-      #2196f3,
-      #2196f3 4px,
-      transparent 4px,
-      transparent 8px);
-  transform: translateX(-50%);
+      &::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: -48px;
+        width: 2px;
+        height: 48px;
+        background: repeating-linear-gradient(
+          to bottom,
+          $color-primary,
+          $color-primary 4px,
+          transparent 4px,
+          transparent 8px
+        );
+        transform: translateX(-50%);
+      }
+    }
+  }
 }
 </style>
+

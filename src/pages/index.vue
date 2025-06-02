@@ -35,6 +35,9 @@
                     <template v-else-if="column.key === 'diagnosis'">
                       <TruncateText :text="item.diagnosis" :maxLength="10" />
                     </template>
+                    <template v-else-if="column.key === 'dispatchHospitalName'">
+                      {{ item.dispatchHospital.name }}
+                    </template>
                     <template v-else-if="column.key === 'status'">
                       <v-chip :color="itemStatusColors(item)" small>
                         {{ itemStatusText(item) }}
@@ -97,7 +100,7 @@ const headers = [
   { title: '案名', key: 'caseName' },
   { title: '姓名', key: 'name' },
   { title: '診斷', key: 'diagnosis' },
-  { title: '派案醫院', key: 'dispatchHospital' },
+  { title: '派案醫院', key: 'dispatchHospitalName' },
   { title: '職安署承辦', key: 'oshaHandler' },
   { title: '中心承辦', key: 'centerHandler' },
   // { title: '派案日期', key: 'dispatchDate' },
@@ -149,9 +152,30 @@ const newCase = ref({
   age: null,
   diagnosis: '',
   dispatchDate: '',
-  dispatchHospital: '',
-  employer: '',
-  laborInspection: '',
+  dispatchHospital: {
+    uuid: null,
+    name: '',
+    address: '',
+    contact: ''
+  },
+  dispatchDoctor: {
+    uuid: null,
+    name: '',
+    address: '',
+    contact: ''
+  },
+  dispatchLetter: '',
+  employer: {
+    name: '',
+    address: '',
+    contact: ''
+  },
+  laborInspection: {
+    uuid: '',
+    name: '',
+    address: '',
+    contact: ''
+  },
   remarks: '',
 })
 function formatToROC(date) {
