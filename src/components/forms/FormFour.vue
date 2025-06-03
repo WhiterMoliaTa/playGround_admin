@@ -74,6 +74,10 @@ const props = defineProps({
     type: String,
     default: '菜餚品質與數量檢討記錄'
   },
+  time: {
+    type: String,
+    default: ''
+  },
   formConfig: {
     type: Object,
     default: () => ({})
@@ -87,9 +91,9 @@ const getAddiForm = inject('getAddiForm');
 const updateAddiForm = inject('updateAddiForm');
 
 // Time-based display
-const showBreakfast = computed(() => props.formConfig.time === 'morning' || !props.formConfig.time);
-const showLunch = computed(() => props.formConfig.time === 'afternoon' || !props.formConfig.time);
-const showDinner = computed(() => props.formConfig.time === 'evening' || !props.formConfig.time);
+const showBreakfast = computed(() => props.time.includes('morning'));
+const showLunch = computed(() => props.time.includes('afternoon'));
+const showDinner = computed(() => props.time.includes('evening'));
 
 // Local form data
 const formItems = ref([]);
@@ -114,7 +118,6 @@ watch(() => props.formConfig, () => {
 
 function loadFormData() {
   const formData = getAddiForm('formFour');
-  console.log('Loaded form data:', formData);
   
   if (formData && formData.length > 0) {
     const firstForm = formData[0];

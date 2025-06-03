@@ -14,9 +14,9 @@
         @cancel="handleCancel" 
       />
     </div>
-    <div v-else-if="props.form === 'FormFour'">
+    <div v-else-if="props.form === 'formFour'">
       <FormFour :formConfig="formConfig" 
-        :time="props.time" 
+        :time="props.time"
         @save="handleSave" 
         @cancel="handleCancel" 
       />

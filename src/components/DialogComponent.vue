@@ -116,6 +116,7 @@ function saveAdditionalForm(submittedData) {
 
 function openAdditionalForm() {
     formConfig.value = props.additionalForm;
+    console.log('DialogComponent/openAdditionalForm formConfig.value', formConfig.value);
     showFormDialog.value = true;
 }
 

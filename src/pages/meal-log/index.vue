@@ -163,6 +163,28 @@ const jobs = ref([
       { id: 1, title: '生鮮食材驗收及登錄/進貨異常記錄(表七)。', checked: false, remarks: '' }
     ]
   },
+  {
+    section: "third-section",
+    title: "人數及食材確認",
+    time: "08:40-09:30",
+    items: [
+      { id: 1, title: '10.依清潔檢查表，稽核廚區早餐配膳後清潔作業。', checked: false, remarks: '' },
+      { id: 2, title: '11.督導早餐餐車回收並填寫菜餚剩餘量紀錄(表三)。', checked: false, 
+        forms: {
+          
+        },
+        remarks: '' 
+      },
+      { id: 3, title: '12.督導餐具清洗作業，填寫洗碗機每週基本操作檢查表。', checked: false, remarks: '' },
+      { id: 4, title: '13.檢查早餐餐車排列及清潔，確認無餐盤留於餐車內。', checked: false, remarks: '' },
+      { id: 5, title: '14.填寫每日衛生檢查表(TCHG-G4-02)。', checked: false, 
+        forms: {
+        },
+        remarks: '' 
+      },
+      { id: 6, title: '15.追蹤設備請修及處理情形登錄（另行登錄）。', checked: false, remarks: '' }
+    ]
+  }
 ]);
 
 const forms = ref(
