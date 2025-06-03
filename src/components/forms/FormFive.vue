@@ -10,6 +10,7 @@
                     日期: {{ new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }) }}
                 </v-col>
             </v-row>
+            <v-divider></v-divider>
 
             <!-- Records -->
             <v-list class="scroll-container">
@@ -37,28 +38,28 @@
                         </v-row>
                     </v-card>
                 </v-list-item>
-                <v-btn type="button" @click="newEmptyRecord" class="px-2 py-1 bg-blue text-white rounded">
+                <v-divider></v-divider>
+                <v-btn type="button" @click="newEmptyRecord" class="mt-3 px-2 py-1 bg-blue text-white rounded">
                     新增一組 +
                 </v-btn>
             </v-list>
 
 
             <!-- Action Buttons -->
-            <v-row class="justify-end mr-10">
+            <div class="d-flex justify-end my-3">
                 <v-btn color="grey" outlined @click="tempSave">暫存</v-btn>
                 <v-btn color="pink" @click="save">儲存</v-btn>
                 <v-btn color="grey" outlined @click="cancel">取消</v-btn>
-            </v-row>
+            </div>
         </v-card>
     </div>
 </template>
 
 <script setup>
-import { ref, inject, watch, computed } from 'vue';
+import { ref, inject, watch} from 'vue';
 
 const updateAddiForm = inject('updateAddiForm');
 const getAddiForm = inject('getAddiForm');
-const modifyPass = inject('modifyPassed');
 
 const props = defineProps({
     title: {
@@ -70,12 +71,12 @@ const props = defineProps({
         default: '',
     },
     personalRecords: {
-        type: Array,
-        default: () => [],
+        type: Object,
+        default: () => ({}),
     },
 });
 
-const emit = defineEmits(['save', 'cancel']);
+const emit = defineEmits(['save', 'cancel', 'update:passed']);
 
 const personnelOptions = [
     { name: '林大明', jobTitle: '供膳人員' },
@@ -89,20 +90,27 @@ function url(file) {
     if(file instanceof File) {
         return URL.createObjectURL(file);
     } else if (typeof file === 'string') {
-        return file; // Assume it's a URL
+        return file;
     }
 };
-
-const form = ref({
-    date: new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }),
-});
 
 function getJobTitle(personnelName) {
     const selectedPerson = personnelOptions.find(option => option.name === personnelName);
     return selectedPerson ? selectedPerson.jobTitle : '';
 }
+const formData = ref({
+    passed: false,
+    records: []
+})
+const localRecords = ref([...props.personalRecords[0].records]);
 
-const localRecords = ref([...props.personalRecords]);
+watch(
+    () => props.personalRecords,
+    () => {
+        localRecords.value = getAddiForm('formFive')[0].records;
+    },
+    { immediate: true }
+);
 
 watch(
     () => localRecords.value,
@@ -118,14 +126,6 @@ watch(
         });
     },
     { deep: true, immediate: true }
-);
-
-watch(
-    () => props.personalRecords,
-    () => {
-        localRecords.value = getAddiForm('formFive');
-    },
-    { immediate: true }
 );
 
 function newEmptyRecord() {
@@ -149,8 +149,13 @@ function isRecordEmpty(record) {
 function save() {
     let filteredRecords = localRecords.value.filter(record => !isRecordEmpty(record));
     if (filteredRecords.length > 0) {
-        updateAddiForm('formFive',filteredRecords);
-        modifyPass('formFive', props.time, false);
+        const newFormData = [{
+            passed: false,
+            records: filteredRecords
+        }];
+        updateAddiForm('formFive',newFormData);
+    } else {
+        updateAddiForm('formFive', [{ passed:true, records: [{personnel: '', jobTitle: '', notes: '', image: null }]}]);
     }
     emit('cancel');
 }
@@ -158,7 +163,13 @@ function save() {
 function tempSave() {
     let filteredRecords = localRecords.value.filter(record => !isRecordEmpty(record));
     if (filteredRecords.length > 0) {
-        updateAddiForm('formFive',filteredRecords);
+        const newFormData = [{
+            passed: false,
+            records: filteredRecords
+        }];
+        updateAddiForm('formFive',newFormData);
+    } else {
+        updateAddiForm('formFive', [{ passed:true, records: [{personnel: '', jobTitle: '', notes: '', image: null }]}]);
     }
 }
 

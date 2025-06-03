@@ -73,6 +73,8 @@
 <script setup>
 import { ref, computed, reactive, watch, onMounted, provide } from 'vue';
 import DialogComponent from '../../components/DialogComponent.vue';
+import { fa } from 'vuetify/locale';
+
 const breadcrumbs = [
   { label: '首頁', path: '/' },
   { label: '供膳管理日誌', path: '/meal-log' }
@@ -114,8 +116,8 @@ const jobs = ref([
           formName: 'formFive',
           time: 'morning',
           passed: true,
-          remarks: ''
-        }
+        },
+        remarks: ''
       },
       {
         id: 4, title: '督導病患早餐等配膳作業(表一及表二）。', checked: false,
@@ -130,13 +132,27 @@ const jobs = ref([
           formName: 'formOneAndTwo',
           time: 'morning',
           passed: true,
-          remarks: ''
-        }
+        },
+        remarks: ''
       },
       { id: 5, title: '確認早餐粥品烹煮時間符合，試吃早餐菜色。', checked: false, remarks: '' },
       { id: 6, title: '督導確認病患早餐、補餐送出(填寫漏補餐原因紀錄表)。', checked: false, remarks: '' },
       { id: 7, title: '確認冰箱溫度，冷藏庫 0℃~7℃；冷凍庫≦ -18℃。', checked: false, remarks: '' },
-      { id: 8, title: '填寫菜餚品質與數量檢討記錄（表四）。', checked: false, remarks: '' }
+      { id: 8, title: '填寫菜餚品質與數量檢討記錄（表四）。', checked: false,
+        forms: {
+          title: "菜餚品質與數量檢討紀錄",
+          checkObject: "菜餚品質與數量檢討",
+          checkBoxs: [
+            { id: 1, label: '菜量設計', checked: false },
+            { id: 2, label: '菜餚品質(賣像)', checked: false }
+          ],
+          reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「菜餚品質與數量檢討紀錄」",
+          formName: 'formFour',
+          time: 'morning',
+          passed: false,
+        },
+        remarks: ''
+      },
     ],
   },
   {
@@ -153,13 +169,17 @@ const forms = ref(
   {
     formFive: {
       additionalForm: [
-        { personnel: '', jobTitle: '', notes: '', image: null }
+        {
+          passed: true,
+          records: [{ personnel: '', jobTitle: '', notes: '', image: null }],
+        }
       ],
     },
     formOneAndTwo: {
       additionalForm: [
         {
           title: '配膳線上督餐作業查檢表',
+          passed: false,
           form: [
             { id: 1, title: '1.保溫配膳車依菜色需求加熱(或擺放熱水)，水位須到達指定位置、熱度到達指定溫度(設定溫度≧80℃)。', breakfast: null, lunch: null, dinner: null, remarks: '' },
             { id: 2, title: '2.確認病患用餐車已洗淨並預熱(加熱型，設定≧70℃)。', breakfast: null, lunch: null, dinner: null, remarks: '' },
@@ -177,6 +197,7 @@ const forms = ref(
         },
         {
           title: '出餐作業查檢表',
+          passed: false,
           form1: [
             { id: 1, title: '1.依送餐簡表檢查所有餐車飲食類類別及數量是否正確。', breakfast: null, lunch: null, dinner: null, remarks: '' },
             { id: 2, title: '2.餐車實際送出及結束時間是否正常。', breakfast: null, lunch: null, dinner: null, remarks: '' },
@@ -187,29 +208,25 @@ const forms = ref(
           ]
         }
       ],
+    },
+    formFour: {
+      additionalForm: [
+        {
+          title: '菜餚品質與數量檢討紀錄',
+          passed: false,
+          form: [
+            { id: 1, title: '1.菜量設計是否合理', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 2, title: '2.菜餚品質(賣像)是否優質', breakfast: null, lunch: null, dinner: null, remarks: '' }
+          ]
+        }
+      ],
     }
   }
-)
+);
 
 provide('getAddiForm', (formName) => {
   return forms.value[formName]?.additionalForm || [];
 });
-
-provide('getFormTime', (formName) => {
-  const job = jobs.value.find(j =>
-    j.items.some(item =>
-      item.forms &&
-      item.forms.formName === formName
-    )
-  );
-  if (job) {
-    const item = job.items.find(item =>
-      item.forms && item.forms.formName === formName
-    );
-    return item ? item.forms.time : '';
-  }
-  return '';
-}); 
 
 provide('modifyPassed', (formName, time, pass) => {
   const job = jobs.value.find(j =>
@@ -223,18 +240,11 @@ provide('modifyPassed', (formName, time, pass) => {
     const item = job.items.find(item =>
       item.forms && item.forms.formName === formName && (!time || item.forms.time === time)
     );
-    if (item && item.forms) {
+    if (item && item.forms ) {
       item.forms.passed = pass;
     }
   }
 });
-
-function getCheckboxColor(item) {
-  if ('passed' in item) {
-    return item.passed ? 'success' : 'error';
-  }
-  return 'success';
-}
 
 provide('updateAddiForm', (formName, newData) => {
   const form = forms.value[formName];
@@ -276,7 +286,6 @@ function handleCheckboxChange(currentForms, isChecked) {
       additionalForm: forms.value[currentForms.formName]?.additionalForm || null,
       reminder: currentForms.reminder || ""
     });
-    console.log("Index.vue additionalForm check", forms.value[currentForms.formName]?.additionalForm);
   }
 }
 

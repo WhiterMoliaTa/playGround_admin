@@ -104,15 +104,11 @@ const showDialog = computed({
     set: (value) => emit('update:show', value)
 });
 
-
 function closeDialog() {
-    showDialog.value = false;
-    const unchecked = props.checkBoxs.some(cb => !cb.checked);
-    if( unchecked) {
-        modifyPass(props.formName, props.time, !unchecked);
-    }
+  const unchecked = props.checkBoxs.some(cb => !cb.checked);
+  modifyPass(props.formName, props.time, !unchecked);
+  showDialog.value = false;
 }
-
 
 function saveAdditionalForm(submittedData) {
     emit('addtionalFormSubmit', submittedData);
