@@ -83,7 +83,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['save', 'cancel', 'update:passed']);
+const emit = defineEmits(['save', 'cancel']);
 
 const personnelOptions = [
   { name: '林大明', jobTitle: '供膳人員' },
@@ -92,7 +92,6 @@ const personnelOptions = [
 ];
 
 const formData = ref({
-  passed: false,
   records: []
 })
 
@@ -178,12 +177,11 @@ function save() {
   console.log(filteredRecords);
   if (filteredRecords.length > 0) {
     const newFormData = [{
-      passed: false,
       records: filteredRecords
     }];
     updateAddiForm('formFive', newFormData);
   } else {
-    updateAddiForm('formFive', [{ passed: true, records: [{ personnel: '', jobTitle: '', notes: '', image: null }] }]);
+    updateAddiForm('formFive', [{ records: [{ personnel: '', jobTitle: '', notes: '', image: null }] }]);
   }
   emit('cancel');
 }
@@ -192,12 +190,11 @@ function tempSave() {
   let filteredRecords = localRecords.value.filter(record => !isRecordEmpty(record));
   if (filteredRecords.length > 0) {
     const newFormData = [{
-      passed: false,
       records: filteredRecords
     }];
     updateAddiForm('formFive', newFormData);
   } else {
-    updateAddiForm('formFive', [{ passed: true, records: [{ personnel: '', jobTitle: '', notes: '', image: null }] }]);
+    updateAddiForm('formFive', [{ records: [{ personnel: '', jobTitle: '', notes: '', image: null }] }]);
   }
 }
 

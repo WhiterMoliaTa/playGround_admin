@@ -97,7 +97,6 @@ const showDinner = computed(() => props.time.includes('evening'));
 
 // Local form data
 const formItems = ref([]);
-const formPassed = ref(false);
 
 // Determine the size of the remarks column based on visible meal columns
 const getRemarksColSize = () => {
@@ -121,7 +120,6 @@ function loadFormData() {
   
   if (additionalForm && additionalForm.length > 0) {
     let firstForm = additionalForm[0];
-    formPassed.value = firstForm.passed ?? false;
     
     if (firstForm.form && Array.isArray(firstForm.form)) {
       formItems.value = JSON.parse(JSON.stringify(firstForm.form));
@@ -133,7 +131,6 @@ function loadFormData() {
     }
   } else {
     alert('異常：無法取得表單資料');
-    formPassed.value = false;
   }
 }
 
@@ -147,7 +144,6 @@ function save() {
 
   let newFormData = [{
     title: '菜餚品質與數量檢討紀錄',
-    passed: allChecked,
     form: JSON.parse(JSON.stringify(formItems.value))
   }];
 

@@ -21,7 +21,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="closeDialog">檢核確認</v-btn>
-        <v-btn color="error" @click="openAdditionalForm">填寫紀錄表</v-btn>
+        <v-btn v-if="props.additionalForm" color="error" @click="openAdditionalForm">填寫紀錄表</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

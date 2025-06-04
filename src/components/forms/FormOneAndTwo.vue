@@ -174,7 +174,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['save', 'cancel', 'update:passed']);
+const emit = defineEmits(['save', 'cancel']);
 
 const activeTab = ref(0);
 
@@ -249,13 +249,7 @@ function save() {
     }
     return true;
   });
-  if (!isComplete) {
-    props.formConfig.passed = false;
-    emit('update:passed', false);
-  }
-  props.formConfig.passed = true;
   updateAddiForm('formOneAndTwo', dataToSave);
-  emit('update:passed', true);
   emit('save', dataToSave);
 }
 

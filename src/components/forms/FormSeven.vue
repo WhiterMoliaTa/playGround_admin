@@ -100,7 +100,6 @@ const updateAddiForm = inject('updateAddiForm');
 
 // Local copy of records for editing
 const localRecords = ref([]);
-const formPassed = ref(true);
 const timeDialog = ref(false)
 
 // Initialize data
@@ -117,7 +116,6 @@ function loadFormData() {
   const additionalForm = getAddiForm('formSeven');
 
   if (additionalForm && additionalForm.length > 0 && additionalForm[0].records) {
-    formPassed.value = additionalForm[0].passed ?? true;
 
     if (additionalForm[0].records.length > 0) {
       localRecords.value = JSON.parse(JSON.stringify(additionalForm[0].records));
@@ -157,12 +155,8 @@ function save() {
     record.company && record.issues && record.issues.trim() !== ''
   );
 
-  // If there are issues, the form should not be passed
-  formPassed.value = !hasIssues;
-
   // Create the new form data with our updated records
   const newFormData = [{
-    passed: formPassed.value,
     records: filteredRecords
   }];
 
