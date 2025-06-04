@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="showManger" max-width="500">
+  <v-dialog v-model="showManger" max-width="90vw">
     <div v-if="props.form === 'formFive'">
       <FormFive :personalRecords="formConfig" 
         :time="props.time" 
@@ -21,6 +21,13 @@
         @cancel="handleCancel" 
       />
     </div>
+    <div v-else-if="props.form === 'formSeven'">
+      <FormSeven :formConfig="formConfig" 
+        :time="props.time"
+        @save="handleSave" 
+        @cancel="handleCancel" 
+      />
+    </div>
   </v-dialog>
 </template>
 <script setup>
@@ -28,6 +35,7 @@ import { computed } from 'vue';
 import FormFive from './forms/FormFive.vue';
 import FormOneAndTwo from './forms/FormOneAndTwo.vue';
 import FormFour from './forms/FormFour.vue';
+import FormSeven from './forms/FormSeven.vue';
 
 const emit = defineEmits(['update:showForm', 'submitForm']);
 

@@ -17,7 +17,7 @@
       <v-row v-for="item in formItems" :key="item.id" class="my-3">
         <v-col cols="5" class="d-flex align-center">{{ item.title }}</v-col>
         
-        <v-col cols="2" v-if="showBreakfast" class="d-flex justify-center">
+        <v-col cols="2" v-if="showBreakfast" class="d-flex flex-column align-center">
           <v-checkbox-btn
             v-model="item.breakfast"
             color="success"
@@ -26,7 +26,7 @@
           ></v-checkbox-btn>
         </v-col>
         
-        <v-col cols="2" v-if="showLunch" class="d-flex justify-center">
+        <v-col cols="2" v-if="showLunch" class="d-flex flex-column align-center">
           <v-checkbox-btn
             v-model="item.lunch"
             color="success"
@@ -35,7 +35,7 @@
           ></v-checkbox-btn>
         </v-col>
         
-        <v-col cols="2" v-if="showDinner" class="d-flex justify-center">
+        <v-col cols="2" v-if="showDinner" class="d-flex flex-column align-center">
           <v-checkbox-btn
             v-model="item.dinner"
             color="success"
@@ -117,49 +117,40 @@ watch(() => props.formConfig, () => {
 }, { deep: true });
 
 function loadFormData() {
-  const formData = getAddiForm('formFour');
+  let additionalForm = getAddiForm('formFour');
   
-  if (formData && formData.length > 0) {
-    const firstForm = formData[0];
+  if (additionalForm && additionalForm.length > 0) {
+    let firstForm = additionalForm[0];
     formPassed.value = firstForm.passed ?? false;
     
     if (firstForm.form && Array.isArray(firstForm.form)) {
-      // Create a deep copy to avoid reference issues
       formItems.value = JSON.parse(JSON.stringify(firstForm.form));
     } else {
-      // Initialize with default items if no form data
       formItems.value = [
         { id: 1, title: '1.菜量設計是否合理', breakfast: null, lunch: null, dinner: null, remarks: '' },
         { id: 2, title: '2.菜餚品質(賣像)是否優質', breakfast: null, lunch: null, dinner: null, remarks: '' }
       ];
     }
   } else {
-    // Initialize with default items if no form data
-    formItems.value = [
-      { id: 1, title: '1.菜量設計是否合理', breakfast: null, lunch: null, dinner: null, remarks: '' },
-      { id: 2, title: '2.菜餚品質(賣像)是否優質', breakfast: null, lunch: null, dinner: null, remarks: '' }
-    ];
+    alert('異常：無法取得表單資料');
     formPassed.value = false;
   }
 }
 
 function save() {
-  // Determine if all visible checkboxes are checked
-  const allChecked = formItems.value.every(item => {
+  let allChecked = formItems.value.every(item => {
     if (showBreakfast.value && item.breakfast !== true) return false;
     if (showLunch.value && item.lunch !== true) return false;
     if (showDinner.value && item.dinner !== true) return false;
     return true;
   });
 
-  // Create new form data
-  const newFormData = [{
+  let newFormData = [{
     title: '菜餚品質與數量檢討紀錄',
     passed: allChecked,
     form: JSON.parse(JSON.stringify(formItems.value))
   }];
 
-  // Update form data
   updateAddiForm('formFour', newFormData);
   emit('save', newFormData);
 }

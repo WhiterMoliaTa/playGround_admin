@@ -6,6 +6,7 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import { VTimePicker } from 'vuetify/labs/VTimePicker'
 
 // 引入 icon
 import '@mdi/font/css/materialdesignicons.css'
@@ -20,7 +21,10 @@ const router = createRouter({
 })
 
 const vuetify = createVuetify({
-  components: components,
+  components: {
+    VTimePicker,
+    ...components
+  },
   directives,
   icons: {
     defaultSet: 'mdi',

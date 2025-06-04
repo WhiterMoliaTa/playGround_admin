@@ -160,7 +160,19 @@ const jobs = ref([
     title: "生鮮食材驗收及登錄",
     time: "07:30-08:00",
     items: [
-      { id: 1, title: '生鮮食材驗收及登錄/進貨異常記錄(表七)。', checked: false, remarks: '' }
+      { id: 1, title: '生鮮食材驗收及登錄/進貨異常記錄(表七)。', checked: false, 
+        forms: {
+          title: "進貨廠商管理紀錄",
+          checkObject: "進貨廠商管理",
+          checkBoxs: [
+            { id: 1, label: '進貨廠商管理', checked: false },
+          ],
+          reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「進貨廠商管理紀錄」",
+          formName: 'formSeven',
+          time: 'morning',
+          passed: true,
+        },
+        remarks: '' }
     ]
   },
   {
@@ -171,7 +183,7 @@ const jobs = ref([
       { id: 1, title: '10.依清潔檢查表，稽核廚區早餐配膳後清潔作業。', checked: false, remarks: '' },
       { id: 2, title: '11.督導早餐餐車回收並填寫菜餚剩餘量紀錄(表三)。', checked: false, 
         forms: {
-          
+
         },
         remarks: '' 
       },
@@ -242,7 +254,17 @@ const forms = ref(
           ]
         }
       ],
-    }
+    },
+    formSeven: {
+      additionalForm: [
+        {
+          passed: true,
+          records: [
+            { company: null, name: '', time: null, issues: '' }
+          ]
+        }
+      ],
+    },
   }
 );
 
