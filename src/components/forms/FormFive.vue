@@ -1,5 +1,5 @@
 <template>
-  <div class="form-five">
+  <v-container class="form-five">
     <v-card class="pa-1">
       <v-toolbar>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
@@ -13,11 +13,13 @@
       <v-divider></v-divider>
 
       <!-- Records -->
-      <v-list class="scroll-container">
-        <v-list-item v-for="(record, index) in localRecords" :key="index" class="mb-4">
+      <v-list class="scroll-container" v-model:opened="open">
+        <v-list-group v-for="(record, index) in localRecords" :key="index" :value="`record-${index}`" class="mb-4">
+          <template v-slot:activator="{ props }">
+            <v-list-item :title="`紀錄 #${index + 1}`" v-bind="props">
+            </v-list-item>
+          </template>
           <v-card class="pa-3">
-            <v-card-title class="text-subtitle-1">紀錄 #{{ index + 1 }}</v-card-title>
-
             <v-row>
               <v-col class="d-flex">
                 <v-select class="mr-3" v-model="record.personnel" :items="personnelOptions.map(option => option.name)"
@@ -36,11 +38,16 @@
               </v-col>
             </v-row>
           </v-card>
-        </v-list-item>
-        <v-divider></v-divider>
-        <v-btn type="button" @click="newEmptyRecord" class="mt-3 px-2 py-1 bg-blue text-white rounded">
-          新增一組 +
-        </v-btn>
+        </v-list-group>
+        <v-divider class="my-1"></v-divider>
+        <v-container class="d-flex align-center pa-1">
+          <v-container class="pa-1">
+            新增一組
+          </v-container>
+          <v-btn @click="newEmptyRecord" variant="plain" ref="autoScroll">
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </v-container>
       </v-list>
 
 
@@ -51,11 +58,11 @@
         <v-btn color="grey" outlined @click="cancel">取消</v-btn>
       </div>
     </v-card>
-  </div>
+  </v-container>
 </template>
 
 <script setup>
-import { ref, inject, watch, onMounted } from 'vue';
+import { ref, inject, watch, onMounted, useTemplateRef, nextTick } from 'vue';
 import { isNotBlankUtil } from '../../utils/stringUtil.js';
 
 const updateAddiForm = inject('updateAddiForm');
@@ -84,28 +91,21 @@ const personnelOptions = [
   { name: '郭小俠', jobTitle: '供膳人員' }
 ];
 
-function url(file) {
-  if (!file) return null;
-
-  if (file instanceof File) {
-    return URL.createObjectURL(file);
-  } else if (typeof file === 'string') {
-    return file;
-  }
-};
-
-function getJobTitle(personnelName) {
-  const selectedPerson = personnelOptions.find(option => option.name === personnelName);
-  return selectedPerson ? selectedPerson.jobTitle : '';
-}
 const formData = ref({
   passed: false,
   records: []
 })
+
+const autoScroll = ref();
+
 const localRecords = ref([]); //...props.personalRecords[0].records
+const open = ref([]);
 
 onMounted(() => {
   loadFormData();
+  if(localRecords.value.length > 0) {
+    open.value = ['record-0'];
+  }
 });
 
 function loadFormData() {
@@ -139,6 +139,21 @@ watch(
   { deep: true, immediate: true }
 );
 
+function url(file) {
+  if (!file) return null;
+
+  if (file instanceof File) {
+    return URL.createObjectURL(file);
+  } else if (typeof file === 'string') {
+    return file;
+  }
+};
+
+function getJobTitle(personnelName) {
+  const selectedPerson = personnelOptions.find(option => option.name === personnelName);
+  return selectedPerson ? selectedPerson.jobTitle : '';
+}
+
 function newEmptyRecord() {
   const newRecord = {
     personnel: '',
@@ -147,6 +162,9 @@ function newEmptyRecord() {
     image: null,
   }
   localRecords.value.push(newRecord);
+  nextTick( async() => {
+    autoScroll.value.$el.scrollIntoView({ behavior: 'smooth'});
+  });
 }
 
 function isRecordEmpty(record) {

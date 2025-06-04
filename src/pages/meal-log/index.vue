@@ -38,7 +38,7 @@
         </template>
 
         <div class="task-timeline">
-          <v-list-item v-for="item in job.items" :key="item.id" :value="item.id" lines="one" class="task-item">
+          <v-list-item v-for="item in job.items" :key="`${index}-${item.id}`" :value="`${index}-${item.id}-val`" lines="one" class="task-item">
             <template v-slot:prepend>
               <div class="timeline-indicator"></div>
             </template>
@@ -51,11 +51,7 @@
                   false-icon="mdi-check-circle" v-model="item.checked"
                   :color="('forms' in item) ? (item.forms.passed ? 'success' : 'error') : 'success'" hide-details
                   class="ma-0 pa-0" @change="(value) => handleCheckboxChange(item.forms, item.checked)" />
-                <!-- <v-icon-btn
-                                    icon="mdi-dots-horizontal-circle"
-                                    icon-size="25"
-                                /> -->
-                <v-btn variant="text" icon>
+                <v-btn variant="text" icon @click="openRemarkDialog(item)">
                   <v-icon>mdi-dots-horizontal-circle</v-icon>
                 </v-btn>
               </div>
@@ -65,15 +61,34 @@
       </v-list-group>
     </v-list>
   </v-card>
-  <DialogComponent v-model:show="dialogState.show" :title="dialogState.title" :checkObject="dialogState.checkObject"
-    :checkBoxs="dialogState.checkBoxs" :additional-form="dialogState.additionalForm" :form-name="dialogState.formName"
-    :time="dialogState.time" :reminder="dialogState.reminder" @addtionalFormSubmit="saveDialogAndAdditionalForm" />
+  <DialogComponent 
+    v-model:show="dialogState.show" 
+    :title="dialogState.title" 
+    :checkObject="dialogState.checkObject"
+    :checkBoxs="dialogState.checkBoxs" 
+    :additional-form="dialogState.additionalForm" 
+    :form-name="dialogState.formName"
+    :time="dialogState.time" 
+    :reminder="dialogState.reminder" 
+    @addtionalFormSubmit="saveDialogAndAdditionalForm" 
+  />
+  <v-dialog v-model="showRemarksDialog">
+    <v-card>
+      <v-card-title class="text-center">備註</v-card-title>
+      <v-card-text>
+        <v-textarea v-model="jobsRemarks.remarks" label="特殊狀況" rows="3" />
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" @click="updateJobRemark">確認</v-btn>
+        <v-btn color="secondary" @click="closeRemarksDialog">取消</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
 import { ref, computed, reactive, watch, onMounted, provide } from 'vue';
 import DialogComponent from '../../components/DialogComponent.vue';
-import { fa } from 'vuetify/locale';
 
 const breadcrumbs = [
   { label: '首頁', path: '/' },
@@ -93,6 +108,9 @@ const dialogState = reactive({
   additionalForm: null,
   reminder: ''
 });
+
+const jobsRemarks = ref(null);
+const showRemarksDialog = ref(false);
 
 const jobs = ref([
   {
@@ -131,7 +149,7 @@ const jobs = ref([
           reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「病患配膳紀錄表」",
           formName: 'formOneAndTwo',
           time: 'morning',
-          passed: true,
+          passed: false,
         },
         remarks: ''
       },
@@ -165,7 +183,7 @@ const jobs = ref([
           title: "進貨廠商管理紀錄",
           checkObject: "進貨廠商管理",
           checkBoxs: [
-            { id: 1, label: '進貨廠商管理', checked: false },
+            { id: 1, label: '無異常', checked: false },
           ],
           reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「進貨廠商管理紀錄」",
           formName: 'formSeven',
@@ -209,7 +227,7 @@ const forms = ref(
         }
       ],
     },
-    formOneAndTwo: {
+    formOne:{
       additionalForm: [
         {
           title: '配膳線上督餐作業查檢表',
@@ -229,14 +247,17 @@ const forms = ref(
             { id: 12, title: '12.配膳線上作業結束後，剩餘主食及菜餚處理。', breakfast: null, lunch: null, dinner: null, remarks: '' }
           ]
         },
+      ]
+    },
+    formTwo: {
+      additionalForm: [
         {
           title: '出餐作業查檢表',
-          passed: false,
-          form1: [
+          section1: [
             { id: 1, title: '1.依送餐簡表檢查所有餐車飲食類類別及數量是否正確。', breakfast: null, lunch: null, dinner: null, remarks: '' },
             { id: 2, title: '2.餐車實際送出及結束時間是否正常。', breakfast: null, lunch: null, dinner: null, remarks: '' },
           ],
-          form2: [
+          section2: [
             { id: 1, title: '第一部餐車送出時間', breakfast: null, lunch: null, dinner: null, remarks: '' },
             { id: 2, title: '最後一部餐車送出時間', breakfast: null, lunch: null, dinner: null, remarks: '' },
           ]
@@ -272,7 +293,8 @@ provide('getAddiForm', (formName) => {
   return forms.value[formName]?.additionalForm || [];
 });
 
-provide('modifyPassed', (formName, time, pass) => {
+provide('modifyJobPass', (formName, time, pass) => {
+
   const job = jobs.value.find(j =>
     j.items.some(item =>
       item.forms &&
@@ -306,6 +328,19 @@ const completedCount = ref(0);
 const sectionsToDone = computed(() => {
   return jobs.value.length;
 });
+
+function openRemarkDialog(item){
+  jobsRemarks.value = item || '';
+  showRemarksDialog.value = true;
+}
+
+function updateJobRemark(){
+  closeRemarksDialog();
+}
+
+function closeRemarksDialog() {
+  showRemarksDialog.value = false;
+}
 
 function updateCompletedCount() {
   let completed = 0;

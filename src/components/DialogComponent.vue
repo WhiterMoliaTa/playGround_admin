@@ -31,8 +31,11 @@
         :fillFormTime="new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })"
         @submitForm="saveAdditionalForm"
     /> -->
-  <form-dialog-manager v-model:showForm="showFormDialog" :form="formName" :time="time"
-    :form-config="formConfig"></form-dialog-manager>
+  <form-dialog-manager 
+    v-model:showForm="showFormDialog" 
+    :form="formName" :time="time"
+    :form-config="formConfig"
+  />
 </template>
 
 <script setup>
@@ -40,7 +43,7 @@ import { ref, computed, watch, inject } from 'vue';
 import FormDialogComponent from './FormDialogComponent.vue';
 import FormDialogManager from './FormDialogManager.vue';
 
-const modifyPass = inject('modifyPassed');
+const modifyPass = inject('modifyJobPass');
 
 const showFormDialog = ref(false);
 const formConfig = ref(null);
