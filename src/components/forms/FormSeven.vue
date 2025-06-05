@@ -107,7 +107,6 @@ onMounted(() => {
   loadFormData();
 });
 
-// Watch for form config changes
 watch(() => props.formConfig, () => {
   loadFormData();
 }, { deep: true });
@@ -142,25 +141,20 @@ function isRecordEmpty(record) {
 }
 
 function save() {
-  // Filter out completely empty records
   let filteredRecords = localRecords.value.filter(record => !isRecordEmpty(record));
 
-  // If all records were empty, keep one empty record
   if (filteredRecords.length === 0) {
     filteredRecords = [{ company: null, name: '', time: null, issues: '' }];
   }
 
-  // Check if we have any non-empty records
   const hasIssues = filteredRecords.some(record =>
     record.company && record.issues && record.issues.trim() !== ''
   );
 
-  // Create the new form data with our updated records
   const newFormData = [{
     records: filteredRecords
   }];
 
-  // Update the form data in the parent component
   updateAddiForm('formSeven', newFormData);
   emit('save', newFormData);
 }

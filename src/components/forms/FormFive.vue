@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, inject, watch, onMounted, useTemplateRef, nextTick } from 'vue';
+import { ref, inject, watch, onMounted, nextTick } from 'vue';
 import { isNotBlankUtil } from '../../utils/stringUtil.js';
 
 const updateAddiForm = inject('updateAddiForm');
@@ -111,7 +111,14 @@ function loadFormData() {
   let additionalForm = getAddiForm('formFive');
   if (additionalForm && additionalForm.length > 0) {
     formData.value = additionalForm[0];
-    localRecords.value = JSON.parse(JSON.stringify(formData.value.records));
+    const records = JSON.parse(JSON.stringify(formData.value.records));
+    records.forEach(record => {
+      if (record.image && typeof record.image === 'string' && 
+          record.image.startsWith('data:')) {
+        record.image = base64ToFile(record.image);
+      }
+    });
+    localRecords.value = records;
   } else {
     alert('異常：無法取得表單資料');
   }
@@ -172,12 +179,21 @@ function isRecordEmpty(record) {
   );
 }
 
-function save() {
+async function save() {
   let filteredRecords = localRecords.value.filter(record => !isRecordEmpty(record));
-  console.log(filteredRecords);
   if (filteredRecords.length > 0) {
+    const processedRecords = await Promise.all(
+      filteredRecords.map(async record => {
+        const processedRecord = { ...record };
+        if (record.image instanceof File) {
+          processedRecord.image = await fileToBase64(record.image);
+        }
+        
+        return processedRecord;
+      })
+    );
     const newFormData = [{
-      records: filteredRecords
+      records: processedRecords
     }];
     updateAddiForm('formFive', newFormData);
   } else {
@@ -186,16 +202,65 @@ function save() {
   emit('cancel');
 }
 
-function tempSave() {
+async function tempSave() {
   let filteredRecords = localRecords.value.filter(record => !isRecordEmpty(record));
   if (filteredRecords.length > 0) {
+    const processedRecords = await Promise.all(
+      filteredRecords.map(async record => {
+        const processedRecord = { ...record };
+        if (record.image instanceof File) {
+          processedRecord.image = await fileToBase64(record.image);
+        }
+        
+        return processedRecord;
+      })
+    );
     const newFormData = [{
-      records: filteredRecords
+      records: processedRecords
     }];
     updateAddiForm('formFive', newFormData);
   } else {
     updateAddiForm('formFive', [{ records: [{ personnel: '', jobTitle: '', notes: '', image: null }] }]);
   }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      resolve(null);
+      return;
+    }
+    if (typeof file === 'string') {
+      resolve(file);
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
+function base64ToFile(dataUrl, filename = 'image.jpg') {
+  if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
+    return null;
+  }
+  
+  // Extract the content type and base64 data
+  const arr = dataUrl.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  
+  // Convert to binary data
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  
+  // Create and return File object
+  return new File([u8arr], filename, { type: mime });
 }
 
 function cancel() {

@@ -14,15 +14,28 @@
           :rules="baseCheckRules"></v-checkbox>
       </v-card-text>
       <v-card-text>
+        <v-btn 
+          outlined 
+          v-for="formBtn in formButtons" 
+          :key="formBtn.id" 
+          @click="openFormDialog(formBtn.formName, formBtn.time)" 
+          width="100%" 
+          class="mt-1">
+          {{ formBtn.label }}
+            <template v-slot:append>
+              <v-icon :color="isFormPassed(formBtn.formName, formBtn.time) ? 'success' : 'grey'">mdi-check-circle</v-icon>
+            </template>
+        </v-btn>
+      </v-card-text>
+      <v-card-text>
         {{ reminder }}
       </v-card-text>
 
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click="closeDialog">檢核確認</v-btn>
-        <v-btn v-if="props.additionalForm" color="error" @click="openAdditionalForm">填寫紀錄表</v-btn>
-      </v-card-actions>
+      <v-container class="d-flex justify-space-around">
+        <v-btn rounded="xl" color="deep-orange-lighten-4" class="text-grey" :readonly="formAllDone" @click="closeDialog" >檢核確認</v-btn>
+        <v-btn v-if="props.additionalForm && !formRequired" rounded="xl" outlined @click="openSingleAdditionalForm">填寫紀錄表</v-btn>
+      </v-container>
     </v-card>
   </v-dialog>
   <!-- <form-dialog-component
@@ -33,7 +46,7 @@
     /> -->
   <form-dialog-manager 
     v-model:showForm="showFormDialog" 
-    :form="formName" :time="time"
+    :form="form" :time="time"
     :form-config="formConfig"
   />
 </template>
@@ -47,6 +60,8 @@ const modifyPass = inject('modifyJobPass');
 
 const showFormDialog = ref(false);
 const formConfig = ref(null);
+const formAllDone = ref(false);
+const form = ref('')
 
 const props = defineProps({
   show: Boolean,
@@ -68,11 +83,19 @@ const props = defineProps({
   },
   checkBoxs: {
     type: Array,
-    default: () => []
+    default: () => [{}]
+  },
+  formButtons: {
+    type: Array,
+    default: () => [{}]
   },
   formName: {
-    type: String,
-    default: ''
+    type: Array,
+    default: () => ['']
+  },
+  formRequired: {
+    type: Boolean,
+    default: false
   },
   time: {
     type: String,
@@ -87,6 +110,10 @@ const props = defineProps({
     default: ''
   }
 });
+
+watch( () => props.formRequired, (newVal) => {
+  formAllDone.value = newVal;
+}, { immediate: true });
 
 const emit = defineEmits(['update:show', 'addtionalFormSubmit']);
 
@@ -109,10 +136,28 @@ function saveAdditionalForm(submittedData) {
   emit('addtionalFormSubmit', submittedData);
 }
 
-function openAdditionalForm() {
+function openSingleAdditionalForm() {
+  console.log('DialogComponent/openSingleAdditionalForm props.additionalForm', props.additionalForm);
   formConfig.value = props.additionalForm;
-  console.log('DialogComponent/openAdditionalForm formConfig.value', formConfig.value);
+  form.value = props.formName[0];
   showFormDialog.value = true;
 }
 
+function openFormDialog(formName, time) {
+  formConfig.value = props.additionalForm[formName] || null;
+  form.value = formName;
+  showFormDialog.value = true;
+}
+
+function isFormPassed(formName, time) {
+  const formData = props.additionalForm[formName]?.additionalForm;
+  if (!formData || formData.length === 0) return false;
+  
+  // Check if this specific time period is passed
+  return formData[0].passed?.[getTimePeriod(time)] === true;
+}
+
+
 </script>
+<style scoped>
+</style>

@@ -1,13 +1,27 @@
 <template>
   <v-dialog v-model="showManger" max-width="90vw">
-    <div v-if="props.form === 'formFive'">
-      <FormFive :personalRecords="formConfig" 
-        :time="props.time" 
+    <div v-if="props.form === 'formOne'">
+      <FormOne :formConfig="formConfig" 
+        :time="props.time"
         @save="handleSave" 
-        @cancel="handleCancel"
+        @cancel="handleCancel" 
       />
     </div>
-    <div v-else-if="props.form === 'formOneAndTwo'">
+    <div v-else-if="props.form === 'formTwo'">
+      <FormTwo :formConfig="formConfig" 
+        :time="props.time"
+        @save="handleSave" 
+        @cancel="handleCancel" 
+      />
+    </div>
+    <!-- <div v-else-if="props.form === 'formOneAndTwo'">
+      <FormOneAndTwo :formConfig="formConfig" 
+        :time="props.time"
+        @save="handleSave" 
+        @cancel="handleCancel" 
+      />
+    </div> -->
+    <div v-else-if="props.form === 'formThree'">
       <FormOneAndTwo :formConfig="formConfig" 
         :time="props.time"
         @save="handleSave" 
@@ -19,6 +33,13 @@
         :time="props.time"
         @save="handleSave" 
         @cancel="handleCancel" 
+      />
+    </div>
+    <div v-if="props.form === 'formFive'">
+      <FormFive :personalRecords="formConfig" 
+        :time="props.time" 
+        @save="handleSave" 
+        @cancel="handleCancel"
       />
     </div>
     <div v-else-if="props.form === 'formSeven'">
@@ -34,6 +55,8 @@
 import { computed } from 'vue';
 import FormFive from './forms/FormFive.vue';
 import FormOneAndTwo from './forms/FormOneAndTwo.vue';
+import FormOne from './forms/formOne.vue';
+import FormTwo from './forms/formTwo.vue';
 import FormFour from './forms/FormFour.vue';
 import FormSeven from './forms/FormSeven.vue';
 

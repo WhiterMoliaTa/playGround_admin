@@ -5,11 +5,11 @@
       <v-card-subtitle class="text-center pb-4">配膳線上督餐作業查檢表</v-card-subtitle>
 
       <v-row class="my-2 font-weight-bold text-center">
-        <v-col cols="5" class="d-flex align-center">檢核項目</v-col>
+        <v-col cols="5" class="d-flex align-center justify-center">檢核項目</v-col>
         <v-col cols="2" v-if="showBreakfast" class="d-flex align-center justify-center">早餐</v-col>
         <v-col cols="2" v-if="showLunch" class="d-flex align-center justify-center">午餐</v-col>
         <v-col cols="2" v-if="showDinner" class="d-flex align-center justify-center">晚餐</v-col>
-        <v-col :cols="getRemarksColSize()" class="d-flex align-center">備註</v-col>
+        <v-col :cols="getRemarksColSize()" class="d-flex align-center justify-center">備註</v-col>
       </v-row>
 
       <v-divider></v-divider>
@@ -17,7 +17,7 @@
       <v-row v-for="item in formItems" :key="item.id" class="my-3">
         <v-col cols="5" class="d-flex align-center">{{ item.title }}</v-col>
         
-        <v-col cols="2" v-if="showBreakfast" class="d-flex justify-center">
+        <v-col cols="2" v-if="showBreakfast" class="d-flex flex-column align-center">
           <v-checkbox-btn
             v-model="item.breakfast"
             color="success"
@@ -26,7 +26,7 @@
           ></v-checkbox-btn>
         </v-col>
         
-        <v-col cols="2" v-if="showLunch" class="d-flex justify-center">
+        <v-col cols="2" v-if="showLunch" class="d-flex flex-column align-center">
           <v-checkbox-btn
             v-model="item.lunch"
             color="success"
@@ -35,7 +35,7 @@
           ></v-checkbox-btn>
         </v-col>
         
-        <v-col cols="2" v-if="showDinner" class="d-flex justify-center">
+        <v-col cols="2" v-if="showDinner" class="d-flex flex-column align-center">
           <v-checkbox-btn
             v-model="item.dinner"
             color="success"
@@ -44,13 +44,16 @@
           ></v-checkbox-btn>
         </v-col>
         
-        <v-col :cols="getRemarksColSize()">
-          <v-text-field
+        <v-col :cols="getRemarksColSize()" class="d-flex flex-column align-center">
+          <!-- <v-text-field
             v-model="item.remarks"
             variant="outlined"
             density="compact"
             hide-details
-          ></v-text-field>
+          ></v-text-field> -->
+          <v-btn variant="text" icon @click="openRemarkDialog(item)">
+            <v-icon>mdi-dots-horizontal-circle</v-icon>
+          </v-btn>
         </v-col>
       </v-row>
 
@@ -62,6 +65,18 @@
           <v-btn color="primary" @click="save">儲存</v-btn>
         </v-col>
       </v-row>
+      <v-dialog v-model="showRemarksDialog">
+        <v-card>
+          <v-card-title class="text-center">備註</v-card-title>
+          <v-card-text>
+            <v-textarea v-model="jobsRemarks.remarks" label="特殊狀況" rows="3" />
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" @click="updateJobRemark">確認</v-btn>
+            <v-btn color="secondary" @click="closeRemarksDialog">取消</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-card>
   </div>
 </template>
@@ -73,6 +88,10 @@ const props = defineProps({
   title: {
     type: String,
     default: '配膳線上督餐作業查檢表'
+  },
+  time: {
+    type: String,
+    default: ''
   },
   formConfig: {
     type: Object,
@@ -87,9 +106,9 @@ const getAddiForm = inject('getAddiForm');
 const updateAddiForm = inject('updateAddiForm');
 
 // Time-based display
-const showBreakfast = computed(() => props.formConfig.time === 'morning' || !props.formConfig.time);
-const showLunch = computed(() => props.formConfig.time === 'afternoon' || !props.formConfig.time);
-const showDinner = computed(() => props.formConfig.time === 'evening' || !props.formConfig.time);
+const showBreakfast = computed(() => props.time.includes('morning') || !props.time);
+const showLunch = computed(() => props.time.includes('afternoon') || !props.time);
+const showDinner = computed(() => props.time.includes('evening') || !props.time);
 
 // Local form data
 const formItems = ref([]);
@@ -100,6 +119,22 @@ const getRemarksColSize = () => {
   // 12 - 5 (title column) - (2 * number of visible meal columns)
   return 12 - 5 - (2 * visibleColumns);
 };
+
+const jobsRemarks = ref(null);
+const showRemarksDialog = ref(false);
+
+function openRemarkDialog(item) {
+  jobsRemarks.value = item || '';
+  showRemarksDialog.value = true;
+}
+
+function updateJobRemark() {
+  closeRemarksDialog();
+}
+
+function closeRemarksDialog() {
+  showRemarksDialog.value = false;
+}
 
 // Load form data
 onMounted(() => {
@@ -154,7 +189,9 @@ function cancel() {
 
 <style scoped>
 .form-one {
-  max-width: 800px;
+  max-width: 100%;
+  height: 70vh;
+  overflow-y: auto;
   margin: 0 auto;
 }
 </style>

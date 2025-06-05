@@ -38,7 +38,8 @@
         </template>
 
         <div class="task-timeline">
-          <v-list-item v-for="item in job.items" :key="`${index}-${item.id}`" :value="`${index}-${item.id}-val`" lines="one" class="task-item">
+          <v-list-item v-for="item in job.items" :key="`${index}-${item.id}`" :value="`${index}-${item.id}-val`"
+            lines="one" class="task-item">
             <template v-slot:prepend>
               <div class="timeline-indicator"></div>
             </template>
@@ -61,17 +62,11 @@
       </v-list-group>
     </v-list>
   </v-card>
-  <DialogComponent 
-    v-model:show="dialogState.show" 
-    :title="dialogState.title" 
-    :checkObject="dialogState.checkObject"
-    :checkBoxs="dialogState.checkBoxs" 
-    :additional-form="dialogState.additionalForm" 
-    :form-name="dialogState.formName"
-    :time="dialogState.time" 
-    :reminder="dialogState.reminder" 
-    @addtionalFormSubmit="saveDialogAndAdditionalForm" 
-  />
+  <DialogComponent v-model:show="dialogState.show" :title="dialogState.title" :check-object="dialogState.checkObject"
+    :check-boxs="dialogState.checkBoxs" :form-buttons="dialogState.formButtons"
+    :additional-form="dialogState.additionalForm" :form-name="dialogState.formName"
+    :form-required="dialogState.formRequired" :time="dialogState.time" :reminder="dialogState.reminder"
+    @addtionalFormSubmit="saveDialogAndAdditionalForm" />
   <v-dialog v-model="showRemarksDialog">
     <v-card>
       <v-card-title class="text-center">備註</v-card-title>
@@ -103,7 +98,9 @@ const dialogState = reactive({
   title: '',
   checkObject: '',
   checkBoxs: [],
-  formName: '',
+  formButtons: [],
+  formName: [],
+  formRequired: false,
   time: '',
   additionalForm: null,
   reminder: ''
@@ -131,7 +128,8 @@ const jobs = ref([
             { id: 3, label: '個人儀容符合規定', checked: false }
           ],
           reminder: "檢核項目符合規範請點選「確認」\n若有不符合規範項目,請填寫「人事管理紀錄表」",
-          formName: 'formFive',
+          formName: ['formFive'],
+          formRequired: false,
           time: 'morning',
           passed: true,
         },
@@ -142,16 +140,17 @@ const jobs = ref([
         forms: {
           title: "檢核確認",
           checkObject: "督導病患早餐等配膳作業",
-          checkBoxs: [
-            { id: 1, label: '配膳線上督餐作業查檢表', checked: false },
-            { id: 2, label: '出餐作業查檢表', checked: false }
-          ],
-          formButtons:[
+          // checkBoxs: [
+          //   { id: 1, label: '配膳線上督餐作業查檢表', checked: false },
+          //   { id: 2, label: '出餐作業查檢表', checked: false }
+          // ],
+          formButtons: [
             { id: 1, label: '配膳線上督餐作業查檢表', formName: 'formOne', time: 'morning' },
             { id: 2, label: '出餐作業查檢表', formName: 'formTwo', time: 'morning' }
           ],
           reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「病患配膳紀錄表」",
-          formName: 'formOneAndTwo',
+          formName: ['formOne', 'formTwo'],
+          formRequired: true,
           time: 'morning',
           passed: false,
         },
@@ -160,16 +159,21 @@ const jobs = ref([
       { id: 5, title: '確認早餐粥品烹煮時間符合，試吃早餐菜色。', checked: false, remarks: '' },
       { id: 6, title: '督導確認病患早餐、補餐送出(填寫漏補餐原因紀錄表)。', checked: false, remarks: '' },
       { id: 7, title: '確認冰箱溫度，冷藏庫 0℃~7℃；冷凍庫≦ -18℃。', checked: false, remarks: '' },
-      { id: 8, title: '填寫菜餚品質與數量檢討記錄（表四）。', checked: false,
+      {
+        id: 8, title: '填寫菜餚品質與數量檢討記錄（表四）。', checked: false,
         forms: {
           title: "菜餚品質與數量檢討紀錄",
           checkObject: "菜餚品質與數量檢討",
-          checkBoxs: [
-            { id: 1, label: '菜量設計', checked: false },
-            { id: 2, label: '菜餚品質(賣像)', checked: false }
+          // checkBoxs: [
+          //   { id: 1, label: '菜量設計', checked: false },
+          //   { id: 2, label: '菜餚品質(賣像)', checked: false }
+          // ],
+          formButtons: [
+            { id: 1, label: '菜餚品質與數量檢討紀錄', formName: 'formFour', time: 'morning' }
           ],
           reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「菜餚品質與數量檢討紀錄」",
-          formName: 'formFour',
+          formName: ['formFour'],
+          formRequired: true,
           time: 'morning',
           passed: false,
         },
@@ -182,19 +186,25 @@ const jobs = ref([
     title: "生鮮食材驗收及登錄",
     time: "07:30-08:00",
     items: [
-      { id: 1, title: '生鮮食材驗收及登錄/進貨異常記錄(表七)。', checked: false, 
+      {
+        id: 1, title: '生鮮食材驗收及登錄/進貨異常記錄(表七)。', checked: false,
         forms: {
           title: "進貨廠商管理紀錄",
           checkObject: "進貨廠商管理",
           checkBoxs: [
             { id: 1, label: '無異常', checked: false },
           ],
+          // formButtons: [
+          //   { id: 1, label: '進貨廠商管理紀錄', formName: 'formSeven', time: 'morning' },
+          // ],
           reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「進貨廠商管理紀錄」",
-          formName: 'formSeven',
+          formName: ['formSeven'],
+          formRequired: false,
           time: 'morning',
           passed: true,
         },
-        remarks: '' }
+        remarks: ''
+      }
     ]
   },
   {
@@ -203,18 +213,29 @@ const jobs = ref([
     time: "08:40-09:30",
     items: [
       { id: 1, title: '10.依清潔檢查表，稽核廚區早餐配膳後清潔作業。', checked: false, remarks: '' },
-      { id: 2, title: '11.督導早餐餐車回收並填寫菜餚剩餘量紀錄(表三)。', checked: false, 
+      {
+        id: 2, title: '11.督導早餐餐車回收並填寫菜餚剩餘量紀錄(表三)。', checked: false,
         forms: {
-
+          title: "病人餐點回收及盤餘抽查記錄",
+          checkObject: "病人餐點回收及盤餘抽查",
+          formButtons: [
+            { id:1, label: '全數病人餐點回收完畢', formName: 'formThree', time: 'morning' },
+          ],
+          reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「病人餐點回收及盤餘抽查記錄」",
+          formName: ['formThree'],
+          formRequired: true,
+          time: 'morning',
+          passed: false,
         },
-        remarks: '' 
+        remarks: ''
       },
       { id: 3, title: '12.督導餐具清洗作業，填寫洗碗機每週基本操作檢查表。', checked: false, remarks: '' },
       { id: 4, title: '13.檢查早餐餐車排列及清潔，確認無餐盤留於餐車內。', checked: false, remarks: '' },
-      { id: 5, title: '14.填寫每日衛生檢查表(TCHG-G4-02)。', checked: false, 
+      {
+        id: 5, title: '14.填寫每日衛生檢查表(TCHG-G4-02)。', checked: false,
         forms: {
         },
-        remarks: '' 
+        remarks: ''
       },
       { id: 6, title: '15.追蹤設備請修及處理情形登錄（另行登錄）。', checked: false, remarks: '' }
     ]
@@ -235,7 +256,7 @@ const forms = ref(
         }
       ],
     },
-    formOneAndTwo:{
+    formOneAndTwo: {
       additionalForm: [
         {
           title: '配膳線上督餐作業查檢表',
@@ -277,7 +298,7 @@ const forms = ref(
         }
       ]
     },
-    formOne:{
+    formOne: {
       additionalForm: [
         {
           title: '配膳線上督餐作業查檢表',
@@ -322,6 +343,23 @@ const forms = ref(
           ]
         }
       ],
+    },
+    formThree: {
+      additionalForm: [
+        {
+          title: '病人餐點回收及盤餘抽查記錄',
+          passed: {
+            morning: false,
+            noon: false,
+            evening: false
+          },
+          records: [
+            { recycleTime: '', ward: '', plate: 0, 
+              dishAndLeftoverPortion: [{dishName: '', leftPortion: ''}],
+              breakfast: null, lunch: null, dinner: null, remarks: '' },
+          ]
+        }
+      ]
     },
     formFour: {
       additionalForm: [
@@ -373,7 +411,7 @@ provide('modifyJobPass', (formName, time, pass) => {
     const item = job.items.find(item =>
       item.forms && item.forms.formName === formName && (!time || item.forms.time === time)
     );
-    if (item && item.forms ) {
+    if (item && item.forms) {
       item.forms.passed = pass;
     }
   }
@@ -381,6 +419,7 @@ provide('modifyJobPass', (formName, time, pass) => {
 
 provide('updateAddiForm', (formName, newData) => {
   const form = forms.value[formName];
+  console.log('A form updated', formName, newData);
 
   if (form && form.additionalForm) {
     if (Array.isArray(newData)) {
@@ -389,6 +428,8 @@ provide('updateAddiForm', (formName, newData) => {
       form.additionalForm.push(newData);
     }
   }
+
+  console.log('Form Updated:', forms.value[formName]);
 });
 
 const completedCount = ref(0);
@@ -396,12 +437,12 @@ const sectionsToDone = computed(() => {
   return jobs.value.length;
 });
 
-function openRemarkDialog(item){
+function openRemarkDialog(item) {
   jobsRemarks.value = item || '';
   showRemarksDialog.value = true;
 }
 
-function updateJobRemark(){
+function updateJobRemark() {
   closeRemarksDialog();
 }
 
@@ -422,14 +463,23 @@ function handleCheckboxChange(currentForms, isChecked) {
   updateCompletedCount();
 
   if (isChecked && currentForms && Object.keys(currentForms).length > 0) {
+    const formsCollection = {};
+    if( currentForms.formName){
+      currentForms.formName.forEach(form => {
+        formsCollection[form] = 
+          forms.value[form]?.additionalForm || [];
+      });
+    }
     Object.assign(dialogState, {
       show: true,
       title: currentForms.title || "檢核確認",
       checkObject: currentForms.checkObject || "",
       checkBoxs: currentForms.checkBoxs || [],
-      formName: currentForms.formName || "",
+      formButtons: currentForms.formButtons || [],
+      formName: currentForms.formName || [],
+      formRequired: currentForms.formRequired || false,
       time: currentForms.time || "",
-      additionalForm: forms.value[currentForms.formName]?.additionalForm || null,
+      additionalForm: formsCollection,
       reminder: currentForms.reminder || ""
     });
   }

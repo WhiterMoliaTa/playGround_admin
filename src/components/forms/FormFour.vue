@@ -45,12 +45,15 @@
         </v-col>
         
         <v-col :cols="getRemarksColSize()">
-          <v-text-field
+          <!-- <v-text-field
             v-model="item.remarks"
             variant="outlined"
             density="compact"
             hide-details
-          ></v-text-field>
+          ></v-text-field> -->
+          <v-btn variant="text" icon @click="openRemarkDialog(item)">
+            <v-icon>mdi-dots-horizontal-circle</v-icon>
+          </v-btn>
         </v-col>
       </v-row>
 
@@ -62,6 +65,18 @@
           <v-btn color="primary" @click="save">儲存</v-btn>
         </v-col>
       </v-row>
+      <v-dialog v-model="showRemarksDialog">
+        <v-card>
+          <v-card-title class="text-center">備註</v-card-title>
+          <v-card-text>
+            <v-textarea v-model="jobsRemarks.remarks" label="特殊狀況" rows="3" />
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" @click="updateJobRemark">確認</v-btn>
+            <v-btn color="secondary" @click="closeRemarksDialog">取消</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-card>
   </div>
 </template>
@@ -104,6 +119,22 @@ const getRemarksColSize = () => {
   // 12 - 5 (title column) - (2 * number of visible meal columns)
   return 12 - 5 - (2 * visibleColumns);
 };
+
+const jobsRemarks = ref(null);
+const showRemarksDialog = ref(false);
+
+function openRemarkDialog(item) {
+  jobsRemarks.value = item || '';
+  showRemarksDialog.value = true;
+}
+
+function updateJobRemark() {
+  closeRemarksDialog();
+}
+
+function closeRemarksDialog() {
+  showRemarksDialog.value = false;
+}
 
 // Load form data
 onMounted(() => {
