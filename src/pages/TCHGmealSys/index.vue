@@ -9,7 +9,7 @@
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" variant="text" color="white" class="text-caption">
             <v-avatar size="24" class="mr-2">
-              <v-img src="/avatar-placeholder.png" alt="User avatar"></v-img>
+              <v-img src="https://icon-icons.com/icon/Doctor-avatar-medical/140443" alt="User avatar"></v-img>
             </v-avatar>
             午班營養師 <v-icon>mdi-chevron-down</v-icon>
           </v-btn>
