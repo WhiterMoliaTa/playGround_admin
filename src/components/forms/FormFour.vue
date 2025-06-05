@@ -65,7 +65,7 @@
           <v-btn color="primary" @click="save">儲存</v-btn>
         </v-col>
       </v-row>
-      <v-dialog v-model="showRemarksDialog">
+      <!-- <v-dialog v-model="showRemarksDialog">
         <v-card>
           <v-card-title class="text-center">備註</v-card-title>
           <v-card-text>
@@ -76,13 +76,19 @@
             <v-btn color="secondary" @click="closeRemarksDialog">取消</v-btn>
           </v-card-actions>
         </v-card>
-      </v-dialog>
+      </v-dialog> -->
+      <remarks-dialog
+        v-model:showRemarks="showRemarksDialog"
+        :item="itemRemarks"
+      />
     </v-card>
   </div>
 </template>
 
 <script setup>
 import { ref, inject, computed, watch, onMounted } from 'vue';
+
+import RemarksDialog from '../RemarksDialog.vue';
 
 const props = defineProps({
   title: {
@@ -107,7 +113,7 @@ const updateAddiForm = inject('updateAddiForm');
 
 // Time-based display
 const showBreakfast = computed(() => props.time.includes('morning'));
-const showLunch = computed(() => props.time.includes('afternoon'));
+const showLunch = computed(() => props.time.includes('noon'));
 const showDinner = computed(() => props.time.includes('evening'));
 
 // Local form data
@@ -120,21 +126,21 @@ const getRemarksColSize = () => {
   return 12 - 5 - (2 * visibleColumns);
 };
 
-const jobsRemarks = ref(null);
+const itemRemarks = ref(null);
 const showRemarksDialog = ref(false);
 
 function openRemarkDialog(item) {
-  jobsRemarks.value = item || '';
+  itemRemarks.value = item || '';
   showRemarksDialog.value = true;
 }
 
-function updateJobRemark() {
-  closeRemarksDialog();
-}
+// function updateJobRemark() {
+//   closeRemarksDialog();
+// }
 
-function closeRemarksDialog() {
-  showRemarksDialog.value = false;
-}
+// function closeRemarksDialog() {
+//   showRemarksDialog.value = false;
+// }
 
 // Load form data
 onMounted(() => {
@@ -155,10 +161,7 @@ function loadFormData() {
     if (firstForm.form && Array.isArray(firstForm.form)) {
       formItems.value = JSON.parse(JSON.stringify(firstForm.form));
     } else {
-      formItems.value = [
-        { id: 1, title: '1.菜量設計是否合理', breakfast: null, lunch: null, dinner: null, remarks: '' },
-        { id: 2, title: '2.菜餚品質(賣像)是否優質', breakfast: null, lunch: null, dinner: null, remarks: '' }
-      ];
+      alert('異常：無法取得表單資料');
     }
   } else {
     alert('異常：無法取得表單資料');

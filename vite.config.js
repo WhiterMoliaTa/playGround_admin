@@ -14,6 +14,7 @@ export default defineConfig({
   ],
   optimizeDeps: {
     exclude: ['pdfjs-dist/build/pdf.worker.mjs']
-  }
+  },
+  base: '/TCHGMealSys'
 })
 

@@ -28,18 +28,18 @@
                   hide-details class="mr-1"></v-text-field> -->
                 <v-text-field
                   v-model="record.time"
-                  :active="timeDialog"
-                  :focused="timeDialog"
+                  :active="timeDialog[`record-${index}`]"
+                  :focused="timeDialog[`record-${index}`]"
                   label="時間"
                   readonly
                 >
                   <v-dialog
-                    v-model="timeDialog"
+                    v-model="timeDialog[`record-${index}`]"
                     activator="parent"
                     width="auto"
                   >
                     <v-time-picker
-                      v-if="timeDialog"
+                      v-if="timeDialog[`record-${index}`]"
                       v-model="record.time"
                     ></v-time-picker>
                   </v-dialog>
@@ -53,8 +53,10 @@
                 rows="2" no-resize></v-textarea>
             </td>
             <td class="text-center">
-              <v-btn v-if="index > 0" icon="mdi-delete" color="error" size="small" variant="text"
-                @click="removeRecord(index)"></v-btn>
+              <v-btn icon="mdi-delete" color="error" size="small" variant="text"
+                @click="removeRecord(index)"
+                :disabled="localRecords.length <= 1"
+              ></v-btn>
             </td>
           </tr>
         </tbody>
@@ -100,7 +102,7 @@ const updateAddiForm = inject('updateAddiForm');
 
 // Local copy of records for editing
 const localRecords = ref([]);
-const timeDialog = ref(false)
+const timeDialog = ref({});
 
 // Initialize data
 onMounted(() => {
@@ -131,7 +133,10 @@ function addNewRecord() {
 }
 
 function removeRecord(index) {
-  if (index > 0) { // Don't remove the first record
+  // if (index > 0) { // Don't remove the first record
+  //   localRecords.value.splice(index, 1);
+  // }
+  if( localRecords.value.length > 1) {
     localRecords.value.splice(index, 1);
   }
 }

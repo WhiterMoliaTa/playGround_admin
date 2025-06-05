@@ -22,7 +22,7 @@
       />
     </div> -->
     <div v-else-if="props.form === 'formThree'">
-      <FormOneAndTwo :formConfig="formConfig" 
+      <FormThree :formConfig="formConfig" 
         :time="props.time"
         @save="handleSave" 
         @cancel="handleCancel" 
@@ -49,16 +49,24 @@
         @cancel="handleCancel" 
       />
     </div>
+    <div v-else-if="props.form === 'shiftHandoverLog'">
+      <ShiftHandoverLog :formConfig="formConfig" 
+        :time="props.time"
+        @cancel="handleCancel"
+      /> <!--TODO 要確認下到底要不要做Save -->
+    </div>
   </v-dialog>
 </template>
 <script setup>
 import { computed } from 'vue';
-import FormFive from './forms/FormFive.vue';
 import FormOneAndTwo from './forms/FormOneAndTwo.vue';
 import FormOne from './forms/formOne.vue';
 import FormTwo from './forms/formTwo.vue';
+import FormThree from './forms/FormThree.vue';
 import FormFour from './forms/FormFour.vue';
+import FormFive from './forms/FormFive.vue';
 import FormSeven from './forms/FormSeven.vue';
+import ShiftHandoverLog from './forms/ShiftHandoverLog.vue';
 
 const emit = defineEmits(['update:showForm', 'submitForm']);
 

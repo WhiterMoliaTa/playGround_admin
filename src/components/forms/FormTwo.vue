@@ -158,24 +158,18 @@
           <v-btn color="primary" @click="save">儲存</v-btn>
         </v-col>
       </v-row>
-      <v-dialog v-model="showRemarksDialog">
-        <v-card>
-          <v-card-title class="text-center">備註</v-card-title>
-          <v-card-text>
-            <v-textarea v-model="jobsRemarks.remarks" label="特殊狀況" rows="3" />
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" @click="updateJobRemark">確認</v-btn>
-            <v-btn color="secondary" @click="closeRemarksDialog">取消</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <remarks-dialog
+        v-model:showRemarks="showRemarksDialog"
+        :item="itemRemarks"
+      />
     </v-card>
   </div>
 </template>
 
 <script setup>
 import { ref, inject, computed, watch, onMounted } from 'vue';
+
+import RemarksDialog from '../RemarksDialog.vue';
 
 const props = defineProps({
   title: {
@@ -202,27 +196,19 @@ const timeDialog = ref({});
 
 // Time-based display
 const showBreakfast = computed(() => props.time.includes('morning') || !props.time);
-const showLunch = computed(() => props.time.includes('afternoon') || !props.time);
+const showLunch = computed(() => props.time.includes('noon') || !props.time);
 const showDinner = computed(() => props.time.includes('evening') || !props.time);
 
 // Local form data
 const section1Items = ref([]);
 const section2Items = ref([]);
 
-const jobsRemarks = ref(null);
+const itemRemarks = ref(null);
 const showRemarksDialog = ref(false);
 
 function openRemarkDialog(item) {
-  jobsRemarks.value = item || '';
+  itemRemarks.value = item || '';
   showRemarksDialog.value = true;
-}
-
-function updateJobRemark() {
-  closeRemarksDialog();
-}
-
-function closeRemarksDialog() {
-  showRemarksDialog.value = false;
 }
 
 // Determine the size of the remarks column based on visible meal columns

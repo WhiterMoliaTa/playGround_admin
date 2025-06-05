@@ -115,7 +115,21 @@ const jobs = ref([
     title: "晨點作業",
     time: "07:00-07:40",
     items: [
-      { id: 1, title: '閱讀前日工作日誌及交班事項，並請相關人員簽核。', checked: false, remarks: '' },
+      { id: 1, title: '閱讀前日工作日誌及交班事項，並請相關人員簽核。', checked: false, 
+        forms: {
+          title: "前日工作日誌",
+          checkObject: "閱讀前日工作日誌及交班事項",
+          formButtons: [
+            { id: 1, label: '交班事項', formName: 'shiftHandoverLog', time: 'morning' }
+          ],
+          reminder: "請閱讀「交班事項」「前日工作日誌」",
+          formName: ['shiftHandoverLog'],
+          formRequired: true,
+          time: 'morning',
+          passed: false,
+        }
+        ,remarks: '' 
+      },
       { id: 2, title: '檢查瓦斯漏氣受信總機指示燈號正常。', checked: false, remarks: '' },
       {
         id: 3, title: '確認員工到班及服裝儀容【人事管理記錄(表五)】。', checked: false,
@@ -219,7 +233,7 @@ const jobs = ref([
           title: "病人餐點回收及盤餘抽查記錄",
           checkObject: "病人餐點回收及盤餘抽查",
           formButtons: [
-            { id:1, label: '全數病人餐點回收完畢', formName: 'formThree', time: 'morning' },
+            { id: 1, label: '全數病人餐點回收完畢', formName: 'formThree', time: 'morning' },
           ],
           reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「病人餐點回收及盤餘抽查記錄」",
           formName: ['formThree'],
@@ -239,65 +253,114 @@ const jobs = ref([
       },
       { id: 6, title: '15.追蹤設備請修及處理情形登錄（另行登錄）。', checked: false, remarks: '' }
     ]
+  },
+  {
+    section: 'fourth-section',
+    title: '人數食材確認',
+    time: '08:00-10:00',
+    items: [
+      { id: 1, title: '16.查詢當日膳食人數。', checked: false, remarks: '' },
+      { id: 2, title: '17.確認當日食材撥發作業。', checked: false, remarks: '' },
+      { id: 3, title: '18.檢視可利用熟食。', checked: false, remarks: '' },
+      { id: 4, title: '19.確認一般食、治療食等食材前處理作業，如：配菜、大菜切洗及水果清洗切盒。及備餐冰箱0℃~7℃。', checked: false, remarks: ''},
+      { id: 5, title: '20.若午、晚餐訂購食材不足或過量，預作調配安排及紀錄清點剩餘食材、修改食材採購量(表四)。', checked: false, 
+        forms: {
+          title: "菜餚品質與數量檢討紀錄",
+          checkObject: "菜餚品質與數量檢討",
+          formButtons: [
+            { id: 1, label: '菜餚品質與數量檢討紀錄', formName: 'formFour', time: 'afternoon' }
+          ],
+          reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「菜餚品質與數量檢討紀錄」",
+          formName: ['formFour'],
+          formRequired: true,
+          time: 'afternoon',
+          passed: false,
+        },
+      }
+    ]
+  },
+  {
+    section: 'fifth-section',
+    title: '午餐製作作業',
+    time: '10:00-10:50',
+    items: [
+      { id: 6, title: '6.確認爐灶火源安全使用。', checked: false, remarks: '' },
+      { id: 7, title: '7.督導一般食、治療食、剁碎等烹調作業(烹煮設備時間溫度設定)。', checked: false, remarks: '' },
+      { id: 8, title: '8.督導素食、軟食、半流等烹調作業(烹煮設備及烹煮時間溫度)。', checked: false, remarks: '' },
+      { id: 9, title: '9.督導飯、稀飯、麵、湯等烹調作業(烹煮設備正常及烹煮時間)。', checked: false, remarks: '' },
+      { id: 10, title: '10.試吃午餐', checked: false, remarks: '' },
+    ]
+  },
+  {
+    section: 'sixth-section',
+    title: '午餐配膳作業',
+    time: '10:50-12:00',
+    items: [
+      { id: 11, title: '11.督導病患及員工午餐等配膳作業(表一及表二）。', checked: false,
+        forms: {
+          title: "檢核確認",
+          checkObject: "督導病患早餐等配膳作業",
+          formButtons: [
+            { id: 1, label: '配膳線上督餐作業查檢表', formName: 'formOne', time: 'noon' },
+            { id: 2, label: '出餐作業查檢表', formName: 'formTwo', time: 'noon' }
+          ],
+          reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「病患配膳紀錄表」",
+          formName: ['formOne', 'formTwo'],
+          formRequired: true,
+          time: 'noon',
+          passed: false,
+        },
+        remarks: ''
+      },
+      { id: 12, title: '12.督導病患午餐剩菜處理及器具用具清潔作業。', checked: false, remarks: '' },
+      { id: 13, title: '13.依清潔檢查表稽核病患飲食配膳區午餐膳後清潔作業。', checked: false, remarks: '' },
+      { id: 14, title: '14.填寫菜餚品質與數量檢討記錄（表四）。', checked: false, 
+        forms: {
+          title: "菜餚品質與數量檢討紀錄",
+          checkObject: "菜餚品質與數量檢討",
+          formButtons: [
+            { id: 1, label: '菜餚品質與數量檢討紀錄', formName: 'formFour', time: 'noon' }
+          ],
+          reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「菜餚品質與數量檢討紀錄」",
+          formName: ['formFour'],
+          formRequired: true,
+          time: 'noon',
+          passed: false,
+        },
+        remarks: ''
+      }
+    ]
+  },
+  {
+    section: 'seventh-section',
+    title: '午餐回收清潔作業',
+    time: '12:00-14:00',
+    items: [
+      { id: 15, title: '15.督導確認病患午餐、補餐送出(填寫漏補餐原因紀錄表)。', checked: false, remarks: '' },
+      { id: 16, title: '16.確認午餐餐車回收並填寫菜餚剩餘量紀錄 (表三)。', checked: false,
+        forms: {
+          title: "病人餐點回收及盤餘抽查記錄",
+          checkObject: "病人餐點回收及盤餘抽查",
+          formButtons: [
+            { id: 1, label: '全數病人餐點回收完畢', formName: 'formThree', time: 'noon' },
+          ],
+          reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「病人餐點回收及盤餘抽查記錄」",
+          formName: ['formThree'],
+          formRequired: true,
+          time: 'noon',
+          passed: false,
+        },
+        remarks: '' 
+      },
+      { id: 17, title: '17.督導餐具清洗作業，填寫洗碗機每週基本操作檢查表。', checked: false, remarks: '' },
+      { id: 18, title: '18.檢查餐車排列及清潔，確認無餐盤留於餐車內。', checked: false, remarks: '' },
+      { id: 19, title: '19.檢查廚區清潔作業。', checked: false, remarks: '' }
+    ]
   }
 ]);
 
 const forms = ref(
   {
-    formFive: {
-      additionalForm: [
-        {
-          passed: {
-            morning: true,
-            noon: true,
-            evening: true
-          },
-          records: [{ personnel: '', jobTitle: '', notes: '', image: null }],
-        }
-      ],
-    },
-    formOneAndTwo: {
-      additionalForm: [
-        {
-          title: '配膳線上督餐作業查檢表',
-          passed: {
-            morning: false,
-            noon: false,
-            evening: false
-          },
-          form: [
-            { id: 1, title: '1.保溫配膳車依菜色需求加熱(或擺放熱水)，水位須到達指定位置、熱度到達指定溫度(設定溫度≧80℃)。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 2, title: '2.確認病患用餐車已洗淨並預熱(加熱型，設定≧70℃)。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 3, title: '3.配膳前環境的清潔符合作業規範（以 75%酒精消毒輸送帶、配膳區域地面乾燥、無積水等）', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 4, title: '4.病患餐具或免洗餐具，配膳前置放於正確位置。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 5, title: '5.配膳器具，例如：勺子、夾子、煎鏟等，配膳前依菜色正確選用。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 6, title: '6. 配膳前熱食溫度需達≧60℃；冷食(分切水果)需維持設定0℃~7℃(依內控不定期抽測)。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 7, title: '7.配膳前正確洗淨雙手、佩戴外科口罩、乾淨手套、髮帽完全包覆頭髮、耳朵等。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 8, title: '8.雙手如有傷口(無則免填)應適當包紮並穿戴乳膠手套。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 9, title: '9.配膳人員就定位並避免危害食品衛生及交互污染之行為，例如：聊天、唱歌、嚼口香糖等。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 10, title: '10.依照餐卡所標示飲食種類及份量正確配膳。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 11, title: '11.留存備檢餐，各種菜餚皆須留存。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 12, title: '12.配膳線上作業結束後，剩餘主食及菜餚處理。', breakfast: null, lunch: null, dinner: null, remarks: '' }
-          ]
-        },
-        {
-          title: '出餐作業查檢表',
-          passed: {
-            morning: false,
-            noon: false,
-            evening: false
-          },
-          section1: [
-            { id: 1, title: '1.依送餐簡表檢查所有餐車飲食類類別及數量是否正確。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 2, title: '2.餐車實際送出及結束時間是否正常。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          ],
-          section2: [
-            { id: 1, title: '第一部餐車送出時間', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 2, title: '最後一部餐車送出時間', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          ]
-        }
-      ]
-    },
     formOne: {
       additionalForm: [
         {
@@ -344,6 +407,48 @@ const forms = ref(
         }
       ],
     },
+    formOneAndTwo: {
+      additionalForm: [
+        {
+          title: '配膳線上督餐作業查檢表',
+          passed: {
+            morning: false,
+            noon: false,
+            evening: false
+          },
+          form: [
+            { id: 1, title: '1.保溫配膳車依菜色需求加熱(或擺放熱水)，水位須到達指定位置、熱度到達指定溫度(設定溫度≧80℃)。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 2, title: '2.確認病患用餐車已洗淨並預熱(加熱型，設定≧70℃)。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 3, title: '3.配膳前環境的清潔符合作業規範（以 75%酒精消毒輸送帶、配膳區域地面乾燥、無積水等）', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 4, title: '4.病患餐具或免洗餐具，配膳前置放於正確位置。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 5, title: '5.配膳器具，例如：勺子、夾子、煎鏟等，配膳前依菜色正確選用。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 6, title: '6. 配膳前熱食溫度需達≧60℃；冷食(分切水果)需維持設定0℃~7℃(依內控不定期抽測)。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 7, title: '7.配膳前正確洗淨雙手、佩戴外科口罩、乾淨手套、髮帽完全包覆頭髮、耳朵等。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 8, title: '8.雙手如有傷口(無則免填)應適當包紮並穿戴乳膠手套。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 9, title: '9.配膳人員就定位並避免危害食品衛生及交互污染之行為，例如：聊天、唱歌、嚼口香糖等。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 10, title: '10.依照餐卡所標示飲食種類及份量正確配膳。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 11, title: '11.留存備檢餐，各種菜餚皆須留存。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 12, title: '12.配膳線上作業結束後，剩餘主食及菜餚處理。', breakfast: null, lunch: null, dinner: null, remarks: '' }
+          ]
+        },
+        {
+          title: '出餐作業查檢表',
+          passed: {
+            morning: false,
+            noon: false,
+            evening: false
+          },
+          section1: [
+            { id: 1, title: '1.依送餐簡表檢查所有餐車飲食類類別及數量是否正確。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 2, title: '2.餐車實際送出及結束時間是否正常。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+          ],
+          section2: [
+            { id: 1, title: '第一部餐車送出時間', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 2, title: '最後一部餐車送出時間', breakfast: null, lunch: null, dinner: null, remarks: '' },
+          ]
+        }
+      ]
+    },
     formThree: {
       additionalForm: [
         {
@@ -354,9 +459,11 @@ const forms = ref(
             evening: false
           },
           records: [
-            { recycleTime: '', ward: '', plate: 0, 
-              dishAndLeftoverPortion: [{dishName: '', leftPortion: ''}],
-              breakfast: null, lunch: null, dinner: null, remarks: '' },
+            {
+              recycleTime: '', ward: '', plate: 0,
+              dishAndLeftoverPortion: [{ dishName: '', leftPortion: '' }],
+              breakfast: null, lunch: null, dinner: null, remarks: ''
+            },
           ]
         }
       ]
@@ -377,6 +484,18 @@ const forms = ref(
         }
       ],
     },
+    formFive: {
+      additionalForm: [
+        {
+          passed: {
+            morning: true,
+            noon: true,
+            evening: true
+          },
+          records: [{ personnel: '', jobTitle: '', notes: '', image: null }],
+        }
+      ],
+    },
     formSeven: {
       additionalForm: [
         {
@@ -391,6 +510,32 @@ const forms = ref(
         }
       ],
     },
+    shiftHandoverLog: {
+      additionalForm: [
+        {
+          title: '前日工作日誌',
+          passed: {
+            morning: false,
+            noon: true,
+            evening: true
+          },
+          records: [
+            { content: '99病房燈壞掉', signature: '還沒做', processHandleDesc: '已經請人替換', handlerSignature: '還沒做' },
+            { content: '100病房燈壞掉', signature: '還沒做', processHandleDesc: '已經請人替換', handlerSignature: '還沒做' },
+            { content: '101病房燈壞掉', signature: '還沒做', processHandleDesc: '已經請人替換', handlerSignature: '還沒做' },
+            { content: '102病房燈壞掉', signature: '還沒做', processHandleDesc: '已經請人替換', handlerSignature: '還沒做' },
+            { content: '101病房燈壞掉', signature: '還沒做', processHandleDesc: '已經請人替換', handlerSignature: '還沒做' }, 
+            { content: '102病房燈壞掉', signature: '還沒做', processHandleDesc: '已經請人替換', handlerSignature: '還沒做' }, 
+            { content: '103病房燈壞掉', signature: '還沒做', processHandleDesc: '已經請人替換', handlerSignature: '還沒做' }, 
+            { content: '104病房燈壞掉', signature: '還沒做', processHandleDesc: '已經請人替換', handlerSignature: '還沒做' }, 
+            { content: '105病房燈壞掉', signature: '還沒做', processHandleDesc: '已經請人替換', handlerSignature: '還沒做' }, 
+            { content: '106病房燈壞掉', signature: '還沒做', processHandleDesc: '已經請人替換', handlerSignature: '還沒做' }, 
+            { content: '107病房燈壞掉', signature: '還沒做', processHandleDesc: '已經請人替換', handlerSignature: '還沒做' }, 
+            { content: '108病房燈壞掉', signature: '還沒做', processHandleDesc: '已經請人替換', handlerSignature: '還沒做' }, 
+          ]
+        }
+      ],
+    }
   }
 );
 
@@ -464,12 +609,13 @@ function handleCheckboxChange(currentForms, isChecked) {
 
   if (isChecked && currentForms && Object.keys(currentForms).length > 0) {
     const formsCollection = {};
-    if( currentForms.formName){
+    if (currentForms.formName) {
       currentForms.formName.forEach(form => {
-        formsCollection[form] = 
+        formsCollection[form] =
           forms.value[form]?.additionalForm || [];
       });
     }
+    console.log('Forms Collection:', formsCollection);
     Object.assign(dialogState, {
       show: true,
       title: currentForms.title || "檢核確認",
