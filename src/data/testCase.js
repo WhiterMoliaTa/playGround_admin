@@ -1,5 +1,6 @@
 export const testCases = [
   {
+    uuid: 'case-001',
     docId: '勞動部職安字第123456號',
     docDate: '2025-05-01',
     oshaHandler: '王小明',
@@ -11,11 +12,31 @@ export const testCases = [
     age: 45,
     diagnosis: '顱內出血(腦出血併右側偏癱與失語症)',
     dispatchDate: '2025-05-05',
-    dispatchHospital: '台大醫院',
-    employer: '宏達電股份有限公司',
-    laborInspection: '是',
+    dispatchHospital: {
+      uuid: 'hospital-001',
+      name: '台北榮總醫院',
+      address: '台北市中山區民權東路二段123號',
+      contact: '02-1234-5678'
+    },
+    dispatchDoctor: {
+      uuid: 'doctor-001',
+      name: '陳醫生',
+      specialty: '神經外科',
+      contact: '02-1234-5678'
+    },
+    dispatchLetter: '這是派遣信件的內容，包含醫院和醫生的詳細資訊。',
+    employer: {
+      name: '宏達電股份有限公司',
+      address: '新北市新店區寶強路88號',
+      contact: '02-8912-3456'
+    },
+    laborInspection: {
+      uuid: 'inspection-001',
+      name: '勞動部職業安全衛生署',
+      address: '台北市信義區松山路456號',
+      contact: '02-2345-6789'
+    },
     remarks: '已安排就醫，等待報告',
-
     docReceivedDate: '2025-05-01',
     dispatchEvaluationDate: '2025-05-03',
     executionDiscussionStartDate: '2025-05-05',
@@ -43,6 +64,7 @@ export const testCases = [
     diseaseReviewMeetingAddition: false,
   },
   {
+    uuid: 'case-002',
     docId: '勞動部職安字第123460號',
     docDate: '2025-04-01',
     oshaHandler: '張偉',
@@ -53,13 +75,33 @@ export const testCases = [
     name: '林志強',
     age: 45,
     gender: '男性',
-    diagnosis: '左側膝關節鏡部分半月狀軟骨切除術(術後) 左側膝部原發性骨關節炎、單側性左側膝部內側未明示之半月板其他障礙、未明示側性膝部髕骨軟化、左膝內側半月板破裂併軟骨損傷',
+    diagnosis: '左側膝關節鏡部分半月狀軟骨切除術(術後)...',
     dispatchDate: '2025-04-03',
-    dispatchHospital: '臺大醫院',
-    employer: '中鋼',
-    laborInspection: '是',
+    dispatchHospital: {
+      uuid: 'hospital-002',
+      name: '臺大醫院',
+      address: '台北市中正區中山南路7號',
+      contact: '02-2312-3456'
+    },
+    dispatchDoctor: {
+      uuid: 'doctor-002',
+      name: '李醫師',
+      specialty: '胸腔內科',
+      contact: '02-2312-3456'
+    },
+    dispatchLetter: '這是派遣信件的內容，包含醫院和醫生的詳細資訊。',
+    employer: {
+      name: '中鋼',
+      address: '高雄市前鎮區中山三路1號',
+      contact: '07-336-1234'
+    },
+    laborInspection: {
+      uuid: 'inspection-002',
+      name: '勞動部職業安全衛生署',
+      address: '台北市信義區松山路456號',
+      contact: '02-2345-6789'
+    },
     remarks: '已排定複審',
-
     docReceivedDate: '2025-04-02',
     dispatchEvaluationDate: '2025-04-03',
     executionDiscussionStartDate: '2025-04-07',
@@ -87,6 +129,7 @@ export const testCases = [
     diseaseReviewMeetingAddition: true
   },
   {
+    uuid: 'case-003',
     docId: '勞動部職安字第123458號',
     docDate: '2025-04-28',
     oshaHandler: '黃大仁',
@@ -99,11 +142,31 @@ export const testCases = [
     gender: '男性',
     diagnosis: '慢性阻塞性肺病、肺炎、(矽肺症)',
     dispatchDate: '2025-05-02',
-    dispatchHospital: '林口長庚',
-    employer: '聯發科',
-    laborInspection: '是',
+    dispatchHospital: {
+      uuid: 'hospital-003',
+      name: '林口長庚',
+      address: '新北市林口區文化路123號',
+      contact: '03-3278-9123'
+    },
+    dispatchDoctor: {
+      uuid: 'doctor-003',
+      name: '黃醫師',
+      specialty: '耳鼻喉科',
+      contact: '03-3278-9123'
+    },
+    dispatchLetter: '這是派遣信件的內容，包含醫院和醫生的詳細資訊。',
+    employer: {
+      name: '台灣鋼鐵',
+      address: '台北市大同區重慶北路一段100號',
+      contact: '02-1234-5678',
+    },
+    laborInspection: {
+      uuid: 'inspection-003',
+      name: '勞動部職業安全衛生署',
+      address: '台北市信義區松山路456號',
+      contact: '02-2345-6789'
+    },
     remarks: '現場訪視已完成',
-
     docReceivedDate: '2025-04-30',
     dispatchEvaluationDate: '2025-05-01',
     executionDiscussionStartDate: null,
@@ -131,6 +194,7 @@ export const testCases = [
     diseaseReviewMeetingAddition: false,
   },
   {
+    uuid: 'case-004',
     docId: '勞動部職安字第123461號',
     docDate: '2025-03-01',
     oshaHandler: '劉英',
@@ -143,11 +207,32 @@ export const testCases = [
     age: 38,
     diagnosis: '過敏性皮膚炎',
     dispatchDate: '2025-03-03',
-    dispatchHospital: '彰基',
-    employer: '台灣化工',
-    laborInspection: '是',
+    dispatchHospital: {
+      uuid: 'hospital-004',
+      name: '彰基',
+      address: '彰化市中山路二段456號',
+      contact: '04-1234-5678'
+    },
+    dispatchDoctor: {
+      uuid: 'doctor-004',
+      name: '吳醫師',
+      specialty: '皮膚科',
+      contact: '04-1234-5678'
+    },
+    dispatchLetter: '這是派遣信件的內容，包含醫院和醫生的詳細資訊。',
+    employer: {
+      name: '台灣化工',
+      address: '台中市西屯區工業一路88號',
+      contact: '04-2456-7890'
+    },
+    laborInspection: {
+      uuid: 'inspection-004',
+      name: '勞動部職業安全衛生署',
+      address: '台北市信義區松山路456號',
+      contact: '02-2345-6789'
+    },
     remarks: '已完成報告初稿',
-    docReceivedDate: '2025-03-01', // +60 = 2025-04-30（今天 5/27，已逾期）
+    docReceivedDate: '2025-03-01',
     dispatchEvaluationDate: '2025-03-04',
     siteVisitDate: '2025-03-10',
     reportDraftStartDate: '2025-03-15',
@@ -157,6 +242,7 @@ export const testCases = [
     diseaseReviewMeetingAddition: false
   },
   {
+    uuid: 'case-005',
     docId: '勞動部職安字第123462號',
     docDate: '2025-03-28',
     oshaHandler: '鄭婷',
@@ -169,11 +255,27 @@ export const testCases = [
     age: 29,
     diagnosis: '熱衰竭',
     dispatchDate: '2025-03-30',
-    dispatchHospital: '高醫',
-    employer: '聯華電子',
-    laborInspection: '否',
+    dispatchHospital: {
+      uuid: 'hospital-005',
+      name: '高醫',
+      address: '高雄市三民區九如一路100號',
+      contact: '07-123-4567'
+    },
+    dispatchDoctor: {
+      uuid: 'doctor-005',
+      name: '張醫師',
+      specialty: '急診醫學',
+      contact: '07-321-4567'
+    },
+    dispatchLetter: '這是派遣信件的內容，包含醫院和醫生的詳細資訊。',
+    employer: {
+      name: '聯華電子',
+      address: '新竹市東區新安路88號',
+      contact: '03-578-2258'
+    },
+    laborInspection: null,
     remarks: '待安排專家複審',
-    docReceivedDate: '2025-03-28', // +60 = 2025-05-27（今天截止）
+    docReceivedDate: '2025-03-28',
     dispatchEvaluationDate: '2025-03-30',
     siteVisitDate: '2025-04-02',
     reportDraftStartDate: '2025-04-10',
@@ -181,7 +283,9 @@ export const testCases = [
     reportDraftAddition: false,
     oshaResponseDate: null,
     diseaseReviewMeetingAddition: false
-  }, {
+  },
+  {
+    uuid: 'case-006',
     docId: '勞動部職安字第123463號',
     docDate: '2025-03-30',
     oshaHandler: '王子豪',
@@ -193,9 +297,30 @@ export const testCases = [
     age: 54,
     diagnosis: '鉛中毒',
     dispatchDate: '2025-04-01',
-    dispatchHospital: '成大醫院',
-    employer: '大同公司',
-    laborInspection: '是',
+    dispatchHospital: {
+      uuid: 'hospital-006',
+      name: '成大醫院',
+      address: '台南市東區大學路1號',
+      contact: '06-123-4567'
+    },
+    dispatchDoctor: {
+      uuid: 'doctor-006',
+      name: '鄭醫師',
+      specialty: '職業醫學科',
+      contact: '06-123-4567'
+    },
+    dispatchLetter: '這是派遣信件的內容，包含醫院和醫生的詳細資訊。',
+    employer: {
+      name: '大同公司',
+      address: '台北市中山區中山北路三段22號',
+      contact: '02-2592-5252'
+    },
+    laborInspection: {
+      uuid: 'inspection-006',
+      name: '勞動部職業安全衛生署',
+      address: '台北市信義區松山路456號',
+      contact: '02-2345-6789'
+    },
     remarks: '初步檢驗完成',
     docReceivedDate: '2025-03-26',
     dispatchEvaluationDate: '2025-04-02',

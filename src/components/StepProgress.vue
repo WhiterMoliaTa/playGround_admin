@@ -21,7 +21,6 @@
       {{ lastStatus }}
     </div>
 
-
     <!-- 共用的底線 -->
     <div class="progress-line"></div>
 
@@ -44,7 +43,6 @@
       </div>
     </div>
 
-
     <!-- 次節點 -->
     <div v-for="(label, index) in secondaryLabels" :key="'secondary-group-' + index" style="position: relative;">
       <div class="secondary-step-progress-bar" :style="{
@@ -64,17 +62,14 @@
       <div class="secondary-step-node-label" v-if="secondaryDates[index * 2] && secondaryDates[index * 2 + 1]"
         :class="{ addition: secondaryAddition[index], 'secondary-step-label-top': index % 2 === 0, 'secondary-step-label-bottom': index % 2 === 1 }"
         :style="{
-          left: `calc(${(secondaryLeftPercents[index * 2] + secondaryLeftPercents[index * 2 + 1]) / 2}% + 6px)`
-          , top: index % 2 === 0 ? `calc(${secondaryTop} - 20px)` : `calc(${secondaryBottom} + 12px)`
+          left: `calc(${(secondaryLeftPercents[index * 2] + secondaryLeftPercents[index * 2 + 1]) / 2}% + 6px)`,
+          top: index % 2 === 0 ? `calc(${secondaryTop} - 20px)` : `calc(${secondaryBottom} + 12px)`
         }">
         {{ label }}
       </div>
     </div>
-
-
   </div>
 </template>
-
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import dayjs from 'dayjs'
@@ -278,216 +273,225 @@ function formatToROC(date) {
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+$color-border-default: #bbb;
+$color-primary: #2196f3;
+$color-primary-light: #6cbdff;
+$color-bg: white;
+$color-progress-bg: #ddd;
+$font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+
+$size-main-node: 14px;
+$size-secondary-node: 10px;
+$size-secondary-node-addition: 12px;
+$progress-height: 6px;
+
 .step-progress-container {
   position: relative;
   height: 150px;
   margin-top: 20px;
-}
 
-.progress-line {
-  position: absolute;
-  top: 50px;
-  left: 0;
-  width: 100%;
-  height: 6px;
-  background-color: #ddd;
-  z-index: 1;
-  border-radius: 3px;
-}
+  .progress-line {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    height: $progress-height;
+    background-color: $color-progress-bg;
+    z-index: 1;
+    border-radius: 3px;
+  }
 
-/* 主進度條 */
-.main-step-progress-bar {
-  position: absolute;
-  top: 50px;
-  left: 8px;
-  height: 6px;
-  border-radius: 3px;
-  z-index: 2;
-  transition: width 0.3s ease;
-}
+  /* 主進度條 */
+  .main-step-progress-bar {
+    position: absolute;
+    top: 50px;
+    left: 8px;
+    height: $progress-height;
+    border-radius: 3px;
+    z-index: 2;
+    transition: width 0.3s ease;
+  }
 
-/* 次進度條（每兩個節點一段） */
-.secondary-step-progress-bar {
-  position: absolute;
-  height: 6px;
-  background-color: #2196f3;
-  border-radius: 3px;
-  z-index: 2;
-}
+  /* 次進度條（每兩個節點一段） */
+  .secondary-step-progress-bar {
+    position: absolute;
+    height: $progress-height;
+    background-color: $color-primary;
+    border-radius: 3px;
+    z-index: 2;
+  }
 
-/* 主節點 */
-.main-step-node-circle {
-  position: absolute;
-  top: 46px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background-color: white;
-  border: 3px solid #bbb;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
+  /* 主節點 */
+  .main-step-node-circle {
+    position: absolute;
+    top: 46px;
+    width: $size-main-node;
+    height: $size-main-node;
+    border-radius: 50%;
+    background-color: $color-bg;
+    border: 3px solid $color-border-default;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 
-.main-step-node-circle.completed {
-  font-size: 10px;
-  font-weight: bold;
-}
+    &.completed {
+      font-size: 10px;
+      font-weight: bold;
+    }
 
-.main-step-checkmark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 8px;
-  pointer-events: none;
-}
+    .main-step-checkmark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 8px;
+      pointer-events: none;
+    }
+  }
 
-.main-step-node-label {
-  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-  position: absolute;
-  white-space: nowrap;
-  font-size: 12px;
-  text-align: center;
-  left: 50%;
-  transform: translateX(-50%);
-}
+  .main-step-node-label {
+    font-family: $font-family;
+    position: absolute;
+    white-space: nowrap;
+    font-size: 12px;
+    text-align: center;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 
-/* 次節點 */
-.secondary-step-node-circle {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: white;
-  border: 2px solid #2196f3;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
+  /* 次節點 */
+  .secondary-step-node-circle {
+    position: absolute;
+    width: $size-secondary-node;
+    height: $size-secondary-node;
+    border-radius: 50%;
+    background-color: $color-bg;
+    border: 2px solid $color-primary;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 
-.secondary-step-node-circle.addition {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: #6cbdff;
-  border: 2px solid #2196f3;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
+    &.addition {
+      width: $size-secondary-node-addition;
+      height: $size-secondary-node-addition;
+      background-color: $color-primary-light;
+      border: 2px solid $color-primary;
+    }
+  }
 
-.secondary-step-node-label {
-  font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-  color: #2196f3;
-  position: absolute;
-  white-space: nowrap;
-  font-size: 12px;
-  text-align: center;
-  left: 50%;
-  transform: translateX(-50%);
-}
+  .secondary-step-node-label {
+    font-family: $font-family;
+    color: $color-primary;
+    position: absolute;
+    white-space: nowrap;
+    font-size: 12px;
+    text-align: center;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 
-/* 共用 label 樣式 */
-.main-step-label-top {
-  bottom: 100%;
-  margin-bottom: 8px;
-  border-bottom: 2px solid var(--line-color);
-}
+  /* 共用 label 樣式 */
+  .main-step-label-top,
+  .main-step-label-bottom {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: $font-family;
+    font-size: 12px;
+    text-align: center;
+    white-space: nowrap;
+  }
 
-.main-step-label-bottom {
-  top: 100%;
-  margin-top: 8px;
-  border-top: 2px solid var(--line-color);
-}
+  .main-step-label-top {
+    bottom: 100%;
+    margin-bottom: 8px;
+    border-bottom: 2px solid var(--line-color, $color-border-default);
 
-.main-step-label-top {
-  bottom: 100%;
-  margin-bottom: 8px;
-  border-bottom: 2px solid var(--line-color);
-}
+    &::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -8px;
+      width: 2px;
+      height: 8px;
+      background-color: var(--line-color, $color-border-default);
+      transform: translateX(-50%);
+    }
+  }
 
-.main-step-label-bottom {
-  top: 100%;
-  margin-top: 8px;
-  border-top: 2px solid var(--line-color);
-}
+  .main-step-label-bottom {
+    top: 100%;
+    margin-top: 8px;
+    border-top: 2px solid var(--line-color, $color-border-default);
 
-.main-step-label-top::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -8px;
-  width: 2px;
-  height: 8px;
-  background-color: var(--line-color, #bbb);
-  transform: translateX(-50%);
-}
+    &::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: -8px;
+      width: 2px;
+      height: 8px;
+      background-color: var(--line-color, $color-border-default);
+      transform: translateX(-50%);
+    }
+  }
 
-.main-step-label-bottom::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -8px;
-  width: 2px;
-  height: 8px;
-  background-color: var(--line-color, #bbb);
-  transform: translateX(-50%);
-}
+  .secondary-step-label-top,
+  .secondary-step-label-bottom {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 
-.secondary-step-label-top {
-  bottom: auto;
-}
+  .secondary-step-label-top {
+    bottom: auto;
 
-.secondary-step-label-bottom {
-  top: auto;
-}
+    &.addition {
+      border-bottom: 2px solid $color-primary;
 
-.secondary-step-label-top.addition {
-  border-bottom: 2px solid #2196f3;
-}
+      &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: -48px;
+        width: 2px;
+        height: 48px;
+        background: repeating-linear-gradient(to bottom,
+            $color-primary,
+            $color-primary 4px,
+            transparent 4px,
+            transparent 8px);
+        transform: translateX(-50%);
+      }
+    }
+  }
 
-.secondary-step-label-bottom.addition {
-  border-top: 2px solid #2196f3;
-}
+  .secondary-step-label-bottom {
+    top: auto;
 
-.secondary-step-label-top.addition::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -48px;
-  width: 2px;
-  height: 48px;
-  background: repeating-linear-gradient(to bottom,
-      #2196f3,
-      #2196f3 4px,
-      transparent 4px,
-      transparent 8px);
-  transform: translateX(-50%);
-}
+    &.addition {
+      border-top: 2px solid $color-primary;
 
-
-
-.secondary-step-label-bottom.addition::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -48px;
-  width: 2px;
-  height: 48px;
-  background: repeating-linear-gradient(to bottom,
-      #2196f3,
-      #2196f3 4px,
-      transparent 4px,
-      transparent 8px);
-  transform: translateX(-50%);
+      &::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: -48px;
+        width: 2px;
+        height: 48px;
+        background: repeating-linear-gradient(to bottom,
+            $color-primary,
+            $color-primary 4px,
+            transparent 4px,
+            transparent 8px);
+        transform: translateX(-50%);
+      }
+    }
+  }
 }
 </style>

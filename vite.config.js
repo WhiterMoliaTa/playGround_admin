@@ -4,6 +4,7 @@ import VueDevTools from 'vite-plugin-vue-devtools'
 
 import VueRouter from 'unplugin-vue-router/vite'
 export default defineConfig({
+  base: '/my-vue-app/', // 👈 這一行是 GitHub Pages 關鍵
   plugins: [
    VueRouter({
       routesFolder: 'src/pages', // 預設是 src/pages，也可以自訂
@@ -15,6 +16,12 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['pdfjs-dist/build/pdf.worker.mjs']
   },
-  base: '/TCHGMealSys'
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: "modern-compiler" // or 'modern'
+      }
+    }
+  },
 })
 
