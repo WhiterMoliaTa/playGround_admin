@@ -5,7 +5,7 @@
             <v-card-title>
                 <v-row>
                     <v-col cols="auto">
-                        <h3>新增案件</h3>
+                        <h3>{{ newCase ? '新增案件' : '編輯案件' }}</h3>
                     </v-col>
                     <v-spacer />
                     <v-col cols="auto">
@@ -98,6 +98,7 @@
                                 </v-row>
                             </v-stepper-window-item>
 
+                            
                             <!-- Step 1: 派案醫院 -->
                             <v-stepper-window-item :value="1">
                                 <v-row dense>
@@ -245,7 +246,7 @@
                             </v-stepper-window-item>
 
                             <!-- Step 3: 勞檢 -->
-                            <v-stepper-window-item :value="6">
+                            <v-stepper-window-item :value="3">
 
                                 <v-row dense>
                                     <v-col cols="12" md="6">
@@ -319,6 +320,7 @@ const form = ref(null)
 const props = defineProps({
     modelValue: Boolean,
     model: Object,
+    newCase: Boolean,
 })
 
 const emit = defineEmits(['update:modelValue', 'save'])
@@ -391,7 +393,7 @@ function formatDateToDB(date) {
 }
 
 
-// 當 dialog 開啟時重置資料與日期狀態
+// 當 dialog 開啟時根據傳入值重置資料與日期狀態
 watch(
     () => props.modelValue,
     (newVal) => {
@@ -399,19 +401,22 @@ watch(
             // console.log('Dialog 開啟，重置資料，props.model:', props.model)
             caseData.value = cloneDeep(props.model)
             docDateRaw.value = caseData.value.docDate || null
-            receivedDateRaw.value = new Date()
+            receivedDateRaw.value = caseData.value.receivedDate || new Date()
             caseData.value.receivedDate = formatDateToDB(receivedDateRaw.value)
             dispatchDateRaw.value = caseData.value.dispatchDate || null
-            caseData.value.caseNumber = formatToROC(formatDateToDB(new Date())).replace(/\//g, '') + '000'
+            caseData.value.caseNumber = caseData.value.caseNumber || formatToROC(formatDateToDB(new Date())).replace(/\//g, '') + '000'
             caseData.value.dispatchDoctor.uuid = null
             caseData.value.dispatchHospital.uuid = null
             step.value = 0
-            caseData.value.centerHandler = '帳戶名稱'
+            caseData.value.centerHandler = caseData.value.centerHandler || '管理員帳戶'
         }
     }
 )
 
 function emitSave() {
+    if(!caseData.value.uuid) {
+        caseData.value.uuid = crypto.randomUUID()
+    }
     emit('save', caseData.value)
     emit('update:modelValue', false)
 }

@@ -14,6 +14,14 @@ import '@mdi/font/css/materialdesignicons.css'
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { routes } from 'vue-router/auto-routes'
 
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+
+const options = {
+  transition: "Vue-Toastification__fade",
+  maxToasts: 20,
+  newestOnTop: false
+};
 const router = createRouter({
   history: createWebHistory(),
   routes,
@@ -25,22 +33,22 @@ const vuetify = createVuetify({
   icons: {
     defaultSet: 'mdi',
   },
-    theme: {
+  theme: {
     defaultTheme: 'medicalTheme',
     themes: {
       medicalTheme: {
         dark: false,
         colors: {
-          primary: '#0D47A1',    
-          secondary: '#00796B', 
-          info: '#0288D1',       
-          success: '#2E7D32',    
-          warning: '#FBC02D',   
-          error: '#D32F2F',     
+          primary: '#0D47A1',
+          secondary: '#00796B',
+          info: '#0288D1',
+          success: '#2E7D32',
+          warning: '#FBC02D',
+          error: '#D32F2F',
           background: '#FAFAFA',
-          surface: '#FFFFFF',    
-          onPrimary: '#FFFFFF',  
-          onSecondary: '#FFFFFF' 
+          surface: '#FFFFFF',
+          onPrimary: '#FFFFFF',
+          onSecondary: '#FFFFFF'
         }
       }
     }
@@ -50,4 +58,5 @@ const vuetify = createVuetify({
 createApp(App)
   .use(router)    // ✅ 加上這行
   .use(vuetify)
+  .use(Toast, options)
   .mount('#app')

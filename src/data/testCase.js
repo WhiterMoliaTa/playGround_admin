@@ -1,6 +1,6 @@
 export const testCases = [
-  // 第一筆維持不變
   {
+    uuid: 'case-001',
     docId: '勞動部職安字第123456號',
     docDate: '2025-05-01',
     oshaHandler: '王小明',
@@ -63,9 +63,8 @@ export const testCases = [
     diseaseReviewMeetingEndDate: null,
     diseaseReviewMeetingAddition: false,
   },
-
-  // 第二筆（已補 dispatchLetter 與 dispatchDoctor）
   {
+    uuid: 'case-002',
     docId: '勞動部職安字第123460號',
     docDate: '2025-04-01',
     oshaHandler: '張偉',
@@ -129,9 +128,8 @@ export const testCases = [
     diseaseReviewMeetingEndDate: '2025-09-31',
     diseaseReviewMeetingAddition: true
   },
-
-  // 第三筆（已補 dispatchDoctor 與 dispatchLetter）
   {
+    uuid: 'case-003',
     docId: '勞動部職安字第123458號',
     docDate: '2025-04-28',
     oshaHandler: '黃大仁',
@@ -195,9 +193,8 @@ export const testCases = [
     diseaseReviewMeetingEndDate: null,
     diseaseReviewMeetingAddition: false,
   },
-
-  // 第四筆
   {
+    uuid: 'case-004',
     docId: '勞動部職安字第123461號',
     docDate: '2025-03-01',
     oshaHandler: '劉英',
@@ -244,9 +241,8 @@ export const testCases = [
     oshaResponseDate: null,
     diseaseReviewMeetingAddition: false
   },
-
-  // 第五筆
   {
+    uuid: 'case-005',
     docId: '勞動部職安字第123462號',
     docDate: '2025-03-28',
     oshaHandler: '鄭婷',
@@ -269,7 +265,7 @@ export const testCases = [
       uuid: 'doctor-005',
       name: '張醫師',
       specialty: '急診醫學',
-      contact: '07-123-4567'
+      contact: '07-321-4567'
     },
     dispatchLetter: '這是派遣信件的內容，包含醫院和醫生的詳細資訊。',
     employer: {
@@ -288,9 +284,8 @@ export const testCases = [
     oshaResponseDate: null,
     diseaseReviewMeetingAddition: false
   },
-
-  // 第六筆
   {
+    uuid: 'case-006',
     docId: '勞動部職安字第123463號',
     docDate: '2025-03-30',
     oshaHandler: '王子豪',

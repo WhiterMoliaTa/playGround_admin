@@ -1,9 +1,11 @@
 <template>
   <v-card class="pa-2">
-    <v-card-title class="d-flex align-center">
-      <span class="text-h5">案件管理系統</span>
-      <v-spacer />
-      <v-btn color="primary" @click="newCaseDialog = true">新增案件</v-btn>
+    <v-card-title class="text-h5">
+      <v-col class="d-flex align-center">
+        <span>案件管理系統</span>
+        <v-spacer />
+        <v-btn color="primary" @click="newCaseDialog = true">新增案件</v-btn>
+      </v-col>
     </v-card-title>
 
     <v-card-text>
@@ -50,7 +52,7 @@
                       <v-btn variant="text" size="small" icon @click="viewItem(item)">
                         <v-icon>mdi-eye</v-icon>
                       </v-btn>
-                      <v-btn variant="text" size="small" icon>
+                      <v-btn variant="text" size="small" icon @click="editItem(item)">
                         <v-icon color="warning">mdi-pencil</v-icon>
                       </v-btn>
                       <v-btn variant="text" size="small" icon>
@@ -85,14 +87,14 @@
     </v-card-text>
   </v-card>
   <NewCaseDialog :model-value="newCaseDialog" @update:model-value="newCaseDialog = $event" :model="newCase"
-    @save="saveCase" />
+    @save="saveCase" :new-case="true" />
   <v-dialog v-model="viewCaseModel">
     <v-card>
       <v-card-title class="text-h5">
         <v-col class="d-flex align-center">
           <span>案件詳情</span>
           <v-spacer />
-          <v-icon icon="mdi-close" @click="viewCaseModel = false" style="cursor: pointer;" color="error"/>
+          <v-icon icon="mdi-close" @click="viewCaseModel = false" style="cursor: pointer;" color="error" />
         </v-col>
       </v-card-title>
 
@@ -102,10 +104,12 @@
 </template>
 
 <script setup>
+defineOptions({ name: 'IndexPage' }) // 👈 讓 Devtools 能看到
+
 import { ref, toRaw } from 'vue'
 import StepProgress from '../components/StepProgress.vue'
 import TruncateText from '../components/TruncateText.vue'
-import NewCaseDialog from '../components/NewCaseDialog.vue'
+import NewCaseDialog from '../components/caseDialog.vue'
 import showCaseCard from '../components/showCaseCard.vue'
 
 const headers = [
@@ -201,13 +205,25 @@ function formatToROC(date) {
   return `${year}/${month}/${day}`
 }
 
+const toast = useToast()
 function saveCase(caseData) {
   console.log('儲存案件', toRaw(caseData))
-  // newCase.value = { ...caseData }
-  cases.value.push({
-    ...caseData,
+  toast.success('案件已儲存，跳轉至新增事件！', {
+    position: 'top-right',
+    timeout: 2000,
+    closeOnClick: true,
+    pauseOnHover: true,
   })
   newCaseDialog.value = false
+
+  const rawCase = toRaw(caseData)
+  testCases.push({
+    ...rawCase,
+    uuid: rawCase.uuid || crypto.randomUUID(), // 補上 UUID（僅作單次使用）
+  })
+  cases.value = structuredClone(testCases)
+
+  router.push({ name: '/edit/[id]', params: { id: rawCase.uuid } })
 }
 
 const itemStatusColors = (item) => {
@@ -231,7 +247,16 @@ const viewItem = (item) => {
   viewCaseData.value = item
   viewCaseModel.value = true
 }
+import { useRouter } from 'vue-router'
+import Swal from 'sweetalert2'
+import { no } from 'vuetify/locale'
+import { useToast } from 'vue-toastification'
+const router = useRouter()
+const editItem = (item) => {
+  router.push({ name: '/edit/[id]', params: { id: item.uuid } })
+}
 </script>
+
 
 <style scoped>
 .zebra-header {
