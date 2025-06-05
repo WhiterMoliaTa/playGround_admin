@@ -106,7 +106,7 @@
 <script setup>
 defineOptions({ name: 'IndexPage' }) // 👈 讓 Devtools 能看到
 
-import { ref, toRaw } from 'vue'
+import { onMounted, ref, toRaw } from 'vue'
 import StepProgress from '../components/StepProgress.vue'
 import TruncateText from '../components/TruncateText.vue'
 import NewCaseDialog from '../components/caseDialog.vue'
@@ -123,6 +123,9 @@ const headers = [
   // { title: '派案日期', key: 'dispatchDate' },
   { title: '目前狀態', key: 'status' },
   { title: '操作', key: 'actions' },
+  // { title: '認可天數', key: 'docId', hidden: true },
+  // { title: '總天數', key: 'docId', hidden: true },
+
 ]
 
 import { testCases } from '../data/testCase'
@@ -223,7 +226,8 @@ function saveCase(caseData) {
   })
   cases.value = structuredClone(testCases)
 
-  router.push({ name: '/edit/[id]', params: { id: rawCase.uuid } })
+  router.push(`/edit/${rawCase.uuid}`)
+
 }
 
 const itemStatusColors = (item) => {
@@ -248,13 +252,17 @@ const viewItem = (item) => {
   viewCaseModel.value = true
 }
 import { useRouter } from 'vue-router'
-import Swal from 'sweetalert2'
-import { no } from 'vuetify/locale'
 import { useToast } from 'vue-toastification'
 const router = useRouter()
 const editItem = (item) => {
-  router.push({ name: '/edit/[id]', params: { id: item.uuid } })
+  router.push(`/edit/${item.uuid}`)
+
 }
+
+onMounted(() => {
+  // 初始化時可以做一些額外的設定
+  console.log(router.getRoutes().map(r => r.name))
+})
 </script>
 
 

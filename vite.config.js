@@ -3,12 +3,17 @@ import vue from '@vitejs/plugin-vue'
 import VueDevTools from 'vite-plugin-vue-devtools'
 
 import VueRouter from 'unplugin-vue-router/vite'
+const isProd = process.env.NODE_ENV === 'production'
 export default defineConfig({
-  base: '/my-vue-app/', // 👈 這一行是 GitHub Pages 關鍵
+  base: isProd ? '/playGround_admin/' : '/',
   plugins: [
-   VueRouter({
-      routesFolder: 'src/pages', // 預設是 src/pages，也可以自訂
-      dts: 'src/typed-router.d.ts' // 自動產生型別
+    VueRouter({
+      routesFolder: 'src/pages',
+      dts: 'src/typed-router.d.ts',
+      history: 'createWebHashHistory',
+      historyOptions: {
+        base: isProd ? '/playGround_admin/' : '/'
+      },
     }),
     vue(),
     VueDevTools()
@@ -19,9 +24,8 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        api: "modern-compiler" // or 'modern'
+        api: "modern-compiler"
       }
     }
   },
 })
-

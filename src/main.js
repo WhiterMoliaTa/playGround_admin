@@ -12,21 +12,28 @@ import { VTimePicker } from 'vuetify/labs/VTimePicker'
 import '@mdi/font/css/materialdesignicons.css'
 
 // unplugin-vue-router 的虛擬模組
-import { createRouter, createWebHistory } from 'vue-router/auto'
+// import { createRouter, createWebHistory } from 'vue-router/auto'
 import { routes } from 'vue-router/auto-routes'
+import { createRouter, createWebHashHistory } from 'vue-router/auto'
+// ↓ 修改為 hash history
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes,
+})
 
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
-
+const isProd = import.meta.env.PROD
 const options = {
   transition: "Vue-Toastification__fade",
   maxToasts: 20,
   newestOnTop: false
 };
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-})
+// const router = createRouter({
+//     history: createWebHistory(isProd ? '/playGround_admin/' : '/'),
+//   routes,
+// })
+
 
 const vuetify = createVuetify({
   components: {

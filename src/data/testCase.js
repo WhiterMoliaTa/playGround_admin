@@ -37,6 +37,7 @@ export const testCases = [
       contact: '02-2345-6789'
     },
     remarks: '已安排就醫，等待報告',
+    事業單位:'法人',
     docReceivedDate: '2025-05-01',
     dispatchEvaluationDate: '2025-05-03',
     executionDiscussionStartDate: '2025-05-05',
