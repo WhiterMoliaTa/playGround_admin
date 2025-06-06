@@ -304,7 +304,7 @@ import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import cloneDeep from 'lodash/cloneDeep'
-import showCaseCard from '../components/showCaseCard.vue'
+import showCaseCard from './caseDialogView.vue'
 
 const step = ref(0)
 const stepItems = [

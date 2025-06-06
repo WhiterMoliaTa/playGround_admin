@@ -59,14 +59,14 @@
 </template>
 <script setup>
 import { computed } from 'vue';
-import FormOneAndTwo from './forms/FormOneAndTwo.vue';
-import FormOne from './forms/formOne.vue';
-import FormTwo from './forms/formTwo.vue';
-import FormThree from './forms/FormThree.vue';
-import FormFour from './forms/FormFour.vue';
-import FormFive from './forms/FormFive.vue';
-import FormSeven from './forms/FormSeven.vue';
-import ShiftHandoverLog from './forms/ShiftHandoverLog.vue';
+import FormOneAndTwo from '../forms/FormOneAndTwo.vue';
+import FormOne from '../forms/formOne.vue';
+import FormTwo from '../forms/formTwo.vue';
+import FormThree from '../forms/FormThree.vue';
+import FormFour from '../forms/FormFour.vue';
+import FormFive from '../forms/FormFive.vue';
+import FormSeven from '../forms/FormSeven.vue';
+import ShiftHandoverLog from '../forms/ShiftHandoverLog.vue';
 
 const emit = defineEmits(['update:showForm', 'submitForm']);
 
