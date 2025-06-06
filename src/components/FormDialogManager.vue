@@ -53,6 +53,7 @@
       <ShiftHandoverLog :formConfig="formConfig" 
         :time="props.time"
         @cancel="handleCancel"
+        @formDone="handleFormDone($event)"
       /> <!--TODO 要確認下到底要不要做Save -->
     </div>
   </v-dialog>
@@ -68,7 +69,7 @@ import FormFive from './forms/FormFive.vue';
 import FormSeven from './forms/FormSeven.vue';
 import ShiftHandoverLog from './forms/ShiftHandoverLog.vue';
 
-const emit = defineEmits(['update:showForm', 'submitForm']);
+const emit = defineEmits(['update:showForm', 'submitForm', 'currentformDone']);
 
 const props = defineProps({
   showForm: Boolean,
@@ -104,5 +105,9 @@ function handleCancel() {
   emit('update:showForm', false);
 }
 
+function handleFormDone(formName) {
+  console.log(`FormDialogManager: Forwarding currentformDone event from ${formName}`);
+  emit('currentformDone', formName);
+}
 
 </script>

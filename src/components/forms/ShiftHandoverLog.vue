@@ -23,13 +23,15 @@
                 </v-table>
             </v-card-text>
             <v-card-actions>
-                <v-btn color="secondary" @click="$emit('cancel')">Close</v-btn>
+                <v-btn color="secondary" @click="haveReadAll()">閱覽完畢</v-btn>
             </v-card-actions>
         </v-card>
     </div>
 </template>
 <script setup>
 import { ref, watch } from 'vue';
+
+const $emit = defineEmits(['formDone', 'cancel']);
 
 const props = defineProps({
     time: {
@@ -49,6 +51,11 @@ watch(() => props.formConfig, (newVal) => {
         logEntry.value = newVal;
     }
 }, { immediate: true });
+
+function haveReadAll(){
+    $emit('formDone', 'shiftHandoverLog');
+    $emit('cancel');
+}
 
 </script>
 

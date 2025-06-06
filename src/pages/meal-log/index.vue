@@ -564,7 +564,6 @@ provide('modifyJobPass', (formName, time, pass) => {
 
 provide('updateAddiForm', (formName, newData) => {
   const form = forms.value[formName];
-  console.log('A form updated', formName, newData);
 
   if (form && form.additionalForm) {
     if (Array.isArray(newData)) {
@@ -574,7 +573,6 @@ provide('updateAddiForm', (formName, newData) => {
     }
   }
 
-  console.log('Form Updated:', forms.value[formName]);
 });
 
 const completedCount = ref(0);
@@ -615,7 +613,6 @@ function handleCheckboxChange(currentForms, isChecked) {
           forms.value[form]?.additionalForm || [];
       });
     }
-    console.log('Forms Collection:', formsCollection);
     Object.assign(dialogState, {
       show: true,
       title: currentForms.title || "檢核確認",
