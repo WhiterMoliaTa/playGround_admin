@@ -28,7 +28,7 @@
           class="mt-1">
           {{ formBtn.label }}
             <template v-slot:append>
-              <v-icon :color="formDones[`${formBtn.formName}-${formBtn.time}`] ? 'success' : 'grey'">mdi-check-circle</v-icon>
+              <v-icon :color="buttonColor(formBtn.formName,formBtn.time)">mdi-check-circle</v-icon>
             </template>
         </v-btn>
       </v-card-text>
@@ -138,9 +138,13 @@ const baseCheckRules = [
   (value) => !!value || '請確認'
 ];
 
-// onMounted(() => {
-//   allDone.value = false;
-// }); //TODO: 這個onMounted有必要嗎？因為allDone已經是ref了
+const buttonColor = computed(() => {
+  return (formName, time) => {
+    const key = `${formName}-${time}`;
+    // Return the color from formDones if it exists, otherwise return "grey"
+    return formDones.value[key] || "grey";
+  };
+});
 
 const showDialog = computed({
   get: () => props.show,
@@ -195,8 +199,8 @@ watch(() => props.show, (newVal) => {
   }
 });
 
-function updateFormDone(formName,time) {
-  formDones.value[`${formName}-${time}`] = true;
+function updateFormDone(event,time) {
+  formDones.value[`${event.formName}-${time}`] = event.state;
   let checkFormAllDone = Object.values(formDones.value).every(done => done);
   console.log(`FormDialogManager: Form done ${checkFormAllDone}`);
   dbugs();

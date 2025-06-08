@@ -35,7 +35,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 
-const $emit = defineEmits(['formDone', 'cancel']);
+const $emit = defineEmits(['formDone', 'cancel', 'formDoneEvent']);
 
 const props = defineProps({
     time: {
@@ -62,7 +62,7 @@ const logEntry = ref([{
 // }, { immediate: true });
 
 function haveReadAll(){
-    $emit('formDone', 'shiftHandoverLog');
+    $emit('formDoneEvent', {formName:'shiftHandoverLog', state: 'success'});
     $emit('cancel');
 }
 

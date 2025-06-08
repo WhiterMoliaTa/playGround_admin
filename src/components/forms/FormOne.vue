@@ -104,7 +104,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['save', 'cancel']);
+const emit = defineEmits(['save', 'cancel', 'formDoneEvent']);
 
 const formDone = ref(false);
 
@@ -166,15 +166,14 @@ function loadFormData() {
 }
 
 function tempSave() {
-  // Determine if all visible checkboxes are checked
-  const formNoProblem = formItems.value.every(item => {
+  let formNoProblem = formItems.value.every(item => {
     if (showBreakfast.value && item.breakfast !== true) return false;
     if (showLunch.value && item.lunch !== true) return false;
     if (showDinner.value && item.dinner !== true) return false;
     return true;
   });
+  let state = formNoProblem ? 'success' : 'error'; 
 
-  // Create new form data
   const newFormData = [{
     title: '配膳線上督餐作業查檢表',
     form: JSON.parse(JSON.stringify(formItems.value))
@@ -182,15 +181,17 @@ function tempSave() {
 
   // Update form data
   updateAddiForm('formOne', newFormData);
+  emit('formDoneEvent', {formName:'formOne', state: state});
 }
 
 function save() {
-  const formNoProblem = formItems.value.every(item => {
+  let formNoProblem = formItems.value.every(item => {
     if (showBreakfast.value && item.breakfast !== true) return false;
     if (showLunch.value && item.lunch !== true) return false;
     if (showDinner.value && item.dinner !== true) return false;
     return true;
   });
+  let state = formNoProblem ? 'success' : 'error'; 
 
   const newFormData = [{
     title: '配膳線上督餐作業查檢表',
@@ -199,7 +200,8 @@ function save() {
 
   // Update form data
   updateAddiForm('formOne', newFormData);
-  emit('save', newFormData);
+  emit('formDoneEvent', {formName:'formOne', state: state});
+  cancel();
 }
 
 function checkAllSelcted() {

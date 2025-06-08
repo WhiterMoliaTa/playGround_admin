@@ -3,7 +3,8 @@
     <div v-if="props.form === 'formOne'">
       <FormOne :formConfig="formConfig" 
         :time="props.time"
-        @save="handleSave" 
+        @formDoneEvent="handleFormDone($event)"
+        @save="handleSave"
         @cancel="handleCancel" 
       />
     </div>
@@ -53,8 +54,8 @@
       <ShiftHandoverLog :formConfig="formConfig" 
         :time="props.time"
         @cancel="handleCancel"
-        @formDone="handleFormDone($event)"
-      /> <!--TODO 要確認下到底要不要做Save -->
+        @formDoneEvent="handleFormDone($event)"
+      />
     </div>
   </v-dialog>
 </template>
@@ -105,9 +106,9 @@ function handleCancel() {
   emit('update:showForm', false);
 }
 
-function handleFormDone(formName) {
-  console.log(`FormDialogManager: Forwarding currentformDone event from ${formName}`);
-  emit('currentformDone', formName);
+function handleFormDone(event) {
+  console.log(`FormDialogManager: Forwarding currentformDone event from ${event.formName}`);
+  emit('currentformDone', {formName: event.formName, state: event.state});
 }
 
 </script>
