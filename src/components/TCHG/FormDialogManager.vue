@@ -35,7 +35,7 @@
       <FormFour :formConfig="formConfig" 
         :time="props.time"
         @formDoneEvent="handleFormDone($event)"
-        @save="handleSave" 
+        @save="handleSave"
         @cancel="handleCancel" 
       />
     </div>

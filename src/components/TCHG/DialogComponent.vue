@@ -10,26 +10,17 @@
       </v-card-text>
 
       <v-card-text>
-        <v-checkbox v-for="checkBox in checkBoxs" 
-        :key="checkBox.id" 
-        v-model="checkBox.checked" 
-        :label="checkBox.label"
-        @update:modelValue="checkBoxCheck()"
-        :rules="baseCheckRules">
+        <v-checkbox v-for="checkBox in checkBoxs" :key="checkBox.id" v-model="checkBox.checked" :label="checkBox.label"
+          @update:modelValue="checkBoxCheck()" :rules="baseCheckRules">
         </v-checkbox>
       </v-card-text>
       <v-card-text>
-        <v-btn 
-          outlined 
-          v-for="formBtn in formButtons" 
-          :key="formBtn.id" 
-          @click="openFormDialog(formBtn.formName, formBtn.time)" 
-          width="100%" 
-          class="mt-1">
+        <v-btn outlined v-for="formBtn in formButtons" :key="formBtn.id"
+          @click="openFormDialog(formBtn.formName, formBtn.time)" width="100%" class="mt-1">
           {{ formBtn.label }}
-            <template v-slot:append>
-              <v-icon :color="buttonColor(formBtn.formName,formBtn.time)">mdi-check-circle</v-icon>
-            </template>
+          <template v-slot:append>
+            <v-icon :color="buttonColor(formBtn.formName, formBtn.time)">mdi-check-circle</v-icon>
+          </template>
         </v-btn>
       </v-card-text>
       <v-card-text>
@@ -38,9 +29,10 @@
 
 
       <v-container class="d-flex justify-space-around">
-        <v-btn rounded="xl" :color="allDone ? 'deep-orange-lighten-4' : 'grey'" class="text-white" 
-        :readonly="!allDone" @click="ableToCloseDialog" >檢核確認</v-btn>
-        <v-btn v-if="props.additionalForm && !formRequired" rounded="xl" outlined @click="openSingleAdditionalForm">填寫紀錄表</v-btn>
+        <v-btn rounded="xl" :color="allDone ? 'deep-orange-lighten-4' : 'grey'" class="text-white" :readonly="!allDone"
+          @click="ableToCloseDialog">檢核確認</v-btn>
+        <v-btn v-if="props.additionalForm && !formRequired" rounded="xl" outlined
+          @click="openSingleAdditionalForm">填寫紀錄表</v-btn>
       </v-container>
     </v-card>
   </v-dialog>
@@ -50,20 +42,18 @@
         :fillFormTime="new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })"
         @submitForm="saveAdditionalForm"
     /> -->
-  <form-dialog-manager 
-    v-model:showForm="showFormDialog" 
-    :form="form" :time="time"
-    :form-config="formConfig"
-    @currentformDone="updateFormDone($event,time)"
-  />
+  <form-dialog-manager v-model:showForm="showFormDialog" :form="form" :time="time" :form-config="formConfig"
+    @currentformDone="updateFormDone($event, time)" />
 </template>
 
 <script setup>
-import { ref, computed, watch, inject} from 'vue';
+import { ref, computed, watch, inject } from 'vue';
 import FormDialogComponent from './FormDialogComponent.vue';
 import FormDialogManager from './FormDialogManager.vue';
+import { fa } from 'vuetify/locale';
 
 const modifyPass = inject('modifyJobPass');
+const getAddiForm = inject('getAddiForm');
 
 const showFormDialog = ref(false);
 const formConfig = ref(null);
@@ -119,9 +109,18 @@ const props = defineProps({
   }
 });
 
+function updateAllDone() {
+  let checkFormAllDone = true;
+  if (props.formRequired) {
+    checkFormAllDone = props.formName.every(name => !!formDones.value[`${name}-${props.time}`]);
+  }
+  let checkBoxAllDone = props.checkBoxs.every(cb => cb.checked);
+  allDone.value = checkFormAllDone && checkBoxAllDone;
+}
+
 function dbugs(place) {
-  console.log(`----${place}-----\n%O\n-------------`, 
-    {    
+  console.log(`----${place}-----\n%O\n-------------`,
+    {
       formRequired: props.formRequired,
       formNames: props.formName,
       allCheckboxesChecked: props.checkBoxs.every(cb => cb.checked),
@@ -138,6 +137,7 @@ const baseCheckRules = [
   (value) => !!value || '請確認'
 ];
 
+//Change meal-log button using this function
 const buttonColor = computed(() => {
   return (formName, time) => {
     const key = `${formName}-${time}`;
@@ -147,30 +147,33 @@ const buttonColor = computed(() => {
 });
 
 const showDialog = computed({
-  get: () => props.show,
+  get: () => {
+    updateAllDone();
+    return props.show;
+  },
   set: (value) => emit('update:show', value)
 });
 
 watch(() => props.checkBoxs, (newVal) => {
-  let checkFormAllDone = true;
-  if(props.formRequired){
-    checkFormAllDone = props.formName.every(name => !!formDones.value[`${name}-${props.time}`]);
-  }
-  let checkBoxAllDone = props.checkBoxs.every(cb => cb.checked);
-  allDone.value = checkFormAllDone && checkBoxAllDone;
+  updateAllDone();
 }, { immediate: false });
 
 function checkBoxCheck() {
-  let checkFormAllDone = true;
-  if(props.formRequired){
-    checkFormAllDone = props.formName.every(name => !!formDones.value[`${name}-${props.time}`]);
-  }
-  let checkBoxAllDone = props.checkBoxs.every(cb => cb.checked);
-  allDone.value = checkFormAllDone && checkBoxAllDone;
+  updateAllDone();
 }
 
 function ableToCloseDialog() {
-  modifyPass(props.formName, props.time, allDone.value);
+  let allFormNoError = true;
+  if (props.formRequired) {
+    allFormNoError = props.formName.every(name => {
+      const key = `${name}-${props.time}`;
+      return formDones.value[key] !== undefined && formDones.value[key] === 'success';
+    });
+  }
+  if(props.formName[0] === 'formFive'){
+    getAddiForm('formFive')[0].records.length === 0 ? allFormNoError = true : allFormNoError = false;
+  }
+  modifyPass(props.formName, props.time, allFormNoError);
   showDialog.value = false;
 }
 
@@ -192,14 +195,9 @@ watch(() => props.show, (newVal) => {
   }
 });
 
-function updateFormDone(event,time) {
+function updateFormDone(event, time) {
   formDones.value[`${event.formName}-${time}`] = event.state;
-  let checkFormAllDone = true;
-  if(props.formRequired){
-    checkFormAllDone = props.formName.every(name => !!formDones.value[`${name}-${props.time}`]);
-  }
-  let checkBoxAllDone = props.checkBoxs.every(cb => cb.checked);
-  allDone.value = checkFormAllDone && checkBoxAllDone;
+  updateAllDone();
 }
 
 function openSingleAdditionalForm() {
@@ -216,5 +214,4 @@ function openFormDialog(formName, time) {
 
 
 </script>
-<style scoped>
-</style>
+<style scoped></style>

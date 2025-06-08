@@ -165,13 +165,6 @@ function loadFormData() {
 }
 
 function tempSave() {
-  let formNoProblem = formItems.value.every(item => {
-    if (showBreakfast.value && item.breakfast !== true) return false;
-    if (showLunch.value && item.lunch !== true) return false;
-    if (showDinner.value && item.dinner !== true) return false;
-    return true;
-  });
-  let state = formNoProblem ? 'success' : 'error'; 
 
   const newFormData = [{
     title: '配膳線上督餐作業查檢表',
@@ -180,7 +173,6 @@ function tempSave() {
 
   // Update form data
   updateAddiForm('formOne', newFormData);
-  emit('formDoneEvent', {formName:'formOne', state: state});
 }
 
 function save() {

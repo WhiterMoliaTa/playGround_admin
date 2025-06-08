@@ -6,9 +6,10 @@
 
       <v-row class="my-2 font-weight-bold text-center">
         <v-col cols="5" class="d-flex align-center">檢核項目</v-col>
-        <v-col cols="2" v-if="showBreakfast" class="d-flex align-center justify-center">早餐</v-col>
+        <!-- <v-col cols="2" v-if="showBreakfast" class="d-flex align-center justify-center">早餐</v-col>
         <v-col cols="2" v-if="showLunch" class="d-flex align-center justify-center">午餐</v-col>
-        <v-col cols="2" v-if="showDinner" class="d-flex align-center justify-center">晚餐</v-col>
+        <v-col cols="2" v-if="showDinner" class="d-flex align-center justify-center">晚餐</v-col> -->
+        <v-col cols="4"></v-col>
         <v-col :cols="getRemarksColSize()" class="d-flex align-center">備註</v-col>
       </v-row>
 
@@ -16,41 +17,38 @@
 
       <v-row v-for="item in formItems" :key="item.id" class="my-3">
         <v-col cols="5" class="d-flex align-center">{{ item.title }}</v-col>
-        
-        <v-col cols="2" v-if="showBreakfast" class="d-flex flex-column align-center">
-          <v-checkbox-btn
-            v-model="item.breakfast"
-            color="success"
-            true-icon="mdi-check-circle"
-            false-icon="mdi-close-circle-outline"
-          ></v-checkbox-btn>
+
+        <v-col cols="4" v-if="showBreakfast" class="d-flex flex-column align-center">
+          <v-radio-group inline v-model="item.breakfast" class="dflex flex-column align-center" row hide-details
+            @update:modelValue="checkAllSelcted()">
+            <v-radio :value="true" color="success" true-icon="mdi-check-circle" false-icon="mdi-check-circle"
+              density="compact"></v-radio>
+            <v-radio :value="false" color="error" true-icon="mdi-close-circle" false-icon="mdi-close-circle"
+              density="compact"></v-radio>
+          </v-radio-group>
         </v-col>
-        
-        <v-col cols="2" v-if="showLunch" class="d-flex flex-column align-center">
-          <v-checkbox-btn
-            v-model="item.lunch"
-            color="success"
-            true-icon="mdi-check-circle"
-            false-icon="mdi-close-circle-outline"
-          ></v-checkbox-btn>
+
+        <v-col cols="4" v-if="showLunch" class="d-flex flex-column align-center">
+          <v-radio-group inline v-model="item.lunch" class="dflex flex-column align-center" row hide-details
+            @update="checkAllSelcted()">
+            <v-radio :value="true" color="success" true-icon="mdi-check-circle" false-icon="mdi-check-circle"
+              density="compact"></v-radio>
+            <v-radio :value="false" color="error" true-icon="mdi-close-circle" false-icon="mdi-close-circle"
+              density="compact"></v-radio>
+          </v-radio-group>
         </v-col>
-        
-        <v-col cols="2" v-if="showDinner" class="d-flex flex-column align-center">
-          <v-checkbox-btn
-            v-model="item.dinner"
-            color="success"
-            true-icon="mdi-check-circle"
-            false-icon="mdi-close-circle-outline"
-          ></v-checkbox-btn>
+
+        <v-col cols="4" v-if="showDinner" class="d-flex flex-column align-center">
+          <v-radio-group inline v-model="item.dinner" class="dflex flex-column align-center" row hide-details
+            @update="checkAllSelcted()">
+            <v-radio :value="true" color="success" true-icon="mdi-check-circle" false-icon="mdi-check-circle"
+              density="compact"></v-radio>
+            <v-radio :value="false" color="error" true-icon="mdi-close-circle" false-icon="mdi-close-circle"
+              density="compact"></v-radio>
+          </v-radio-group>
         </v-col>
-        
+
         <v-col :cols="getRemarksColSize()">
-          <!-- <v-text-field
-            v-model="item.remarks"
-            variant="outlined"
-            density="compact"
-            hide-details
-          ></v-text-field> -->
           <v-btn variant="text" icon @click="openRemarkDialog(item)">
             <v-icon>mdi-dots-horizontal-circle</v-icon>
           </v-btn>
@@ -61,26 +59,15 @@
 
       <v-row>
         <v-col cols="12" class="d-flex justify-end">
-          <v-btn color="error" variant="text" class="mr-2" @click="cancel">取消</v-btn>
-          <v-btn color="primary" @click="save">儲存</v-btn>
+          <v-btn variant="outlined" rounded @click="tempSave">暫存</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="deep-orange-lighten-4" class="text-white" :variant="!formDone ? 'outlined' : 'elevated'"
+            :readonly="!formDone" rounded @click="save">儲存</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn variant="outlined" rounded class="mr-2" @click="cancel">取消</v-btn>
         </v-col>
       </v-row>
-      <!-- <v-dialog v-model="showRemarksDialog">
-        <v-card>
-          <v-card-title class="text-center">備註</v-card-title>
-          <v-card-text>
-            <v-textarea v-model="jobsRemarks.remarks" label="特殊狀況" rows="3" />
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" @click="updateJobRemark">確認</v-btn>
-            <v-btn color="secondary" @click="closeRemarksDialog">取消</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog> -->
-      <remarks-dialog
-        v-model:showRemarks="showRemarksDialog"
-        :item="itemRemarks"
-      />
+      <remarks-dialog v-model:showRemarks="showRemarksDialog" :item="itemRemarks" />
     </v-card>
   </div>
 </template>
@@ -105,7 +92,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['save', 'cancel']);
+const emit = defineEmits(['save', 'cancel', 'formDoneEvent']);
 
 // Get form data access from parent
 const getAddiForm = inject('getAddiForm');
@@ -116,6 +103,8 @@ const showBreakfast = computed(() => props.time.includes('morning'));
 const showLunch = computed(() => props.time.includes('noon'));
 const showDinner = computed(() => props.time.includes('evening'));
 
+const formDone = ref(false);
+
 // Local form data
 const formItems = ref([]);
 
@@ -123,7 +112,7 @@ const formItems = ref([]);
 const getRemarksColSize = () => {
   const visibleColumns = [showBreakfast.value, showLunch.value, showDinner.value].filter(Boolean).length;
   // 12 - 5 (title column) - (2 * number of visible meal columns)
-  return 12 - 5 - (2 * visibleColumns);
+  return 12 - 5 - (4 * visibleColumns);
 };
 
 const itemRemarks = ref(null);
@@ -133,14 +122,6 @@ function openRemarkDialog(item) {
   itemRemarks.value = item || '';
   showRemarksDialog.value = true;
 }
-
-// function updateJobRemark() {
-//   closeRemarksDialog();
-// }
-
-// function closeRemarksDialog() {
-//   showRemarksDialog.value = false;
-// }
 
 // Load form data
 onMounted(() => {
@@ -152,12 +133,21 @@ watch(() => props.formConfig, () => {
   loadFormData();
 }, { deep: true });
 
+function checkAllSelcted() {
+  formDone.value = formItems.value.every(item => {
+    if (showBreakfast.value && item.breakfast == null) return false;
+    if (showLunch.value && item.lunch == null) return false;
+    if (showDinner.value && item.dinner === null) return false;
+    return true;
+  });
+};
+
 function loadFormData() {
   let additionalForm = getAddiForm('formFour');
-  
+
   if (additionalForm && additionalForm.length > 0) {
     let firstForm = additionalForm[0];
-    
+
     if (firstForm.form && Array.isArray(firstForm.form)) {
       formItems.value = JSON.parse(JSON.stringify(firstForm.form));
     } else {
@@ -166,15 +156,32 @@ function loadFormData() {
   } else {
     alert('異常：無法取得表單資料');
   }
+  formDone.value = formItems.value.every(item => {
+    if (showBreakfast.value && item.breakfast == null) return false;
+    if (showLunch.value && item.lunch == null) return false;
+    if (showDinner.value && item.dinner === null) return false;
+    return true;
+  });
+}
+
+function tempSave() {
+
+  const newFormData = [{
+    title: '菜餚品質與數量檢討記錄',
+    form: JSON.parse(JSON.stringify(formItems.value))
+  }];
+
+  updateAddiForm('formFour', newFormData);
 }
 
 function save() {
-  let allChecked = formItems.value.every(item => {
+  let formNoProblem = formItems.value.every(item => {
     if (showBreakfast.value && item.breakfast !== true) return false;
     if (showLunch.value && item.lunch !== true) return false;
     if (showDinner.value && item.dinner !== true) return false;
     return true;
   });
+  let state = formNoProblem ? 'success' : 'error'; 
 
   let newFormData = [{
     title: '菜餚品質與數量檢討紀錄',
@@ -182,6 +189,7 @@ function save() {
   }];
 
   updateAddiForm('formFour', newFormData);
+  emit('formDoneEvent', { formName: 'formFour',state: state});
   emit('save', newFormData);
 }
 
