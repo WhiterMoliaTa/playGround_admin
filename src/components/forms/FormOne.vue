@@ -145,7 +145,6 @@ watch(() => props.formConfig, () => {
 
 function loadFormData() {
   const formData = getAddiForm('formOne');
-  console.log('Loaded form data:', formData);
 
   if (formData && formData.length > 0) {
     const firstForm = formData[0];

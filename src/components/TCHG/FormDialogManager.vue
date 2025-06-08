@@ -11,6 +11,7 @@
     <div v-else-if="props.form === 'formTwo'">
       <FormTwo :formConfig="formConfig" 
         :time="props.time"
+        @formDoneEvent="handleFormDone($event)"
         @save="handleSave" 
         @cancel="handleCancel" 
       />
@@ -25,6 +26,7 @@
     <div v-else-if="props.form === 'formThree'">
       <FormThree :formConfig="formConfig" 
         :time="props.time"
+        @formDoneEvent="handleFormDone($event)"
         @save="handleSave" 
         @cancel="handleCancel" 
       />
@@ -32,6 +34,7 @@
     <div v-else-if="props.form === 'formFour'">
       <FormFour :formConfig="formConfig" 
         :time="props.time"
+        @formDoneEvent="handleFormDone($event)"
         @save="handleSave" 
         @cancel="handleCancel" 
       />
@@ -39,6 +42,7 @@
     <div v-if="props.form === 'formFive'">
       <FormFive :personalRecords="formConfig" 
         :time="props.time" 
+        @formDoneEvent="handleFormDone($event)"
         @save="handleSave" 
         @cancel="handleCancel"
       />
@@ -46,6 +50,7 @@
     <div v-else-if="props.form === 'formSeven'">
       <FormSeven :formConfig="formConfig" 
         :time="props.time"
+        @formDoneEvent="handleFormDone($event)"
         @save="handleSave" 
         @cancel="handleCancel" 
       />

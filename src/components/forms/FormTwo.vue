@@ -66,7 +66,7 @@
       <v-divider></v-divider>
 
 
-      //TODO 設定min max 可能要整個大改
+      <!-- TODO 設定min max 可能要整個大改 -->
       <v-row v-for="item in section2Items" :key="item.id" class="my-3">
         <v-col cols="5" class="d-flex align-center">{{ item.title }}</v-col>
 
@@ -75,7 +75,7 @@
             :focused="timeDialog[`breakfast-${item.id}`]" label="時間" readonly>
             <v-dialog v-model="timeDialog[`breakfast-${item.id}`]" activator="parent" width="auto">
               <v-time-picker v-if="timeDialog[`breakfast-${item.id}`]" v-model="item.breakfast" format="24hr"
-                scrollable></v-time-picker>
+                scrollable @update:modelValue="checkClockAllDone()"></v-time-picker>
             </v-dialog>
           </v-text-field>
         </v-col>
@@ -85,7 +85,7 @@
             :focused="timeDialog[`lunch-${item.id}`]" label="時間" readonly>
             <v-dialog v-model="timeDialog[`lunch-${item.id}`]" activator="parent" width="auto">
               <v-time-picker v-if="timeDialog[`lunch-${item.id}`]" v-model="item.lunch" format="24hr"
-                scrollable></v-time-picker>
+                scrollable @update:modelValue="checkClockAllDone()"></v-time-picker>
             </v-dialog>
           </v-text-field>
         </v-col>
@@ -95,7 +95,7 @@
             :focused="timeDialog[`dinner-${item.id}`]" label="時間" readonly>
             <v-dialog v-model="timeDialog[`dinner-${item.id}`]" activator="parent" width="auto">
               <v-time-picker v-if="timeDialog[`dinner-${item.id}`]" v-model="item.dinner" format="24hr"
-                scrollable></v-time-picker>
+                scrollable @update:modelValue="checkClockAllDone()"></v-time-picker>
             </v-dialog>
           </v-text-field>
         </v-col>
@@ -144,7 +144,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['save', 'cancel']);
+const emit = defineEmits(['save', 'cancel', 'formDoneEvent']);
 
 // Get form data access from parent
 const getAddiForm = inject('getAddiForm');
@@ -171,12 +171,38 @@ function openRemarkDialog(item) {
 }
 
 function checkAllSelcted() {
-  formDone.value = section1Items.value.every(item => {
+  let sec1Done = section1Items.value.every(item => {
     if (showBreakfast.value && item.breakfast == null) return false;
     if (showLunch.value && item.lunch == null) return false;
     if (showDinner.value && item.dinner === null) return false;
     return true;
   });
+  let sec2Done = section2Items.value.every(item => {
+    if (showBreakfast.value && !item.breakfast) return false;
+    if (showLunch.value && !item.lunch) return false;
+    if (showDinner.value && !item.dinner) return false;
+    return true;
+  });
+
+  formDone.value = sec1Done && sec2Done;
+};
+
+function checkClockAllDone() {
+  let sec1Done = section1Items.value.every(item => {
+    if (showBreakfast.value && item.breakfast == null) return false;
+    if (showLunch.value && item.lunch == null) return false;
+    if (showDinner.value && item.dinner === null) return false;
+    return true;
+  });
+  let sec2Done = section2Items.value.every(item => {
+    if (showBreakfast.value && !item.breakfast) return false;
+    if (showLunch.value && !item.lunch) return false;
+    if (showDinner.value && !item.dinner) return false;
+    return true;
+  });
+  console.log(section2Items.value);
+
+  formDone.value = sec1Done && sec2Done;
 };
 
 // Determine the size of the remarks column based on visible meal columns
@@ -198,43 +224,43 @@ watch(() => props.formConfig, () => {
 
 function loadFormData() {
   const formData = getAddiForm('formTwo');
-  console.log('Loaded form data:', formData);
 
   if (formData && formData.length > 0) {
     const firstForm = formData[0];
-    console.log('First form data:', firstForm);
 
     if (firstForm.section1 && Array.isArray(firstForm.section1)) {
       // Create a deep copy to avoid reference issues
       section1Items.value = JSON.parse(JSON.stringify(firstForm.section1));
     } else {
       alert('異常：無法取得表單資料');
+      cancel();
     }
 
     if (firstForm.section2 && Array.isArray(firstForm.section2)) {
       section2Items.value = JSON.parse(JSON.stringify(firstForm.section2));
     } else {
       alert('異常：無法取得表單資料');
+      cancel();
     }
   } else {
     alert('異常：無法取得表單資料');
+    cancel();
   }
-}
 
-function tempSave() {
-  // Determine if all visible checkboxes are checked
-  const section1FormDone = section1Items.value.every(item => {
-    if (showBreakfast.value && item.breakfast !== true) return false;
-    if (showLunch.value && item.lunch !== true) return false;
-    if (showDinner.value && item.dinner !== true) return false;
+  formDone.value = section1Items.value.every(item => {
+    if (showBreakfast.value && item.breakfast == null) return false;
+    if (showLunch.value && item.lunch == null) return false;
+    if (showDinner.value && item.dinner === null) return false;
     return true;
-  });
-  const section2FormDone = section2Items.value.every(item => {
+  }) && section2Items.value.every(item => {
     if (showBreakfast.value && !item.breakfast) return false;
     if (showLunch.value && !item.lunch) return false;
     if (showDinner.value && !item.dinner) return false;
     return true;
   });
+}
+
+function tempSave() {
 
   // Create new form data
   const newFormData = [{
@@ -248,31 +274,14 @@ function tempSave() {
 }
 
 function save() {
-  // Determine if all visible checkboxes are checked
-  const allChecked = section1Items.value.every(item => {
-    if (showBreakfast.value && item.breakfast !== true) return false;
-    if (showLunch.value && item.lunch !== true) return false;
-    if (showDinner.value && item.dinner !== true) return false;
-    return true;
-  });
-
-  // Check if all time fields are filled
-  const allTimesFilled = section2Items.value.every(item => {
-    if (showBreakfast.value && !item.breakfast) return false;
-    if (showLunch.value && !item.lunch) return false;
-    if (showDinner.value && !item.dinner) return false;
-    return true;
-  });
-
-  // Create new form data
   const newFormData = [{
     title: '出餐作業查檢表',
     section1: JSON.parse(JSON.stringify(section1Items.value)),
     section2: JSON.parse(JSON.stringify(section2Items.value))
   }];
 
-  // Update form data
   updateAddiForm('formTwo', newFormData);
+  emit('formDoneEvent', {formName:'formTwo', state: 'success'});
   cancel();
 }
 

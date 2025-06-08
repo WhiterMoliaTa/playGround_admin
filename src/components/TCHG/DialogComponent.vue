@@ -3,7 +3,7 @@
     <v-card>
       <v-toolbar>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
-        <v-btn icon="mdi-close" @click="closeDialog"></v-btn>
+        <v-btn icon="mdi-close" @click="closeDialog()"></v-btn>
       </v-toolbar>
       <v-card-text>
         檢核項目{{ checkObject }}
@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, inject, onMounted } from 'vue';
+import { ref, computed, watch, inject} from 'vue';
 import FormDialogComponent from './FormDialogComponent.vue';
 import FormDialogManager from './FormDialogManager.vue';
 
@@ -119,8 +119,8 @@ const props = defineProps({
   }
 });
 
-function dbugs() {
-  console.log(`-------------\n%O\n-------------`, 
+function dbugs(place) {
+  console.log(`----${place}-----\n%O\n-------------`, 
     {    
       formRequired: props.formRequired,
       formNames: props.formName,
@@ -154,29 +154,22 @@ const showDialog = computed({
 watch(() => props.checkBoxs, (newVal) => {
   let checkFormAllDone = true;
   if(props.formRequired){
-    checkFormAllDone = Object.values(formDones.value).every(done => done) && 
-    formDones.value.length === props.formName.length;
+    checkFormAllDone = props.formName.every(name => !!formDones.value[`${name}-${props.time}`]);
   }
-  dbugs();
   let checkBoxAllDone = props.checkBoxs.every(cb => cb.checked);
   allDone.value = checkFormAllDone && checkBoxAllDone;
-  dbugs();
 }, { immediate: false });
 
 function checkBoxCheck() {
-  dbugs();
   let checkFormAllDone = true;
   if(props.formRequired){
-    checkFormAllDone = Object.values(formDones.value).every(done => done) && 
-    formDones.value.length === props.formName.length;
+    checkFormAllDone = props.formName.every(name => !!formDones.value[`${name}-${props.time}`]);
   }
   let checkBoxAllDone = props.checkBoxs.every(cb => cb.checked);
   allDone.value = checkFormAllDone && checkBoxAllDone;
-  dbugs();
 }
 
 function ableToCloseDialog() {
-  dbugs();
   modifyPass(props.formName, props.time, allDone.value);
   showDialog.value = false;
 }
@@ -201,9 +194,10 @@ watch(() => props.show, (newVal) => {
 
 function updateFormDone(event,time) {
   formDones.value[`${event.formName}-${time}`] = event.state;
-  let checkFormAllDone = Object.values(formDones.value).every(done => done);
-  console.log(`FormDialogManager: Form done ${checkFormAllDone}`);
-  dbugs();
+  let checkFormAllDone = true;
+  if(props.formRequired){
+    checkFormAllDone = props.formName.every(name => !!formDones.value[`${name}-${props.time}`]);
+  }
   let checkBoxAllDone = props.checkBoxs.every(cb => cb.checked);
   allDone.value = checkFormAllDone && checkBoxAllDone;
 }

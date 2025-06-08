@@ -408,12 +408,12 @@ const forms = ref(
             evening: false
           },
           section1: [
-            { id: 1, title: '1.依送餐簡表檢查所有餐車飲食類類別及數量是否正確。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 2, title: '2.餐車實際送出及結束時間是否正常。', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 1, title: '1.依送餐簡表檢查所有餐車飲食類類別及數量是否正確。', breakfast: true, lunch: null, dinner: null, remarks: '' },
+            { id: 2, title: '2.餐車實際送出及結束時間是否正常。', breakfast: true, lunch: null, dinner: null, remarks: '' },
           ],
           section2: [
-            { id: 1, title: '第一部餐車送出時間', breakfast: null, lunch: null, dinner: null, remarks: '' },
-            { id: 2, title: '最後一部餐車送出時間', breakfast: null, lunch: null, dinner: null, remarks: '' },
+            { id: 1, title: '第一部餐車送出時間', breakfast: '07:20', lunch: null, dinner: null, remarks: '' },
+            { id: 2, title: '最後一部餐車送出時間', breakfast: '07:30', lunch: null, dinner: null, remarks: '' },
           ]
         }
       ],
