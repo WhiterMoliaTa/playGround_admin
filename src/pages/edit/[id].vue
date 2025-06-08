@@ -22,8 +22,8 @@
                             <v-icon>mdi-pencil</v-icon>
                             Edit
                         </v-btn>
-                        <showCaseCard v-if="editCase" :caseData="editCase" :default-expanded="['1']" />
-                        <EditCaseDialog v-if="editCase" :model-value="editCaseDialog"
+                        <caseDialogView v-if="editCase" :caseData="editCase" :default-expanded="['1']" />
+                        <caseDialogEdit v-if="editCase" :model-value="editCaseDialog"
                             @update:model-value="editCaseDialog = $event" :model="editCase" @save="saveCase"
                             :new-case="false" />
                     </v-card>
@@ -99,7 +99,7 @@
 
                             <v-expansion-panel-text>
                                 <div v-if="editIndex === index">
-                                    <EventEditor :model="editEventData" @open-file="openFile" @remove-file="removeFile"
+                                    <nodeEventEditor :model="editEventData" @open-file="openFile" @remove-file="removeFile"
                                         @update:new-files="updateNewFiles" />
                                     <v-divider class="my-3" />
 
@@ -224,8 +224,8 @@
 import { onMounted, reactive, ref, toRaw, computed } from 'vue';
 import { testCases } from '../../data/testCase';
 import { testCaseEvents, EventFiles } from '../../data/testCaseEvent';
-import showCaseCard from '../../components/showCaseCard.vue';
-import EditCaseDialog from '../../components/caseDialog.vue';
+import caseDialogView from '../../components/caseDialogView.vue';
+import caseDialogEdit from '../../components/caseDialogEdit.vue';
 import { cloneDeep } from 'lodash';
 import { useRoute } from 'vue-router';
 import { useToast } from "vue-toastification";
@@ -482,7 +482,7 @@ const toggleAddition = () => {
     caseItem[selectedNode.value.eventType].color = getDotColor(selectedNode.value.eventType);
 };
 
-import EventEditor from '../../components/eventEditor.vue';
+import nodeEventEditor from '../../components/caseNodeEventEditor.vue';
 
 const editIndex = ref(null);
 const editEventData = ref(null);

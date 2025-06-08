@@ -15,6 +15,8 @@ import '@mdi/font/css/materialdesignicons.css'
 // import { createRouter, createWebHistory } from 'vue-router/auto'
 import { routes } from 'vue-router/auto-routes'
 import { createRouter, createWebHashHistory } from 'vue-router/auto'
+
+import HighchartsVue from 'highcharts-vue'
 // ↓ 修改為 hash history
 const router = createRouter({
   history: createWebHashHistory(),
@@ -70,4 +72,5 @@ createApp(App)
   .use(router)    // ✅ 加上這行
   .use(vuetify)
   .use(Toast, options)
+  .use(HighchartsVue)
   .mount('#app')

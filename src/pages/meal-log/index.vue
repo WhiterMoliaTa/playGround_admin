@@ -84,7 +84,7 @@
 
 <script setup>
 import { ref, computed, reactive, watch, onMounted, provide } from 'vue';
-import DialogComponent from '../../components/DialogComponent.vue';
+import DialogComponent from '../../components/TCHG/DialogComponent.vue';
 
 onMounted(() => {
   jobs.value.forEach((job, jobIndex) => {

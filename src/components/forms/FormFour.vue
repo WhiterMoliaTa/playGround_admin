@@ -88,7 +88,7 @@
 <script setup>
 import { ref, inject, computed, watch, onMounted } from 'vue';
 
-import RemarksDialog from '../RemarksDialog.vue';
+import RemarksDialog from '../TCHG/RemarksDialog.vue';
 
 const props = defineProps({
   title: {

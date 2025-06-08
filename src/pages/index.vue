@@ -5,14 +5,39 @@
         <span>案件管理系統</span>
         <v-spacer />
         <v-btn color="primary" @click="newCaseDialog = true">新增案件</v-btn>
+        <v-menu v-model="menu" :close-on-content-click="false" location="bottom" offset="4">
+          <template #activator="{ props }">
+            <div v-bind="props">
+              <v-btn class="ms-2" icon variant="text">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </div>
+          </template>
+          <v-list>
+            <v-list-item link style="cursor: pointer;" @click="exportCSV">
+              <div style="display: flex; align-items: center;">
+                <v-icon class="mr-2" style="line-height: 1;"> mdi-file-delimited</v-icon>
+                <span>匯出統計CSV</span>
+              </div>
+            </v-list-item>
+
+            <v-list-item link style="cursor: pointer;" @click="showCaseView">
+              <div style="display: flex; align-items: center;">
+                <v-icon class="mr-2" style="line-height: 1;">mdi-chart-bar</v-icon>
+                <span>顯示統計視圖</span>
+              </div>
+            </v-list-item>
+          </v-list>
+
+        </v-menu>
       </v-col>
     </v-card-title>
 
     <v-card-text>
-      <div class="d-flex justify-end mt-4">
+      <!-- <div class="d-flex justify-end mt-4">
         <v-btn color="info" @click="expandAll" class="me-2">展開所有案件</v-btn>
         <v-btn color="info" @click="collapseAll" class="me-4">收起所有案件</v-btn>
-      </div>
+      </div> -->
       <div style="overflow-x: auto;">
         <v-data-table :headers="headers" :items="cases" item-value="docId" v-model:expanded="expanded"
           class="elevation-1 pa-4">
@@ -40,13 +65,19 @@
                     <template v-else-if="column.key === 'dispatchHospitalName'">
                       {{ item.dispatchHospital.name }}
                     </template>
-                    <template v-else-if="column.key === 'status'">
+                    <!-- <template v-else-if="column.key === 'status'">
                       <v-chip :color="itemStatusColors(item)" small>
                         {{ itemStatusText(item) }}
                       </v-chip>
-                    </template>
-                    <template v-else-if="column.key === 'dispatchDate'">
+                    </template> -->
+                    <!-- <template v-else-if="column.key === 'dispatchDate'">
                       {{ formatToROC(item.dispatchDate) }}
+                    </template> -->
+                    <template v-else-if="column.key === 'totalDays'">
+                      {{ totalDays(item) }}
+                    </template>
+                    <template v-else-if="column.key === 'approvedDays'">
+                      {{ additionDays(item) }}
                     </template>
                     <template v-else-if="column.key === 'actions'">
                       <v-btn variant="text" size="small" icon @click="viewItem(item)">
@@ -63,8 +94,7 @@
                       {{ item[column.key] }}
                     </template>
                   </span>
-                  <v-icon v-if="idx === columns.length - 1" @click.stop="toggleExpand(item)"
-                    style="cursor: pointer; margin-left: 8px;">
+                  <v-icon v-if="idx === columns.length - 1" @click.stop="toggleExpand(item)" style="cursor: pointer;">
                     {{ expanded.includes(item.docId) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
                   </v-icon>
                 </div>
@@ -97,35 +127,45 @@
           <v-icon icon="mdi-close" @click="viewCaseModel = false" style="cursor: pointer;" color="error" />
         </v-col>
       </v-card-title>
-
       <showCaseCard :caseData="viewCaseData" />
     </v-card>
   </v-dialog>
+  <v-dialog v-model="viewCaseView">
+    <v-card style="position: relative;">
+      <v-btn icon="mdi-close" @click="viewCaseView = false"
+        style="position: absolute; top: 8px; right: 8px; z-index: 9999; cursor: pointer;" color="error"
+        variant="text" />
+      <highcharts :options="chartOptions" />
+    </v-card>
+  </v-dialog>
+
+
+
 </template>
 
 <script setup>
 defineOptions({ name: 'IndexPage' }) // 👈 讓 Devtools 能看到
 
-import { onMounted, ref, toRaw } from 'vue'
-import StepProgress from '../components/StepProgress.vue'
-import TruncateText from '../components/TruncateText.vue'
-import NewCaseDialog from '../components/caseDialog.vue'
-import showCaseCard from '../components/showCaseCard.vue'
+import { onMounted, ref, toRaw, watch } from 'vue'
+import StepProgress from '../components/caseStepPrograss.vue'
+import TruncateText from '../components/truncateText.vue'
+import NewCaseDialog from '../components/caseDialogEdit.vue'
+import showCaseCard from '../components/caseDialogView.vue'
 
 const headers = [
   { title: '案件編號', key: 'caseNumber' },
   { title: '案名', key: 'caseName' },
-  { title: '姓名', key: 'name' },
-  { title: '診斷', key: 'diagnosis' },
   { title: '派案醫院', key: 'dispatchHospitalName' },
-  { title: '職安署承辦', key: 'oshaHandler' },
-  { title: '中心承辦', key: 'centerHandler' },
+  // { title: '姓名', key: 'name' },
+  { title: '認可天數', key: 'approvedDays' },
+  { title: '總天數', key: 'totalDays' },
+  { title: '診斷', key: 'diagnosis' },
+  // { title: '職安署承辦', key: 'oshaHandler' },
+  // { title: '中心承辦', key: 'centerHandler' },
   // { title: '派案日期', key: 'dispatchDate' },
-  { title: '目前狀態', key: 'status' },
+  // { title: '目前狀態', key: 'status' },
+  { title: '備註', key: 'type' },
   { title: '操作', key: 'actions' },
-  // { title: '認可天數', key: 'docId', hidden: true },
-  // { title: '總天數', key: 'docId', hidden: true },
-
 ]
 
 import { testCases } from '../data/testCase'
@@ -253,16 +293,259 @@ const viewItem = (item) => {
 }
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import dayjs from 'dayjs'
+import { max } from 'lodash'
 const router = useRouter()
 const editItem = (item) => {
   router.push(`/edit/${item.uuid}`)
 
 }
 
-onMounted(() => {
-  // 初始化時可以做一些額外的設定
-  console.log(router.getRoutes().map(r => r.name))
-})
+// onMounted(() => {
+//   // 初始化時可以做一些額外的設定
+//   console.log(router.getRoutes().map(r => r.name))
+// })
+const mainField = [
+  'docReceivedDate', 'dispatchEvaluationDate', 'siteVisitDate', 'oshaResponseDate',
+]
+const secondaryField = [
+  'executionDiscussionStartDate', 'executionDiscussionEndDate',
+  'expertReviewPreVisitStartDate', 'expertReviewPreVisitEndDate',
+  'expertReviewPostVisitStartDate', 'expertReviewPostVisitEndDate',
+  'reportDraftStartDate', 'reportDraftEndDate',
+  'reportReviewStartDate', 'reportReviewEndDate',
+  'docSupplementStartDate', 'docSupplementEndDate',
+  'diseaseReviewMeetingStartDate', 'diseaseReviewMeetingEndDate'
+]
+const additionArray = [
+  'executionDiscussionAddition',
+  'expertReviewPreVisitAddition',
+  'expertReviewPostVisitAddition',
+  'reportDraftAddition',
+  'reportReviewAddition',
+  'docSupplementAddition',
+  'diseaseReviewMeetingAddition'
+]
+
+const totalDays = (item) => {
+  const startDate = dayjs(item.receivedDate)
+  if (!startDate.isValid()) return 0
+
+  let maxDate = null
+  const secondaryDates = []
+  const additions = []
+
+  for (const field of mainField) {
+    const date = item[field] ? dayjs(item[field]) : null
+    if (date && (!maxDate || date.isAfter(maxDate))) {
+      maxDate = date
+    }
+  }
+
+  for (let i = 0; i < additionArray.length; i++) {
+    const startField = secondaryField[i * 2]
+    const endField = secondaryField[i * 2 + 1]
+    const start = item[startField] ? dayjs(item[startField]) : null
+    const end = item[endField] ? dayjs(item[endField]) : null
+    secondaryDates.push({ start, end })
+    additions.push(item[additionArray[i]] ?? false)
+    if (end && (!maxDate || end.isAfter(maxDate))) {
+      maxDate = end
+    }
+  }
+  if (!maxDate) return 0
+  const duration = maxDate.diff(startDate, 'day') + 1
+  item = Object.assign(item, {
+    totalDays: duration,
+  })
+  return duration > 0 ? duration : 0
+}
+
+const additionDays = (item) => {
+  let total = 0
+  for (let i = 0; i < additionArray.length; i++) {
+    const start = item[secondaryField[i * 2]] ? dayjs(item[secondaryField[i * 2]]) : null
+    const end = item[secondaryField[i * 2 + 1]] ? dayjs(item[secondaryField[i * 2 + 1]]) : null
+    const addition = item[additionArray[i]] ?? false
+    if (start && end && end.diff(start, 'day') > 0 && addition) {
+      total += end.diff(start, 'day')
+    }
+  }
+
+  return total
+}
+
+const menu = ref(false)
+const exportCSV = () => {
+  const group = {}
+
+  for (const item of cases.value) {
+    const mainType = item.type ?? '無'
+    const diagnosis = item.diagnosis ?? '其他'
+    const days = item.totalDays ?? 0
+    if (!group[mainType]) group[mainType] = {}
+    if (!group[mainType][diagnosis]) group[mainType][diagnosis] = { total: 0, count: 0 }
+
+    group[mainType][diagnosis].total += days
+    group[mainType][diagnosis].count += 1
+  }
+
+  const avgDays = {}
+  for (const mainType in group) {
+    avgDays[mainType] = {}
+    for (const diagnosis in group[mainType]) {
+      const { total, count } = group[mainType][diagnosis]
+      avgDays[mainType][diagnosis] = count ? Math.round(total / count) : 0
+    }
+  }
+
+  // 這邊算兩類型的案件總數
+  const afterCount = Object.values(group["管服"] ?? {}).reduce((acc, cur) => acc + cur.count, 0)
+  const beforeCount = Object.values(group["法人"] ?? {}).reduce((acc, cur) => acc + cur.count, 0)
+
+  const diagnosisSet = new Set()
+  Object.values(avgDays).forEach(typeGroup => {
+    Object.keys(typeGroup).forEach(d => diagnosisSet.add(d))
+  })
+
+  const rows = []
+  diagnosisSet.forEach(diagnosis => {
+    const afterData = group["管服"]?.[diagnosis] ?? { total: 0, count: 0 }
+    const beforeData = group["法人"]?.[diagnosis] ?? { total: 0, count: 0 }
+
+    const afterAvg = avgDays["管服"]?.[diagnosis] ?? 0
+    const beforeAvg = avgDays["法人"]?.[diagnosis] ?? 0
+
+    const afterAvgText = afterData.count > 0 ? (afterAvg > 0 ? afterAvg : '-') : '-'
+    const beforeAvgText = beforeData.count > 0 ? (beforeAvg > 0 ? beforeAvg : '-') : '-'
+
+    const totalCount = afterData.count + beforeData.count
+    rows.push(`${diagnosis}(${totalCount}案),${afterAvgText},${beforeAvgText}`)
+  })
+
+  rows.push(`總計(${afterCount + beforeCount}案),-,-`)
+
+  const header = `案件類型,法人成立後(${afterCount}案),法人成立前(${beforeCount}案)`
+
+  const csvContent = [header, ...rows].join('\n')
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.setAttribute('href', url)
+  link.setAttribute('download', 'cases.csv')
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+const viewCaseView = ref(false)
+const chartOptions = ref({})
+const showCaseView = () => {
+  const group = {}
+
+  for (const item of cases.value) {
+    const mainType = item.type ?? '無'
+    const diagnosis = item.diagnosis ?? '其他'
+    const days = item.totalDays ?? 0
+
+    if (!group[mainType]) group[mainType] = {}
+    if (!group[mainType][diagnosis]) group[mainType][diagnosis] = { total: 0, count: 0 }
+
+    group[mainType][diagnosis].total += days
+    group[mainType][diagnosis].count += 1
+  }
+
+  const avgDays = {}
+  const totalStats = { '法人': { total: 0, count: 0 }, '管服': { total: 0, count: 0 } }
+
+  for (const mainType in group) {
+    avgDays[mainType] = {}
+    for (const diagnosis in group[mainType]) {
+      const { total, count } = group[mainType][diagnosis]
+      avgDays[mainType][diagnosis] = count ? Math.round(total / count) : 0
+
+      // 計算總計用
+      if (mainType === '法人' || mainType === '管服') {
+        totalStats[mainType].total += total
+        totalStats[mainType].count += count
+      }
+    }
+  }
+
+  const totalAvg = {
+    '法人': totalStats['法人'].count > 0
+      ? Math.round(totalStats['法人'].total / totalStats['法人'].count)
+      : 0,
+    '管服': totalStats['管服'].count > 0
+      ? Math.round(totalStats['管服'].total / totalStats['管服'].count)
+      : 0
+  }
+
+  const diagnosisSet = new Set()
+  Object.values(avgDays).forEach(typeGroup => {
+    Object.keys(typeGroup).forEach(d => diagnosisSet.add(d))
+  })
+
+  const diagnoses = Array.from(diagnosisSet)
+  diagnoses.push('總計')
+
+  const series = [
+    {
+      name: '法人成立前',
+      data: diagnoses.map(d =>
+        d === '總計' ? totalAvg['法人'] : avgDays['法人']?.[d] ?? 0
+      )
+    },
+    {
+      name: '法人成立後',
+      data: diagnoses.map(d =>
+        d === '總計' ? totalAvg['管服'] : avgDays['管服']?.[d] ?? 0
+      )
+    }
+  ]
+
+  chartOptions.value = {
+    chart: {
+      type: 'bar'
+    },
+    title: {
+      text: '診斷類別平均總天數比較（含總計）'
+    },
+    xAxis: {
+      categories: diagnoses,
+      title: { text: '診斷類別' },
+      labels: {
+        rotation: 0,
+        style: { fontSize: '12px' }
+      }
+    },
+    yAxis: {
+      min: 0,
+      title: {
+        text: '平均總天數 (天)',
+        align: 'high'
+      },
+      labels: {
+        overflow: 'justify'
+      }
+    },
+    tooltip: {
+      shared: true,
+      valueSuffix: ' 天'
+    },
+    plotOptions: {
+      bar: {
+        dataLabels: {
+          enabled: true
+        }
+      }
+    },
+    series
+  }
+  viewCaseView.value = true
+}
+
 </script>
 
 
