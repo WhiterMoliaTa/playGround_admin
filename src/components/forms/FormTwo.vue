@@ -46,7 +46,7 @@
           ></v-checkbox-btn>
         </v-col>
         
-        <v-col :cols="getRemarksColSize()" class="d-flex flex-column align-center">
+        <v-col :cols="getRemarksColSize()" class="d-flex flex-column justify-center align-center">
           <!-- <v-text-field
             v-model="item.remarks"
             variant="outlined"
@@ -137,7 +137,7 @@
           </v-text-field>
         </v-col>
         
-        <v-col :cols="getRemarksColSize()" class="d-flex flex-column align-center">
+        <v-col :cols="getRemarksColSize()" class="d-flex flex-column justify-center align-center">
           <!-- <v-text-field
             v-model="item.remarks"
             variant="outlined"

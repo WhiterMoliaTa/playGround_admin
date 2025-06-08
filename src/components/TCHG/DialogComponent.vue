@@ -10,8 +10,12 @@
       </v-card-text>
 
       <v-card-text>
-        <v-checkbox v-for="checkBox in checkBoxs" :key="checkBox.id" v-model="checkBox.checked" :label="checkBox.label"
-          :rules="baseCheckRules">
+        <v-checkbox v-for="checkBox in checkBoxs" 
+        :key="checkBox.id" 
+        v-model="checkBox.checked" 
+        :label="checkBox.label"
+        @update:modelValue="checkBoxCheck()"
+        :rules="baseCheckRules">
         </v-checkbox>
       </v-card-text>
       <v-card-text>
@@ -115,6 +119,19 @@ const props = defineProps({
   }
 });
 
+function dbugs() {
+  console.log(`-------------\n%O\n-------------`, 
+    {    
+      formRequired: props.formRequired,
+      formNames: props.formName,
+      allCheckboxesChecked: props.checkBoxs.every(cb => cb.checked),
+      formDones: { ...formDones.value },
+      formDonesLength: Object.values(formDones.value).length,
+      allDone: allDone.value
+    }
+  );
+}
+
 const emit = defineEmits(['update:show', 'addtionalFormSubmit']);
 
 const baseCheckRules = [
@@ -131,8 +148,28 @@ const showDialog = computed({
 });
 
 watch(() => props.checkBoxs, (newVal) => {
-  // allDone.value = formsAllDone && allChecks;
+  let checkFormAllDone = true;
+  if(props.formRequired){
+    checkFormAllDone = Object.values(formDones.value).every(done => done) && 
+    formDones.value.length === props.formName.length;
+  }
+  dbugs();
+  let checkBoxAllDone = props.checkBoxs.every(cb => cb.checked);
+  allDone.value = checkFormAllDone && checkBoxAllDone;
+  dbugs();
 }, { immediate: false });
+
+function checkBoxCheck() {
+  dbugs();
+  let checkFormAllDone = true;
+  if(props.formRequired){
+    checkFormAllDone = Object.values(formDones.value).every(done => done) && 
+    formDones.value.length === props.formName.length;
+  }
+  let checkBoxAllDone = props.checkBoxs.every(cb => cb.checked);
+  allDone.value = checkFormAllDone && checkBoxAllDone;
+  dbugs();
+}
 
 function ableToCloseDialog() {
   dbugs();
@@ -157,19 +194,6 @@ watch(() => props.show, (newVal) => {
     resetDialogDone();
   }
 });
-
-function dbugs() {
-  console.log(`-------------\n%O\n-------------`, 
-    {    
-      formRequired: props.formRequired,
-      formNames: props.formName,
-      allCheckboxesChecked: props.checkBoxs.every(cb => cb.checked),
-      formDones: { ...formDones.value },
-      formDonesLength: Object.values(formDones.value).length,
-      allDone: allDone.value
-    }
-  );
-}
 
 function updateFormDone(formName,time) {
   formDones.value[`${formName}-${time}`] = true;
