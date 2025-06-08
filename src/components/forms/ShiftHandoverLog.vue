@@ -15,9 +15,13 @@
                     <tbody>
                         <tr v-for="(entry, index) in logEntry" :key="index">
                             <td>{{ entry.content }}</td>
-                            <td>{{ entry.signature }}</td>
+                            <td>
+                                <img v-if="entry.signature" :src="entry.signature" alt="簽名" style="max-width: 100px; max-height: 50px;" />
+                            </td>
                             <td>{{ entry.processHandleDesc }}</td>
-                            <td>{{ entry.handlerSignature }}</td>
+                            <td>
+                                <img v-if="entry.handlerSignature" :src="entry.handlerSignature" alt="處理者簽名" style="max-width: 100px; max-height: 50px;" />
+                            </td>
                         </tr>
                     </tbody>
                 </v-table>
@@ -44,13 +48,18 @@ const props = defineProps({
     }
 });
 
-const logEntry = ref({});
+const logEntry = ref([{
+    content: '病房xxx燈泡壞掉',
+    signature: '../../../src/assets/Dr-Dickinson-signature-png.png',
+    processHandleDesc: '已經置換燈泡',
+    handlerSignature: '../../../src/assets/Dr-Dickinson-signature-png.png'
+}]);
 
-watch(() => props.formConfig, (newVal) => {
-    if (newVal) {
-        logEntry.value = newVal;
-    }
-}, { immediate: true });
+// watch(() => props.formConfig, (newVal) => {
+//     if (newVal) {
+//         logEntry.value = newVal;
+//     }
+// }, { immediate: true });
 
 function haveReadAll(){
     $emit('formDone', 'shiftHandoverLog');

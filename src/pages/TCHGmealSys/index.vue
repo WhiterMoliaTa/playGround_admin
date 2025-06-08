@@ -90,7 +90,7 @@
               </ul>
             </v-card-text>
             <v-divider :thickness="7"></v-divider>
-            <v-btn variant="plain" class="font-weight-bold mb-3 start-button" @click="openTaskDetail('meal-log')">
+            <v-btn variant="text" class="font-weight-bold mb-3 start-button" @click="openTaskDetail('meal-log')">
               立即開始
             </v-btn>
           </v-card>
@@ -117,7 +117,7 @@
               </ul>
             </v-card-text>
             <v-divider :thickness="7"></v-divider>
-            <v-btn variant="plain" class="font-weight-bold mb-3 start-button" @click="openTaskDetail('meal-log')">
+            <v-btn variant="text" class="font-weight-bold mb-3 start-button" @click="openTaskDetail('meal-log')">
               立即開始
             </v-btn>
           </v-card>
@@ -144,7 +144,7 @@
               </ul>
             </v-card-text>
             <v-divider :thickness="7"></v-divider>
-            <v-btn variant="plain" class="font-weight-bold mb-3 start-button" @click="openTaskDetail('meal-log')">
+            <v-btn variant="text" class="font-weight-bold mb-3 start-button" @click="openTaskDetail('meal-log')">
               立即開始
             </v-btn>
           </v-card>
@@ -426,9 +426,7 @@ onUnmounted(() => {
 
 .start-button{
   width: 100% !important;
-  height: 11%;
-  font-size: 25px;
-  height: max-content;
+  font-size: 20px;
 }
 
 .yellow-dot,

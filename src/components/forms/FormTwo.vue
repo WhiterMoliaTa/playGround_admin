@@ -289,7 +289,8 @@ function cancel() {
 
 <style scoped>
 .form-two {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 100%;
+  height: 70vh;
+  overflow-y: auto;
 }
 </style>

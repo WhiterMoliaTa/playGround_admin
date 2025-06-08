@@ -34,7 +34,8 @@
 
 
       <v-container class="d-flex justify-space-around">
-        <v-btn rounded="xl" color="deep-orange-lighten-4" class="text-grey" :readonly="!allDone" @click="closeDialog" >檢核確認</v-btn>
+        <v-btn rounded="xl" :color="allDone ? 'deep-orange-lighten-4' : 'grey'" class="text-white" 
+        :readonly="!allDone" @click="ableToCloseDialog" >檢核確認</v-btn>
         <v-btn v-if="props.additionalForm && !formRequired" rounded="xl" outlined @click="openSingleAdditionalForm">填寫紀錄表</v-btn>
       </v-container>
     </v-card>
@@ -120,9 +121,9 @@ const baseCheckRules = [
   (value) => !!value || '請確認'
 ];
 
-onMounted(() => {
-  allDone.value = false;
-});
+// onMounted(() => {
+//   allDone.value = false;
+// }); //TODO: 這個onMounted有必要嗎？因為allDone已經是ref了
 
 const showDialog = computed({
   get: () => props.show,
@@ -133,9 +134,13 @@ watch(() => props.checkBoxs, (newVal) => {
   // allDone.value = formsAllDone && allChecks;
 }, { immediate: false });
 
-function closeDialog() {
+function ableToCloseDialog() {
   dbugs();
   modifyPass(props.formName, props.time, allDone.value);
+  showDialog.value = false;
+}
+
+function closeDialog() {
   showDialog.value = false;
 }
 
@@ -168,7 +173,11 @@ function dbugs() {
 
 function updateFormDone(formName,time) {
   formDones.value[`${formName}-${time}`] = true;
+  let checkFormAllDone = Object.values(formDones.value).every(done => done);
+  console.log(`FormDialogManager: Form done ${checkFormAllDone}`);
   dbugs();
+  let checkBoxAllDone = props.checkBoxs.every(cb => cb.checked);
+  allDone.value = checkFormAllDone && checkBoxAllDone;
 }
 
 function openSingleAdditionalForm() {

@@ -48,10 +48,11 @@
 
             <template v-slot:append>
               <div class="d-flex align-center">
-                <v-checkbox :key="`checkbox-${item.id}-${item.forms?.passed}`" true-icon="mdi-check-circle"
-                  false-icon="mdi-check-circle" v-model="item.checked"
-                  :color="('forms' in item) ? (item.forms.passed ? 'success' : 'error') : 'success'" hide-details
-                  class="ma-0 pa-0" @change="(value) => handleCheckboxChange(item.forms, item.checked)" />
+                <v-btn :key="`button-${index}-${item.id}`"
+                  hide-details variant="text" icon
+                  class="ma-0 pa-0" @click="handleButtonClick(item.forms, job.section, item.id)">
+                  <v-icon :color="state[`button-${job.section}-${item.id}`]"> mdi-check-circle</v-icon>
+                </v-btn>
                 <v-btn variant="text" icon @click="openRemarkDialog(item)">
                   <v-icon>mdi-dots-horizontal-circle</v-icon>
                 </v-btn>
@@ -85,6 +86,15 @@
 import { ref, computed, reactive, watch, onMounted, provide } from 'vue';
 import DialogComponent from '../../components/DialogComponent.vue';
 
+onMounted(() => {
+  jobs.value.forEach((job, jobIndex) => {
+    job.items.forEach(item => {
+      state.value[`button-${job.section}-${item.id}`] = "grey";
+    });
+  });
+  updateCompletedCount();
+});
+
 const breadcrumbs = [
   { label: '首頁', path: '/' },
   { label: '供膳管理日誌', path: '/meal-log' }
@@ -108,6 +118,7 @@ const dialogState = reactive({
 
 const jobsRemarks = ref(null);
 const showRemarksDialog = ref(false);
+const state = ref({});
 
 const jobs = ref([
   {
@@ -553,11 +564,15 @@ provide('modifyJobPass', (formName, time, pass) => {
     )
   );
   if (job) {
+    const section = job.section;
     const item = job.items.find(item =>
       item.forms && item.forms.formName === formName && (!time || item.forms.time === time)
     );
     if (item && item.forms) {
       item.forms.passed = pass;
+      const key = `button-${section}-${item.id}`;
+      state.value[key] = pass ? 'success ' : 'error';
+      console.log(`Job ${formName} in section ${section} updated to ${state.value[key]}.`);
     }
   }
 });
@@ -601,11 +616,11 @@ function updateCompletedCount() {
   completedCount.value = completed;
 }
 
-function handleCheckboxChange(currentForms, isChecked) {
+function handleButtonClick(currentForms, jobSection, itemId) {
   // Update the overall completion count
   updateCompletedCount();
 
-  if (isChecked && currentForms && Object.keys(currentForms).length > 0) {
+  if (currentForms && Object.keys(currentForms).length > 0) {
     const formsCollection = {};
     if (currentForms.formName) {
       currentForms.formName.forEach(form => {
@@ -625,6 +640,15 @@ function handleCheckboxChange(currentForms, isChecked) {
       additionalForm: formsCollection,
       reminder: currentForms.reminder || ""
     });
+  } else {
+    const key = `button-${jobSection}-${itemId}`;
+    if(state.value[key] === 'grey') {
+      state.value[key] = 'success';
+    } else if (state.value[key] === 'success') {
+      state.value[key] = 'grey';
+    } else {
+      state.value[key] = 'error';
+    }
   }
 }
 
