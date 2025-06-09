@@ -1,9 +1,7 @@
 <template>
-  <!-- App Header -->
   <v-app-bar class="app-bar">
     <v-app-bar-nav-icon color="white" variant="text"></v-app-bar-nav-icon>
-    <v-app-bar-title class="text-white ">供膳管理系統</v-app-bar-title>
-    <v-spacer></v-spacer>
+    <v-app-bar-title class="text-white app-bar-title">供膳管理系統</v-app-bar-title>
     <v-menu>
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" variant="text" color="white" class="text-caption">
@@ -20,9 +18,7 @@
       </v-list>
     </v-menu>
   </v-app-bar>
-
-  <!-- Main Content -->
-  <div class="bg-grey-lighten-3 d-flex flex-column pa-4">
+  <div class="bg-grey-lighten-3 d-flex flex-column pa-1">
     <!-- Page Header -->
     <div class="d-flex align-center mb-4">
       <h1 class="text-h5 font-weight-bold">任務看板</h1>
@@ -30,45 +26,39 @@
       <div class="text-caption text-grey">首頁 / 任務看板</div>
     </div>
     <v-divider color="warning" class="my-1"></v-divider>
-
-    <!-- Time and Location Bar -->
-    <v-card class="mb-4" variant="flat">
-      <v-card-text class="d-flex flex-row align-center pa-2">
-        <v-icon class="mr-2">mdi-clock-outline</v-icon>
-        <span>{{ currentDateTime }}</span>
-        <v-select v-model="branch" :items="branches" class="ml-4 brach-selection" variant="outlined" hide-details />
+    <v-card class="mb-4" variant="flat d-flex space-between">
+      <v-card-text class="current-info-bar">
+        <span> <v-icon class="mr-2">mdi-clock-outline</v-icon>{{ currentDateTime }}</span>
+        <v-select v-model="branch" :items="branches" density="compact" class="ml-4 brach-selection"
+          variant="solo-filled" hide-details />
       </v-card-text>
     </v-card>
-
-    <!-- Task Cards Carousel -->
-    <v-carousel :show-arrows="false" height="420" hide-delimiters interval="3000" hide-delimiter-background
-      class="homepage-carousel">
-      <!-- <v-carousel-item
-            v-for="(task, i) in tasks"
-            :key="i"
-          >
-            <v-container class="d-flex justify-center align-center ">
-              <v-card width="400" outlined class="d-flex flex-column align-center">
-                <v-card-title class="font-weight-bold">{{ task.title }}</v-card-title>
-                <v-divider color="warning" :thickness="7"></v-divider>
-                <v-card-text class="py-2">
-                  <div class="text-body-2">{{ task.description }}</div>
-                </v-card-text>
-                <v-divider color="warning" :thickness="7"></v-divider>
-                  <v-btn
-                    color="#6A36DE"
-                    text
-                    class="font-weight-bold"
-                    @click="openTaskDetail(task.id)"
-                  >
-                    立即開始
-                  </v-btn>
-              </v-card>
-            </v-container>
-          </v-carousel-item> -->
-
-
-      <v-carousel-item>
+    <!-- <v-carousel-item
+              v-for="(task, i) in tasks"
+              :key="i"
+            >
+              <v-container class="d-flex justify-center align-center ">
+                <v-card width="400" outlined class="d-flex flex-column align-center">
+                  <v-card-title class="font-weight-bold">{{ task.title }}</v-card-title>
+                  <v-divider color="warning" :thickness="7"></v-divider>
+                  <v-card-text class="py-2">
+                    <div class="text-body-2">{{ task.description }}</div>
+                  </v-card-text>
+                  <v-divider color="warning" :thickness="7"></v-divider>
+                    <v-btn
+                      color="#6A36DE"
+                      text
+                      class="font-weight-bold"
+                      @click="openTaskDetail(task.id)"
+                    >
+                      立即開始
+                    </v-btn>
+                </v-card>
+              </v-container>
+            </v-carousel-item> -->
+    <!-- </v-carousel> -->
+    <Carousel v-bind="carouselConfig" :autoplay="2000">
+      <Slide>
         <div class="d-flex justify-center align-center">
           <v-card outlined class="d-flex flex-column align-center carousel-card" rounded color="purple-lighten-4">
             <div class="icon-background mt-2">
@@ -77,7 +67,6 @@
               </v-icon>
             </div>
             <v-card-title class="task-name">供膳管理日誌</v-card-title>
-            <v-divider :thickness="7"></v-divider>
             <v-card-text class="py-2">
               <ul class="task-list">
                 <li><v-icon class="yellow-dot">mdi-check-circle</v-icon>2/8 廚點作業</li>
@@ -89,16 +78,13 @@
                 <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/5 補餐、午餐後清潔作業</li>
               </ul>
             </v-card-text>
-            <v-divider :thickness="7"></v-divider>
             <v-btn variant="text" class="font-weight-bold mb-3 start-button" @click="openTaskDetail('meal-log')">
               立即開始
             </v-btn>
           </v-card>
         </div>
-      </v-carousel-item>
-
-      <!-- Second Carousel Item - 每日衛生檢查紀錄 -->
-      <v-carousel-item>
+      </Slide>
+      <Slide>
         <div class="d-flex justify-center align-center">
           <v-card outlined class="d-flex flex-column align-center carousel-card" color="yellow-lighten-4">
             <div class="icon-background mt-2">
@@ -122,10 +108,8 @@
             </v-btn>
           </v-card>
         </div>
-      </v-carousel-item>
-
-      <!-- Third Carousel Item - 食材驗收查驗檢查紀錄 -->
-      <v-carousel-item>
+      </Slide>
+      <Slide>
         <div class="d-flex justify-center align-center">
           <v-card outlined class="d-flex flex-column align-center carousel-card" color="pink-lighten-4">
             <div class="icon-background mt-2">
@@ -149,9 +133,10 @@
             </v-btn>
           </v-card>
         </div>
-      </v-carousel-item>
-
-    </v-carousel>
+      </Slide>
+      <template #addons>
+      </template>
+    </Carousel>
     <v-card class="my-4" variant="flat">
       <v-card-text height="100%">
         <div class="d-flex justify-space-between mb-1">
@@ -161,7 +146,6 @@
           {{ totalCompletion }}<span class="text-h6 text-grey-darken-1">%</span>
           <div class="text-caption text-grey-darken-1 mb-1">/ 任務完成度</div>
         </div>
-
         <!-- Timeline -->
         <v-sheet class="timeline-container mt-6">
           <!-- Time markers -->
@@ -171,7 +155,6 @@
               {{ time }}
             </span>
           </div>
-
           <!-- Timeline content with task blocks -->
           <div class="timeline-content">
             <!-- Task blocks -->
@@ -184,7 +167,6 @@
                 :style="{ 'background-color': 'red', width: `${task.completion / task.needToComplete * 100}%` }"></div>
               <div class="task-completion-task">{{ task.completion }}/{{ task.needToComplete }}</div>
             </div>
-
             <!-- Current time indicator -->
             <div class="current-time-indicator" :style="{ left: `${currentTimePosition}px` }">
               <div class="time-bubble">{{ formattedCurrentTime }}</div>
@@ -195,19 +177,20 @@
             '--timeline-total-width': `${timelineWidth}px`,
             '--requreid-height': `${requreidHeight / 2 - 26}px`,
           }"></v-divider>
-          <div class="task-block" :style="{width: `700px`,left: `30px`, transform: `translateY(${requreidHeight/2 - 26}px)`}">
+          <div class="task-block"
+            :style="{ width: `700px`, left: `30px`, transform: `translateY(${requreidHeight / 2 - 26}px)` }">
             <div class="task-completion-bar"></div>
             <div class="task-completion-task">0/15</div>
           </div>
-          <div class="task-block" :style="{width: `930px`,left: `500px`, transform: `translateY(${requreidHeight/2}px)`}">
+          <div class="task-block"
+            :style="{ width: `930px`, left: `500px`, transform: `translateY(${requreidHeight / 2}px)` }">
             <div class="task-completion-bar"></div>
             <div class="task-completion-task">0/21</div>
           </div>
         </v-sheet>
-
       </v-card-text>
     </v-card>
-    <v-btn rounded-sm class="mb-2">
+    <v-btn rounded-sm class="mb-2 need-to-sign-btn">
       <v-icon>mdi-plus</v-icon>
       待簽核
       <template v-slot:append>
@@ -216,7 +199,7 @@
         </div>
       </template>
     </v-btn>
-    <v-btn rounded-sm class="mb-2">
+    <v-btn rounded-sm class="mb-2 signed-btn">
       <v-icon>mdi-plus</v-icon>
       已簽核
       <template v-slot:append>
@@ -232,6 +215,20 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router'
 
+import 'vue3-carousel/carousel.css'
+import { Carousel, Slide, Navigation } from 'vue3-carousel'
+
+const carouselConfig = {
+  height: 400,
+  itemsToShow: 1.3,
+  wrapAround: true,
+}
+
+
+const slidesToShow = ref(1.3);
+const fullWidth = ref(800);
+const fullHeight = ref(600);
+
 const branch = ref('院本部');
 const branches = ref(['院本部', '中興', '仁愛', '其他分院']);
 const timeMarkers = ref([
@@ -245,6 +242,15 @@ const PIXELS_PER_HOUR = 200; // How many pixels per hour
 const START_HOUR = 7; // Our timeline starts at 7:00
 // Current time 
 const currentDateTime = ref(new Date().toLocaleString());
+
+onMounted(() => {
+  fullWidth.value = window.innerWidth;
+  fullHeight.value = window.innerHeight;
+  window.onresize = () => {
+    fullWidth.value = window.innerWidth;
+    fullHeight.value = window.innerHeight;
+  };
+})
 
 const currentTime = ref(new Date("2025-06-09T08:30:00"));
 const formattedCurrentTime = computed(() => {
@@ -266,7 +272,6 @@ function getTimePosition(timeString) {
   const timeDecimal = hours + minutes / 60;
   return (timeDecimal - START_HOUR) * PIXELS_PER_HOUR;
 }
-
 
 const tasks = ref([
   {
@@ -381,7 +386,7 @@ const timelineWidth = computed(() => {
   const [lastHour, lastMin] = lastTime.split(':').map(Number);
   const lastTimeDecimal = lastHour + lastMin / 60;
   return (lastTimeDecimal - START_HOUR) * PIXELS_PER_HOUR;
-})
+});
 
 // // Update current time every minute
 // let timeInterval;
@@ -397,6 +402,13 @@ const timelineWidth = computed(() => {
 </script>
 
 <style scoped>
+@import url("../../css/TCHG_MobileS.css") (max-width: 320px);
+@import url("../../css/TCHG_16_9ratio.css") (min-aspect-ratio: 16/9);
+
+.v-container {
+  padding: 0 !important;
+}
+
 .app-bar {
   background: #442a9b;
   background: linear-gradient(90deg, rgba(68, 42, 155, 1) 0%, rgba(83, 191, 237, 1) 100%);
@@ -405,10 +417,6 @@ const timelineWidth = computed(() => {
 .homepage-carousel {
   max-width: 50vw;
   margin: auto;
-}
-
-.brach-selection {
-  scale: 0.7;
 }
 
 .icon-background {
@@ -561,17 +569,10 @@ const timelineWidth = computed(() => {
   z-index: 10;
 }
 
-.carousel-card {
-  width: 100% !important;
-  height: 380px !important;
-  margin: auto;
-  display: flex;
-  border-radius: 10%;
-  flex-direction: column;
+.need-to-sign-btn{
+  background-color: #f8acac;
 }
-
-.carousel-card .v-card-text {
-  flex: 1;
-  overflow-y: auto;
+.signed-btn {
+  background-color: #98db9a;
 }
 </style>

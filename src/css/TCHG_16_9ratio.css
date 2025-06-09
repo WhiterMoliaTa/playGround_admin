@@ -1,0 +1,87 @@
+@media (min-aspect-ratio: 16/9){
+  :root {
+    --carousel-transition: 300ms;
+    --carousel-opacity-inactive: 0.7;
+    --carousel-opacity-active: 1;
+    --carousel-opacity-near: 0.9;
+
+    background-color: #242424;
+  }
+
+  .app-bar-title {
+    font-size: 0.8rem;
+  }
+
+  .current-info-bar{
+    font-size: 1rem;
+    padding: 0.2rem;
+  }
+
+  .brach-selection {
+    width: 150px;
+  }
+
+  .carousel {
+    --vc-nav-background: rgba(255, 255, 255, 0.7);
+    --vc-nav-border-radius: 100%;
+  }
+
+  .carousel__viewport {
+    perspective: 2000px;
+  }
+
+  .carousel__track {
+    transform-style: preserve-3d;
+  }
+
+  .carousel__slide--sliding {
+    transition:
+      opacity var(--carousel-transition),
+      transform var(--carousel-transition);
+  }
+
+  .carousel.is-dragging .carousel__slide {
+    transition:
+      opacity var(--carousel-transition),
+      transform var(--carousel-transition);
+  }
+
+  .carousel__slide {
+    opacity: var(--carousel-opacity-inactive);
+    transform: translateX(10px) rotateY(-12deg) scale(0.9);
+  }
+
+  .carousel__slide--prev {
+    opacity: var(--carousel-opacity-near);
+    transform: rotateY(-10deg) scale(0.95) translateX(-10px);
+  }
+
+  .carousel__slide--active {
+    opacity: var(--carousel-opacity-active);
+    transform: rotateY(0) scale(1);
+  }
+
+  .carousel__slide--next {
+    opacity: var(--carousel-opacity-near);
+    transform: rotateY(10deg) scale(0.95) translateX(10px);
+  }
+
+  .carousel__slide--next~.carousel__slide {
+    opacity: var(--carousel-opacity-inactive);
+    transform: translateX(-10px) rotateY(12deg) scale(0.9);
+  }
+
+  .carousel-card {
+    width: 300px !important;
+    height: 380px !important;
+    margin: auto;
+    display: flex;
+    border-radius: 10px;
+    flex-direction: column;
+  }
+
+  .carousel-card .v-card-text {
+    flex: 1;
+    overflow-y: auto;
+  }
+}

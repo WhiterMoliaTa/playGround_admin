@@ -22,14 +22,14 @@
           <v-card class="pa-3">
             <v-row>
               <v-col class="d-flex">
-                <v-select class="mr-3" v-model="record.personnel" :items="personnelOptions.map(option => option.name)"
+                <v-select class="mr-3" v-model="record.personnel" @update:focused="checkValidRecord()" :items="personnelOptions.map(option => option.name)"
                   label="請選擇人員" outlined></v-select>
                 <v-select v-model="record.jobTitle" readonly :items="[getJobTitle(record.personnel)]" label="人員職稱"
                   outlined></v-select>
               </v-col>
             </v-row>
 
-            <v-textarea v-model="record.notes" label="特殊狀況紀錄" outlined rows="4"></v-textarea>
+            <v-textarea v-model="record.notes" label="特殊狀況紀錄" @update:focused="checkValidRecord()" outlined rows="4"></v-textarea>
 
             <v-row>
               <v-col cols="12">
@@ -52,10 +52,15 @@
 
 
       <!-- Action Buttons -->
-      <div class="d-flex justify-end my-3">
-        <v-btn color="grey" outlined @click="tempSave">暫存</v-btn>
-        <v-btn color="pink" @click="save">儲存</v-btn>
-        <v-btn color="grey" outlined @click="cancel">取消</v-btn>
+      <div>
+        <v-col cols="12" class="d-flex justify-end">
+          <v-btn variant="outlined" rounded @click="tempSave()">暫存</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="deep-orange-lighten-4" class="text-white" :variant="!formDone ? 'outlined' : 'elevated'"
+            :readonly="!formDone" rounded @click="save()">儲存</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn variant="outlined" rounded class="mr-2" @click="cancel()">取消</v-btn>
+        </v-col>
       </div>
     </v-card>
   </v-container>
@@ -100,8 +105,16 @@ const autoScroll = ref();
 const localRecords = ref([]); //...props.personalRecords[0].records
 const open = ref([]);
 
+const formDone = ref(false);
+
+function checkValidRecord() {
+  formDone.value = localRecords.value.length > 0 && localRecords.value.every(record => 
+    isNotBlankUtil(record.personnel) && isNotBlankUtil(record.notes));
+};
+
 onMounted(() => {
   loadFormData();
+  checkValidRecord();
   if(localRecords.value.length > 0) {
     open.value = ['record-0'];
   }

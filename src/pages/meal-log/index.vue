@@ -43,14 +43,15 @@
             <template v-slot:prepend>
               <div class="timeline-indicator"></div>
             </template>
-
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-title :style="{'background-color':(item.id % 2 ? '#fff' : '#e0f7fa'),'height': '48px'}" class="pl-3 d-flex align-center">{{ item.title }}</v-list-item-title>
 
             <template v-slot:append>
-              <div class="d-flex align-center">
+              <div class="d-flex align-center" :style="{'background-color':(item.id % 2 ? '#fff' : '#e0f7fa')}">
                 <v-btn :key="`button-${index}-${item.id}`" hide-details variant="text" icon class="ma-0 pa-0"
                   @click="handleButtonClick(item, job.section)">
-                  <v-icon :color="state[`button-${job.section}-${item.id}`]"> mdi-check-circle</v-icon>
+                  <v-icon
+                    :color="state[`button-${job.section}-${item.id}`] && item.checked ? state[`button-${job.section}-${item.id}`] : 'grey'">
+                    mdi-check-circle</v-icon>
                 </v-btn>
                 <v-btn variant="text" icon @click="openRemarkDialog(item)">
                   <v-icon>mdi-dots-horizontal-circle</v-icon>
@@ -59,6 +60,17 @@
             </template>
           </v-list-item>
         </div>
+      </v-list-group>
+    </v-list>
+  </v-card>
+  <v-card class="mt-4">
+    <div class="d-flex justify-space-between align-center pa-2">
+      <div>關聯表單</div>
+    </div>
+
+    <v-list>
+      <v-list-group v-for="(form, index) in forms" :key="index">
+        
       </v-list-group>
     </v-list>
   </v-card>
@@ -84,11 +96,12 @@
 <script setup>
 import { ref, computed, reactive, watch, onMounted, provide } from 'vue';
 import DialogComponent from '../../components/TCHG/DialogComponent.vue';
+import { fa } from 'vuetify/locale';
 
 onMounted(() => {
   jobs.value.forEach((job, jobIndex) => {
     job.items.forEach(item => {
-      state.value[`button-${job.section}-${item.id}`] = "grey";
+      state.value[`button-${job.section}-${item.id}`] = "success";
     });
   });
   updateCompletedCount();
@@ -520,7 +533,6 @@ const forms = ref(
             evening: true
           },
           records: [
-            { company: null, name: '', time: null, issues: '' }
           ]
         }
       ],
@@ -577,6 +589,8 @@ provide('modifyJobPass', (formName, time, pass) => {
       const key = `button-${section}-${item.id}`;
       state.value[key] = pass ? 'success ' : 'error';
       console.log(`Job ${formName} in section ${section} updated to ${state.value[key]}.`);
+      item.checked = true;
+      updateCompletedCount();
     }
   }
 });
@@ -623,11 +637,9 @@ function updateCompletedCount() {
 function handleButtonClick(item, jobSection) {
   let currentForms = item.forms;
   let itemId = item.id;
-  item.checked = item.checked ? false : true;
-  // item.forms, job.section, item.id, item.checked
-  updateCompletedCount();
 
-  if (currentForms && Object.keys(currentForms).length > 0) {
+  // item.forms, job.section, item.id, item.checked
+  if (currentForms && Object.keys(currentForms).length > 0 && !item.checked) {
     const formsCollection = {};
     if (currentForms.formName) {
       currentForms.formName.forEach(form => {
@@ -647,16 +659,16 @@ function handleButtonClick(item, jobSection) {
       additionalForm: formsCollection,
       reminder: currentForms.reminder || ""
     });
-  } else {
-    const key = `button-${jobSection}-${itemId}`;
-    if (state.value[key] === 'grey') {
-      state.value[key] = 'success';
-    } else if (state.value[key] === 'success') {
-      state.value[key] = 'grey';
-    } else {
-      state.value[key] = 'error';
-    }
   }
+  const key = `button-${jobSection}-${itemId}`;
+  if (!currentForms) {
+    item.checked = item.checked ? false : true;
+
+  } else {
+    item.checked = false;
+  }
+  updateCompletedCount();
+
 }
 
 function saveDialogAndAdditionalForm(allData) {
@@ -683,6 +695,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.v-list-group__items .v-list-item{
+  padding-inline-start: 48px !important;
+}
+
 .task-timeline {
   position: relative;
   padding-left: 12px;
