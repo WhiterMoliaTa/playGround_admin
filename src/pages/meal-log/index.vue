@@ -234,7 +234,7 @@ const jobs = ref([
   },
   {
     section: "third-section",
-    title: "人數及食材確認",
+    title: "早餐配膳及回收作業",
     time: "08:40-09:30",
     items: [
       { id: 1, title: '10.依清潔檢查表，稽核廚區早餐配膳後清潔作業。', checked: false, remarks: '' },

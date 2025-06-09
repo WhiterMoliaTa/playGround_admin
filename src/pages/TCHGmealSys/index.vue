@@ -153,7 +153,7 @@
 
     </v-carousel>
     <v-card class="my-4" variant="flat">
-      <v-card-text>
+      <v-card-text height="100%">
         <div class="d-flex justify-space-between mb-1">
           <div class="text-subtitle-1 font-weight-bold">今日工作表</div>
         </div>
@@ -165,29 +165,46 @@
         <!-- Timeline -->
         <v-sheet class="timeline-container mt-6">
           <!-- Time markers -->
-          <div class="timeline-header">
-            <span v-for="(time, index) in timeMarkers" :key="index" class="time-marker">{{ time }}</span>
+          <div class="timeline-header" :style="{ width: `${timelineWidth}px` }">
+            <span v-for="(time, index) in timeMarkers" :key="index" class="time-marker"
+              :style="{ left: `${getTimePosition(time)}px` }">
+              {{ time }}
+            </span>
           </div>
 
           <!-- Timeline content with task blocks -->
           <div class="timeline-content">
             <!-- Task blocks -->
-            <div v-for="(task, index) in taskBlocks" :key="`task-${index}`" class="task-block" :class="[task.status]"
-              :style="{
-                width: `${task.width}px`,
-                left: `${task.left}px`,
-                top: `${task.top}px`
-              }">
-              <div class="task-completion">{{ task.completion }}<span class="small">%</span></div>
+            <div v-for="(task, index) in taskBlocks" :key="`task-${index}`" class="task-block" :style="{
+              width: `${task.width}px`,
+              left: `${task.left}px`,
+              top: `${task.top}px`
+            }">
+              <div class="task-completion-bar"
+                :style="{ 'background-color': 'red', width: `${task.completion / task.needToComplete * 100}%` }"></div>
+              <div class="task-completion-task">{{ task.completion }}/{{ task.needToComplete }}</div>
             </div>
 
             <!-- Current time indicator -->
             <div class="current-time-indicator" :style="{ left: `${currentTimePosition}px` }">
               <div class="time-bubble">{{ formattedCurrentTime }}</div>
-              <div class="time-line"></div>
+              <div class="time-line" :style="{ height: `${requreidHeight}px` }"></div>
             </div>
           </div>
+          <v-divider class="total-timeline mb-3" :style="{
+            '--timeline-total-width': `${timelineWidth}px`,
+            '--requreid-height': `${requreidHeight / 2 - 26}px`,
+          }"></v-divider>
+          <div class="task-block" :style="{width: `700px`,left: `30px`, transform: `translateY(${requreidHeight/2 - 26}px)`}">
+            <div class="task-completion-bar"></div>
+            <div class="task-completion-task">0/15</div>
+          </div>
+          <div class="task-block" :style="{width: `930px`,left: `500px`, transform: `translateY(${requreidHeight/2}px)`}">
+            <div class="task-completion-bar"></div>
+            <div class="task-completion-task">0/21</div>
+          </div>
         </v-sheet>
+
       </v-card-text>
     </v-card>
     <v-btn rounded-sm class="mb-2">
@@ -224,12 +241,12 @@ const timeMarkers = ref([
 // Total completion percentage
 const totalCompletion = ref(2);
 // Calculate time to pixels
-const PIXELS_PER_HOUR = 100; // How many pixels per hour
+const PIXELS_PER_HOUR = 200; // How many pixels per hour
 const START_HOUR = 7; // Our timeline starts at 7:00
 // Current time 
 const currentDateTime = ref(new Date().toLocaleString());
 
-const currentTime = ref(new Date());
+const currentTime = ref(new Date("2025-06-09T08:30:00"));
 const formattedCurrentTime = computed(() => {
   const hours = currentTime.value.getHours().toString().padStart(2, '0');
   const minutes = currentTime.value.getMinutes().toString().padStart(2, '0');
@@ -244,17 +261,23 @@ const currentTimePosition = computed(() => {
   return (hoursDecimal - START_HOUR) * PIXELS_PER_HOUR;
 });
 
+function getTimePosition(timeString) {
+  const [hours, minutes] = timeString.split(':').map(Number);
+  const timeDecimal = hours + minutes / 60;
+  return (timeDecimal - START_HOUR) * PIXELS_PER_HOUR;
+}
+
 
 const tasks = ref([
   {
     id: 1,
-    title: '廚點作業',
+    title: '晨點作業',
     startTime: '07:00',
-    endTime: '07:30',
+    endTime: '07:40',
     completion: 2,
     needToComplete: 8,
     status: 'active',
-    row: 0
+    row: 1
   },
   {
     id: 2,
@@ -264,71 +287,58 @@ const tasks = ref([
     completion: 0,
     needToComplete: 1,
     status: 'pending',
-    row: 0
-  },
-  {
-    id: 3,
-    title: '清潔衛具設備衛生',
-    startTime: '08:30',
-    endTime: '09:15',
-    completion: 0,
-    status: 'pending',
-    row: 0
-  },
-  {
-    id: 4,
-    title: '營日誌各事項作業',
-    startTime: '09:00',
-    endTime: '10:00',
-    completion: 0,
-    status: 'pending',
-    row: 1
-  },
-  {
-    id: 5,
-    title: '烹煮督導作業',
-    startTime: '10:00',
-    endTime: '10:30',
-    completion: 0,
-    status: 'pending',
-    row: 0
-  },
-  {
-    id: 6,
-    title: '午餐督導作業',
-    startTime: '11:00',
-    endTime: '11:45',
-    completion: 0,
-    status: 'pending',
-    row: 0
-  },
-  {
-    id: 7,
-    title: '補餐、午餐後清潔作業',
-    startTime: '12:00',
-    endTime: '13:30',
-    completion: 0,
-    status: 'pending',
-    row: 0
-  },
-  {
-    id: 8,
-    title: '下午業務',
-    startTime: '08:00',
-    endTime: '09:30',
-    completion: 0,
-    status: 'pending',
     row: 2
   },
   {
-    id: 9,
-    title: '晚餐準備',
-    startTime: '13:00',
-    endTime: '14:00',
+    id: 3,
+    title: '早餐配膳及回收作業',
+    startTime: '08:40',
+    endTime: '09:30',
     completion: 0,
+    needToComplete: 6,
     status: 'pending',
     row: 3
   },
+  {
+    id: 4,
+    title: '人數食材確認',
+    startTime: '08:00',
+    endTime: '10:00',
+    completion: 0,
+    needToComplete: 5,
+    status: 'pending',
+    row: 4
+  },
+  {
+    id: 5,
+    title: '午餐製作作業',
+    startTime: '10:00',
+    endTime: '10:50',
+    completion: 0,
+    needToComplete: 5,
+    status: 'pending',
+    row: 5
+  },
+  {
+    id: 6,
+    title: '午餐配膳作業',
+    startTime: '10:50',
+    endTime: '12:00',
+    completion: 0,
+    needToComplete: 4,
+    status: 'pending',
+    row: 6
+  },
+  {
+    id: 7,
+    title: '午餐回收清潔作業',
+    startTime: '12:00',
+    endTime: '14:00',
+    completion: 0,
+    needToComplete: 5,
+    status: 'pending',
+    row: 7
+  }
 ]);
 
 const router = useRouter();
@@ -337,6 +347,7 @@ function openTaskDetail(taskName) {
   router.push(`/${taskName}`)
 }
 
+const requreidHeight = ref(0);
 // Calculate task block positions and dimensions
 const taskBlocks = computed(() => {
   return tasks.value.map(task => {
@@ -352,34 +363,37 @@ const taskBlocks = computed(() => {
     const width = (endDecimal - startDecimal) * PIXELS_PER_HOUR;
 
     // Vertical positioning - 30px per row, with some margin
-    const top = task.row * 35;
+    const top = (task.row - 1) * 29;
 
-    // Status class
-    const statusClass = task.completion > 0 ? 'task-block-active' : 'task-block-pending';
+    requreidHeight.value = top;
 
     return {
       ...task,
       left,
       width,
       top,
-      status: task.id === 1 ? 'task-block-purple' :
-        task.id === 2 ? 'task-block-red' :
-          'task-block-grey'
     };
   });
 });
 
-// Update current time every minute
-let timeInterval;
-onMounted(() => {
-  timeInterval = setInterval(() => {
-    currentTime.value = new Date();
-  }, 60000);
-});
+const timelineWidth = computed(() => {
+  const lastTime = timeMarkers.value[timeMarkers.value.length - 1];
+  const [lastHour, lastMin] = lastTime.split(':').map(Number);
+  const lastTimeDecimal = lastHour + lastMin / 60;
+  return (lastTimeDecimal - START_HOUR) * PIXELS_PER_HOUR;
+})
 
-onUnmounted(() => {
-  clearInterval(timeInterval);
-});
+// // Update current time every minute
+// let timeInterval;
+// onMounted(() => {
+//   timeInterval = setInterval(() => {
+//     currentTime.value = new Date();
+//   }, 60000);
+// });
+
+// onUnmounted(() => {
+//   clearInterval(timeInterval);
+// });
 </script>
 
 <style scoped>
@@ -393,11 +407,11 @@ onUnmounted(() => {
   margin: auto;
 }
 
-.brach-selection{
+.brach-selection {
   scale: 0.7;
 }
 
-.icon-background{
+.icon-background {
   background-color: rgba(250, 250, 250, 0.153);
   width: 70px;
   height: 70px;
@@ -407,7 +421,7 @@ onUnmounted(() => {
   justify-content: center;
 }
 
-.task-name{
+.task-name {
   font-size: 18px;
 }
 
@@ -424,7 +438,7 @@ onUnmounted(() => {
   align-items: center;
 }
 
-.start-button{
+.start-button {
   width: 100% !important;
   font-size: 20px;
 }
@@ -445,23 +459,42 @@ onUnmounted(() => {
 
 .timeline-container {
   position: relative;
-  padding-top: 20px;
+  /* padding-top: 20px;
+  padding-left: 30px; */
+  padding: 20px 30px 0px 30px;
   overflow-x: auto;
-  min-height: 180px;
+  height: 330px;
+}
+
+.timeline-container::-webkit-scrollbar {
+  display: none;
 }
 
 .timeline-header {
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 10px;
+  position: relative;
+  height: 30px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  margin-bottom: 10px;
 }
 
 .time-marker {
+  position: absolute;
+  transform: translateX(-50%);
   font-size: 12px;
   color: rgba(0, 0, 0, 0.6);
-  flex: 1;
-  text-align: center;
+  top: 0;
+}
+
+/* Add a tick mark under each time label */
+.time-marker::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 5px;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .timeline-content {
@@ -470,35 +503,33 @@ onUnmounted(() => {
   height: 140px;
 }
 
+.total-timeline {
+  width: var(--timeline-total-width);
+  transform: translateY(var(--requreid-height));
+}
+
 .task-block {
   position: absolute;
-  height: 26px;
+  height: 20px;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #DDDDDD;
 }
 
-.task-completion {
+.task-completion-bar {
+  position: absolute;
+  left: 0px;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.task-completion-task {
+  z-index: 5;
   font-size: 14px;
   color: white;
-}
-
-.small {
-  font-size: 10px;
-  margin-left: 1px;
-}
-
-.task-block-purple {
-  background: linear-gradient(90deg, #8465CE 50%, #D1C6EC 100%);
-}
-
-.task-block-red {
-  background: linear-gradient(90deg, #FF7373 50%, #FFB1B1 100%);
-}
-
-.task-block-grey {
-  background-color: #DDDDDD;
+  position: absolute;
 }
 
 .current-time-indicator {
@@ -524,8 +555,8 @@ onUnmounted(() => {
 .time-line {
   position: absolute;
   top: 45px;
-  height: 100%;
   width: 2px;
+  right: 1.5px;
   background: repeating-linear-gradient(to bottom, #FF7373 0, #FF7373 5px, transparent 5px, transparent 10px);
   z-index: 10;
 }
