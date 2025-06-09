@@ -17,6 +17,8 @@ import { routes } from 'vue-router/auto-routes'
 import { createRouter, createWebHashHistory } from 'vue-router/auto'
 
 import HighchartsVue from 'highcharts-vue'
+import accessibility from "highcharts/modules/accessibility";
+
 // ↓ 修改為 hash history
 const router = createRouter({
   history: createWebHashHistory(),

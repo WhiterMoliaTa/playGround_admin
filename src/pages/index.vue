@@ -295,6 +295,8 @@ import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import dayjs from 'dayjs'
 import { max } from 'lodash'
+import { after } from 'lodash'
+import { floor } from 'lodash'
 const router = useRouter()
 const editItem = (item) => {
   router.push(`/edit/${item.uuid}`)
@@ -400,8 +402,8 @@ const exportCSV = () => {
   }
 
   // 這邊算兩類型的案件總數
-  const afterCount = Object.values(group["管服"] ?? {}).reduce((acc, cur) => acc + cur.count, 0)
-  const beforeCount = Object.values(group["法人"] ?? {}).reduce((acc, cur) => acc + cur.count, 0)
+  const beforeCount = Object.values(group["管服"] ?? {}).reduce((acc, cur) => acc + cur.count, 0)
+  const afterCount = Object.values(group["法人"] ?? {}).reduce((acc, cur) => acc + cur.count, 0)
 
   const diagnosisSet = new Set()
   Object.values(avgDays).forEach(typeGroup => {
@@ -409,26 +411,34 @@ const exportCSV = () => {
   })
 
   const rows = []
+
+  var beforeEven = 0
+  var afterEven = 0
+  var count = 0
   diagnosisSet.forEach(diagnosis => {
-    const afterData = group["管服"]?.[diagnosis] ?? { total: 0, count: 0 }
-    const beforeData = group["法人"]?.[diagnosis] ?? { total: 0, count: 0 }
+    console.log(count)
+    const beforeData = group["管服"]?.[diagnosis] ?? { total: 0, count: 0 }
+    const afterData = group["法人"]?.[diagnosis] ?? { total: 0, count: 0 }
 
-    const afterAvg = avgDays["管服"]?.[diagnosis] ?? 0
-    const beforeAvg = avgDays["法人"]?.[diagnosis] ?? 0
+    const beforeAvg = avgDays["管服"]?.[diagnosis] ?? 0
+    const afterAvg = avgDays["法人"]?.[diagnosis] ?? 0
 
-    const afterAvgText = afterData.count > 0 ? (afterAvg > 0 ? afterAvg : '-') : '-'
-    const beforeAvgText = beforeData.count > 0 ? (beforeAvg > 0 ? beforeAvg : '-') : '-'
+    const beforeAvgText = beforeData.count > 0 ? (beforeAvg > 0 ? `${beforeAvg}(${beforeData.count})` : '-') : '-'
+    const afterAvgText = afterData.count > 0 ? (afterAvg > 0 ? `${afterAvg}(${afterData.count})` : '-') : '-'
 
-    const totalCount = afterData.count + beforeData.count
+    beforeEven += beforeAvg * beforeData.count
+    afterEven += afterAvg * afterData.count
+
+    const totalCount = beforeData.count + afterData.count
     rows.push(`${diagnosis}(${totalCount}案),${afterAvgText},${beforeAvgText}`)
   })
-
-  rows.push(`總計(${afterCount + beforeCount}案),-,-`)
+  console.log(`${beforeEven}/${beforeCount}`)
+  rows.push(`總計(${beforeCount + afterCount}案),${floor(afterEven / afterCount)},${floor(beforeEven / beforeCount)}`)
 
   const header = `案件類型,法人成立後(${afterCount}案),法人成立前(${beforeCount}案)`
 
   const csvContent = [header, ...rows].join('\n')
-
+  console.log(csvContent)
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -458,14 +468,15 @@ const showCaseView = () => {
 
   const avgDays = {}
   const totalStats = { '法人': { total: 0, count: 0 }, '管服': { total: 0, count: 0 } }
-
+  const diagnosisEventCount = {}
+  const mainTypeCount = { '法人': 0, '管服': 0 }
   for (const mainType in group) {
     avgDays[mainType] = {}
     for (const diagnosis in group[mainType]) {
+      mainTypeCount[mainType] += group[mainType][diagnosis].count
+      diagnosisEventCount[diagnosis] = (diagnosisEventCount[diagnosis] || 0) + group[mainType][diagnosis].count
       const { total, count } = group[mainType][diagnosis]
       avgDays[mainType][diagnosis] = count ? Math.round(total / count) : 0
-
-      // 計算總計用
       if (mainType === '法人' || mainType === '管服') {
         totalStats[mainType].total += total
         totalStats[mainType].count += count
@@ -487,33 +498,59 @@ const showCaseView = () => {
     Object.keys(typeGroup).forEach(d => diagnosisSet.add(d))
   })
 
-  const diagnoses = Array.from(diagnosisSet)
-  diagnoses.push('總計')
+  let diagnoses = Array.from(diagnosisSet)
 
+  // 加上標記字串，並且「總計」放最後
+  // diagnoses = diagnoses.map(cate => cate + '($)')
+  // 測試多個診斷類別
+  // for(let i = 0; i < 9; i++) {
+  //   diagnoses.push(`測試診斷類別${(i + 1)%3}($)`)
+  // }
+  diagnoses.push('總計')
+  function getRandomColor() {
+    const r = Math.floor(Math.random() * 256)
+    const g = Math.floor(Math.random() * 256)
+    const b = Math.floor(Math.random() * 256)
+    return `rgba(${r},${g},${b},1)`
+  }
+
+  const diagnosesCount = diagnoses.length
+
+  // 產生每個診斷類別對應的隨機顏色陣列，含總計
+  const randomColors = Array(diagnosesCount).fill(0).map(() => getRandomColor())
+  // console.log('診斷類別:', diagnoses)
+  // console.log('平均天數:', avgDays)
+  // console.log('總平均:', totalAvg)
+  console.log('計數', mainTypeCount)
   const series = [
     {
       name: '法人成立前',
       data: diagnoses.map(d =>
-        d === '總計' ? totalAvg['法人'] : avgDays['法人']?.[d] ?? 0
-      )
+        d === '總計' ? totalAvg['管服'] : avgDays['管服']?.[d] ?? 0
+      ),
+      pointPlacement: -0.2,
+      color: 'rgba(128, 128, 128, 0.3)'  // 整組同色
     },
     {
       name: '法人成立後',
       data: diagnoses.map(d =>
-        d === '總計' ? totalAvg['管服'] : avgDays['管服']?.[d] ?? 0
-      )
+        d === '總計' ? totalAvg['法人'] : avgDays['法人']?.[d] ?? 0
+      ),
+      pointPlacement: 0,
+      colorByPoint: true,       // 每點使用顏色陣列
+      colors: randomColors      // 你自己的顏色陣列（Highcharts 也支援）
     }
   ]
 
   chartOptions.value = {
     chart: {
-      type: 'bar'
+      type: 'column'
     },
     title: {
       text: '診斷類別平均總天數比較（含總計）'
     },
     xAxis: {
-      categories: diagnoses,
+      categories: diagnoses.map(d => d === '總計' ? '總計' : d + `(${diagnosisEventCount[d]}案)`),
       title: { text: '診斷類別' },
       labels: {
         rotation: 0,
@@ -535,10 +572,19 @@ const showCaseView = () => {
       valueSuffix: ' 天'
     },
     plotOptions: {
-      bar: {
+      series: {
+        grouping: false,   // 取消群組，柱狀重疊
+        borderWidth: 0,
         dataLabels: {
           enabled: true
         }
+      }
+    },
+    legend: {
+      backgroundColor: '#f8f9fa',
+      borderColor: '#ccc',
+      labelFormatter: function () {
+        return this.name === '法人成立前' ? `法人成立前(${mainTypeCount['管服']}案)` : `法人成立後(${mainTypeCount['法人']}案)`;
       }
     },
     series
