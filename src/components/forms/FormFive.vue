@@ -83,7 +83,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['save', 'cancel']);
+const emit = defineEmits(['save', 'cancel', 'formDoneEvent']);
 
 const personnelOptions = [
   { name: '林大明', jobTitle: '供膳人員' },
@@ -173,14 +173,14 @@ function newEmptyRecord() {
   });
 }
 
-function isRecordEmpty(record) {
+function isRecordNotEmpty(record) {
   return (
-    !((isNotBlankUtil(record.personnel)) && (isNotBlankUtil(record.notes)))
+    isNotBlankUtil(record.personnel) && isNotBlankUtil(record.notes)
   );
 }
 
 async function save() {
-  let filteredRecords = localRecords.value.filter(record => !isRecordEmpty(record));
+  let filteredRecords = localRecords.value.filter(record => isRecordNotEmpty(record));
   if (filteredRecords.length > 0) {
     const processedRecords = await Promise.all(
       filteredRecords.map(async record => {
@@ -188,7 +188,6 @@ async function save() {
         if (record.image instanceof File) {
           processedRecord.image = await fileToBase64(record.image);
         }
-        
         return processedRecord;
       })
     );
@@ -196,8 +195,10 @@ async function save() {
       records: processedRecords
     }];
     updateAddiForm('formFive', newFormData);
+    emit('formDoneEvent', { formName: 'formFive', state: 'error' });
   } else {
     updateAddiForm('formFive', [{ records: [{ personnel: '', jobTitle: '', notes: '', image: null }] }]);
+    emit('formDoneEvent', { formName: 'formFive', state: 'success' });
   }
   emit('cancel');
 }

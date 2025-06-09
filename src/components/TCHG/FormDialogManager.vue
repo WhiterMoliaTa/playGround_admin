@@ -3,13 +3,15 @@
     <div v-if="props.form === 'formOne'">
       <FormOne :formConfig="formConfig" 
         :time="props.time"
-        @save="handleSave" 
+        @formDoneEvent="handleFormDone($event)"
+        @save="handleSave"
         @cancel="handleCancel" 
       />
     </div>
     <div v-else-if="props.form === 'formTwo'">
       <FormTwo :formConfig="formConfig" 
         :time="props.time"
+        @formDoneEvent="handleFormDone($event)"
         @save="handleSave" 
         @cancel="handleCancel" 
       />
@@ -24,6 +26,7 @@
     <div v-else-if="props.form === 'formThree'">
       <FormThree :formConfig="formConfig" 
         :time="props.time"
+        @formDoneEvent="handleFormDone($event)"
         @save="handleSave" 
         @cancel="handleCancel" 
       />
@@ -31,13 +34,15 @@
     <div v-else-if="props.form === 'formFour'">
       <FormFour :formConfig="formConfig" 
         :time="props.time"
-        @save="handleSave" 
+        @formDoneEvent="handleFormDone($event)"
+        @save="handleSave"
         @cancel="handleCancel" 
       />
     </div>
     <div v-if="props.form === 'formFive'">
       <FormFive :personalRecords="formConfig" 
         :time="props.time" 
+        @formDoneEvent="handleFormDone($event)"
         @save="handleSave" 
         @cancel="handleCancel"
       />
@@ -45,6 +50,7 @@
     <div v-else-if="props.form === 'formSeven'">
       <FormSeven :formConfig="formConfig" 
         :time="props.time"
+        @formDoneEvent="handleFormDone($event)"
         @save="handleSave" 
         @cancel="handleCancel" 
       />
@@ -53,7 +59,8 @@
       <ShiftHandoverLog :formConfig="formConfig" 
         :time="props.time"
         @cancel="handleCancel"
-      /> <!--TODO 要確認下到底要不要做Save -->
+        @formDoneEvent="handleFormDone($event)"
+      />
     </div>
   </v-dialog>
 </template>
@@ -68,7 +75,7 @@ import FormFive from '../forms/FormFive.vue';
 import FormSeven from '../forms/FormSeven.vue';
 import ShiftHandoverLog from '../forms/ShiftHandoverLog.vue';
 
-const emit = defineEmits(['update:showForm', 'submitForm']);
+const emit = defineEmits(['update:showForm', 'submitForm', 'currentformDone']);
 
 const props = defineProps({
   showForm: Boolean,
@@ -104,5 +111,9 @@ function handleCancel() {
   emit('update:showForm', false);
 }
 
+function handleFormDone(event) {
+  console.log(`FormDialogManager: Forwarding currentformDone event from ${event.formName}`);
+  emit('currentformDone', {formName: event.formName, state: event.state});
+}
 
 </script>
