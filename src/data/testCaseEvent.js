@@ -16,7 +16,7 @@ export const testCaseEvents = [
 export const EventFiles = [
   {
     fileId: 'file-001',
-    eventId: 'event-001',
+    referenceId: 'event-001',
     originalName: 'docReceived.pdf',
     storedName: 'docReceived-20250501.pdf',
     filePath: '/files/docReceived-20250501.pdf',
@@ -27,5 +27,6 @@ export const EventFiles = [
     updatedBy: 'user-001',
     updatedTime: '2025-05-01T10:00:00Z',
     status: 'A',
+    type:'caseEvent',
   },
 ]
