@@ -79,6 +79,12 @@
                     <template v-else-if="column.key === 'approvedDays'">
                       {{ additionDays(item) }}
                     </template>
+                    <template v-else-if="column.key === 'viewData'">
+                      <v-badge :content="EventFilesLen(item.uuid)" :color="EventFilesLen(item.uuid) > 0 ? 'green' : 'grey'"
+                        class="ml-3" overlap bordered>
+                        <v-icon small :color="EventFilesLen(item.uuid) > 0 ? 'green' : 'grey'" style="vertical-align: middle;">mdi-file</v-icon>
+                      </v-badge>
+                    </template>
                     <template v-else-if="column.key === 'actions'">
                       <v-btn variant="text" size="small" icon @click="viewItem(item)">
                         <v-icon>mdi-eye</v-icon>
@@ -165,6 +171,7 @@ const headers = [
   // { title: '派案日期', key: 'dispatchDate' },
   // { title: '目前狀態', key: 'status' },
   { title: '備註', key: 'type' },
+  { title: '資料數', key: 'viewData' },
   { title: '操作', key: 'actions' },
 ]
 
@@ -521,7 +528,7 @@ const showCaseView = () => {
   // console.log('診斷類別:', diagnoses)
   // console.log('平均天數:', avgDays)
   // console.log('總平均:', totalAvg)
-  console.log('計數', mainTypeCount)
+  // console.log('計數', mainTypeCount)
   const series = [
     {
       name: '法人成立前',
@@ -591,6 +598,17 @@ const showCaseView = () => {
   }
   viewCaseView.value = true
 }
+import { testCaseEvents, EventFiles } from '../data/testCaseEvent';
+
+const EventFilesLen = (caseId) => {
+  // 先找出此案件底下所有事件的 uuid
+  const eventUuids = testCaseEvents
+    .filter(event => event.caseId === caseId)
+    .map(event => event.eventId);
+
+  // 再統計這些事件的檔案總數
+  return EventFiles.filter(file => eventUuids.includes(file.eventId)).length;
+};
 
 </script>
 
