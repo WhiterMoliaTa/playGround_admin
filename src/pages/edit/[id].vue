@@ -67,7 +67,7 @@
 
                     </div>
                     <v-expansion-panels multiple class="mt-4" variant="popout" v-model="expandedEvents">
-                        <v-expansion-panel v-for="(event, index) in nodeEvents" :key="event.uuid">
+                        <v-expansion-panel v-for="(event, index) in nodeEvents" :key="event.eventId">
                             <v-expansion-panel-title hide-actions>
                                 <div class="d-flex align-center w-100">
                                     <v-icon class="mr-2" :class="{ 'rotate-180': expandedEvents.includes(index) }"
@@ -108,14 +108,14 @@
                                 </div>
 
                                 <div v-else>
-                                    <p>{{ event.eventDescription }}</p>
+                                    <p>{{ event.description }}</p>
 
                                     <!-- Files -->
                                     <div v-if="event.files && event.files.length > 0" class="mt-2">
                                         <div v-for="file in event.files" :key="file.uuid" class="mb-2">
                                             <v-btn variant="text" color="primary" @click="openFile(file.fileUrl)">
                                                 <v-icon left>mdi-file-download</v-icon>
-                                                {{ file.fileName }}
+                                                {{ file.originalName }}
                                             </v-btn>
                                         </div>
                                     </div>
@@ -146,7 +146,7 @@
                                         </v-menu>
                                     </v-col>
                                     <v-col cols="12">
-                                        <v-textarea v-model="newEvent.eventDescription" label="事件描述"
+                                        <v-textarea v-model="newEvent.description" label="事件描述"
                                             :rules="[v => !!v || '必填']" required></v-textarea>
                                     </v-col>
                                     <v-col cols="12">
@@ -154,11 +154,11 @@
                                         <v-file-input v-model="newEvent.files" label="上傳相關檔案" multiple
                                             accept=".pdf,.doc,.docx,.txt,.jpg,.png" show-size prepend-icon=""
                                             color="deep-purple-accent-4" variant="outlined" counter>
-                                            <template v-slot:selection="{ fileNames }">
-                                                <template v-for="(fileName, index) in fileNames" :key="fileName">
+                                            <template v-slot:selection="{ originalNames }">
+                                                <template v-for="(originalName, index) in originalNames" :key="originalName">
                                                     <v-chip v-if="index < 2" class="me-2" color="deep-purple-accent-4"
                                                         size="small" label>
-                                                        {{ fileName }}
+                                                        {{ originalName }}
                                                     </v-chip>
 
                                                     <span v-else-if="index === 2"
@@ -203,7 +203,7 @@
                             <v-list-item v-for="file in filteredFiles" :key="file.uuid" class="file-list-item"
                                 style="border-radius: 8px;" @mouseenter="hover = file.uuid" @mouseleave="hover = null"
                                 :style="{ backgroundColor: hover === file.uuid ? '#e3f2fd' : 'transparent' }"
-                                :title="file.fileName">
+                                :title="file.originalName">
                                 <template v-slot:append>
                                     <v-btn color="blue-lighten-1" icon="mdi-download" variant="text"></v-btn>
                                 </template>
@@ -229,7 +229,6 @@ import caseDialogEdit from '../../components/caseDialogEdit.vue';
 import { cloneDeep } from 'lodash';
 import { useRoute } from 'vue-router';
 import { useToast } from "vue-toastification";
-import { random } from 'lodash';
 const route = useRoute();
 const editCase = ref(null);
 const editCaseDialog = ref(false);
@@ -389,7 +388,7 @@ const setNodeCaseItem = (node) => {
     });
     EventFiles.forEach(file => {
         nodeEvents.some(event => {
-            if (event.uuid === file.eventId) {
+            if (event.eventId === file.eventId) {
                 event.files.push(file);
             }
         });
@@ -434,25 +433,25 @@ const saveNewEvent = () => {
         return;
     }
     const newEventData = {
-        uuid: crypto.randomUUID(),
-        caseUuid: route.params.id,
+        eventId: crypto.randomUUID(),
+        caseId: route.params.id,
         eventTitle: newEvent.eventTitle,
-        eventDescription: newEvent.eventDescription,
+        description: newEvent.description,
         eventDate: newEvent.eventDate,
         eventType: selectedNode.value.eventType,
     }
     testCaseEvents.push(newEventData);
     newEvent.files?.forEach(file => {
         EventFiles.push({
-            uuid: crypto.randomUUID(),
+            fileId: crypto.randomUUID(),
             eventId: newEventData.uuid,
-            fileName: file.name,
+            originalName: file.name,
         });
     });
     // console.log('儲存新事件:', toRaw(newEventData));
     newEventDialog.value = false; // 關閉對話框
     newEvent.eventTitle = '';
-    newEvent.eventDescription = '';
+    newEvent.description = '';
     newEvent.eventDate = '';
     newEvent.files = [];
     selectedNode.value.count += 1; // 更新選定節點的事件計數
@@ -463,7 +462,7 @@ const hover = ref(null);
 const searchQuery = ref('');
 const filteredFiles = computed(() => {
     if (!searchQuery.value) return EventFiles;
-    return EventFiles.filter(file => file.fileName.includes(searchQuery.value));
+    return EventFiles.filter(file => file.originalName.includes(searchQuery.value));
 });
 
 const selectedNodeCaseAddition = computed(() => {
@@ -505,14 +504,14 @@ function saveEdit(index) {
         newFiles.value.forEach((file, i) => {
             editEventData.value.files.push({
                 uuid: `newfile-${Date.now()}-${i}`,
-                fileName: file.name,
+                originalName: file.name,
                 fileUrl: URL.createObjectURL(file),
             });
         });
         EventFiles.push(...newFiles.value.map(file => ({
             uuid: `newfile-${Date.now()}-${Math.random()}`,
             eventId: editEventData.value.uuid,
-            fileName: file.name,
+            originalName: file.name,
         })));
     }
     nodeEvents[index] = JSON.parse(JSON.stringify(editEventData.value));
