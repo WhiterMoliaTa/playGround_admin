@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar class="app-bar">
+  <v-app-bar class="app-bar" v-resize="onResize()">
     <v-app-bar-nav-icon color="white" variant="text"></v-app-bar-nav-icon>
     <v-app-bar-title class="text-white app-bar-title">供膳管理系統</v-app-bar-title>
     <v-menu>
@@ -26,13 +26,15 @@
       <div class="text-caption text-grey">首頁 / 任務看板</div>
     </div>
     <v-divider color="warning" class="my-1"></v-divider>
-    <v-card class="mb-4" variant="flat d-flex space-between">
-      <v-card-text class="current-info-bar">
+    <v-row class="current-info-bar mb-4 justify-space-around">
+      <v-col class="pa-2" cols="7" xs="6">
         <span> <v-icon class="mr-2">mdi-clock-outline</v-icon>{{ currentDateTime }}</span>
-        <v-select v-model="branch" :items="branches" density="compact" class="ml-4 brach-selection"
-          variant="solo-filled" hide-details />
-      </v-card-text>
-    </v-card>
+      </v-col>
+      <v-col class="pa-2" cols="4" xs="6">
+        <v-select v-model="branch" class="branch-selection" :items="branches" dense variant="solo-filled"
+          hide-details />
+      </v-col>
+    </v-row>
     <!-- <v-carousel-item
               v-for="(task, i) in tasks"
               :key="i"
@@ -57,7 +59,7 @@
               </v-container>
             </v-carousel-item> -->
     <!-- </v-carousel> -->
-    <Carousel v-bind="carouselConfig" :autoplay="2000">
+    <Carousel v-bind="carouselConfig" :items-to-show="slidesToShow" :autoplay="2000">
       <Slide>
         <div class="d-flex justify-center align-center">
           <v-card outlined class="d-flex flex-column align-center carousel-card" rounded color="purple-lighten-4">
@@ -218,38 +220,11 @@ import { useRouter } from 'vue-router'
 import 'vue3-carousel/carousel.css'
 import { Carousel, Slide, Navigation } from 'vue3-carousel'
 
-const carouselConfig = {
-  height: 400,
-  itemsToShow: 1.3,
-  wrapAround: true,
-}
-
-
-const slidesToShow = ref(1.3);
-const fullWidth = ref(800);
-const fullHeight = ref(600);
-
-const branch = ref('院本部');
-const branches = ref(['院本部', '中興', '仁愛', '其他分院']);
-const timeMarkers = ref([
-  '7:00', '7:30', '8:00', '8:30', '9:00', '9:30', '10:00', '10:30',
-  '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00'
-]);
-// Total completion percentage
-const totalCompletion = ref(2);
-// Calculate time to pixels
-const PIXELS_PER_HOUR = 200; // How many pixels per hour
-const START_HOUR = 7; // Our timeline starts at 7:00
-// Current time 
-const currentDateTime = ref(new Date().toLocaleString());
+const windowSize = ref({ x: 0, y: 0, });
 
 onMounted(() => {
-  fullWidth.value = window.innerWidth;
-  fullHeight.value = window.innerHeight;
-  window.onresize = () => {
-    fullWidth.value = window.innerWidth;
-    fullHeight.value = window.innerHeight;
-  };
+  onResize();
+  itemsToShowByWindowSize();
 })
 
 const currentTime = ref(new Date("2025-06-09T08:30:00"));
@@ -266,6 +241,26 @@ const currentTimePosition = computed(() => {
   const hoursDecimal = hours + minutes / 60;
   return (hoursDecimal - START_HOUR) * PIXELS_PER_HOUR;
 });
+
+const slidesToShow = ref(1.3);
+const carouselConfig = {
+  height: 400,
+  wrapAround: true,
+}
+
+const branch = ref('院本部');
+const branches = ref(['院本部', '中興', '仁愛', '其他分院']);
+const timeMarkers = ref([
+  '7:00', '7:30', '8:00', '8:30', '9:00', '9:30', '10:00', '10:30',
+  '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00'
+]);
+// Total completion percentage
+const totalCompletion = ref(2);
+// Calculate time to pixels
+const PIXELS_PER_HOUR = 200; // How many pixels per hour
+const START_HOUR = 7; // Our timeline starts at 7:00
+// Current time 
+const currentDateTime = ref(new Date().toLocaleString());
 
 function getTimePosition(timeString) {
   const [hours, minutes] = timeString.split(':').map(Number);
@@ -350,6 +345,23 @@ const router = useRouter();
 
 function openTaskDetail(taskName) {
   router.push(`/${taskName}`)
+}
+
+function onResize() {
+  windowSize.value = { x: window.innerWidth, y: window.innerHeight };
+  console.log('Window resized:', windowSize.value);
+}
+
+function itemsToShowByWindowSize() {
+  if (windowSize.value.x <= 320) {
+    slidesToShow.value = 1.3;
+  } else if (windowSize.value.x <= 800) {
+    slidesToShow.value = 1.6;
+  } else if (windowSize.value.x <= 1000) {
+    slidesToShow.value = 1.9;
+  } else {
+    slidesToShow.value = 2.5;
+  }
 }
 
 const requreidHeight = ref(0);
@@ -569,9 +581,10 @@ const timelineWidth = computed(() => {
   z-index: 10;
 }
 
-.need-to-sign-btn{
+.need-to-sign-btn {
   background-color: #f8acac;
 }
+
 .signed-btn {
   background-color: #98db9a;
 }

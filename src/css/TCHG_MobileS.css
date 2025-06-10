@@ -12,13 +12,17 @@
     font-size: 0.8rem;
   }
 
-  .current-info-bar{
+  .current-info-bar {
     font-size: 0.7rem;
     padding: 0.2rem;
+    line-height: 2.425;
   }
 
-  .brach-selection {
-    width: 200px;
+  :deep(.branch-selection .v-input__control .v-field) {
+    font-size: 9px;
+    --v-field-input-padding-top: 1px;
+    --v-field-input-padding-bottom: 1px;
+    --v-input-control-height: 10px;
   }
 
   .carousel {
