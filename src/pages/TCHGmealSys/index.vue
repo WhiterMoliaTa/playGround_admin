@@ -36,102 +36,26 @@
             hide-details />
         </v-col>
       </v-row>
-      <!-- <v-carousel-item
-                v-for="(task, i) in tasks"
-                :key="i"
-              >
-                <v-container class="d-flex justify-center align-center ">
-                  <v-card width="400" outlined class="d-flex flex-column align-center">
-                    <v-card-title class="font-weight-bold">{{ task.title }}</v-card-title>
-                    <v-divider color="warning" :thickness="7"></v-divider>
-                    <v-card-text class="py-2">
-                      <div class="text-body-2">{{ task.description }}</div>
-                    </v-card-text>
-                    <v-divider color="warning" :thickness="7"></v-divider>
-                      <v-btn
-                        color="#6A36DE"
-                        text
-                        class="font-weight-bold"
-                        @click="openTaskDetail(task.id)"
-                      >
-                        立即開始
-                      </v-btn>
-                  </v-card>
-                </v-container>
-              </v-carousel-item> -->
-      <!-- </v-carousel> -->
       <Carousel v-bind="carouselConfig" :items-to-show="slidesToShow" :autoplay="2000">
-        <Slide>
+        <Slide v-for="(slide, index) in slides" :key="index">
           <div class="d-flex justify-center align-center">
-            <v-card outlined class="d-flex flex-column align-center carousel-card gradient-purple" rounded>
+            <v-card outlined class="d-flex flex-column align-center carousel-card" :class="slide.gradient" rounded-10>
               <div class="icon-background mt-2">
                 <v-icon size="30" class="text-white">
-                  mdi-calendar-month-outline
+                  {{ slide.icon }}
                 </v-icon>
               </div>
-              <v-card-title class="task-name">供膳管理日誌</v-card-title>
+              <v-card-title class="task-name">{{ slide.title }}</v-card-title>
               <v-card-text class="py-2">
                 <ul class="task-list">
-                  <li><v-icon class="yellow-dot">mdi-check-circle</v-icon>2/8 廚點作業</li>
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/1 生鮮食材驗收及登錄</li>
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/6 清潔衛具設備衛生</li>
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/5 營日誌各事項作業</li>
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/5 烹煮督導作業</li>
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/4 午餐督導作業</li>
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/5 補餐、午餐後清潔作業</li>
+                  <li v-for="(task, taskIndex) in slide.tasks" :key="taskIndex">
+                    <v-icon :class="task.status">mdi-check-circle</v-icon>
+                    {{ task.completed }}/{{ task.total }} {{ task.label }}
+                  </li>
                 </ul>
               </v-card-text>
-              <v-btn variant="text" class="font-weight-bold mb-3 start-button" @click="openTaskDetail('meal-log')">
-                立即開始
-              </v-btn>
-            </v-card>
-          </div>
-        </Slide>
-        <Slide>
-          <div class="d-flex justify-center align-center">
-            <v-card outlined class="d-flex flex-column align-center carousel-card gradient-pink">
-              <div class="icon-background mt-2">
-                <v-icon size="30" class="text-white">
-                  mdi-calendar-month-outline
-                </v-icon>
-              </div>
-              <v-card-title class="task-name">每日衛生檢查紀錄</v-card-title>
-              <v-divider :thickness="7"></v-divider>
-              <v-card-text class="py-2">
-                <ul class="task-list">
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/5 廚房衛生檢查</li>
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/3 冰箱溫度確認</li>
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/4 料理區域清潔檢查</li>
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/2 食材保存區確認</li>
-                </ul>
-              </v-card-text>
-              <v-divider :thickness="7"></v-divider>
-              <v-btn variant="text" class="font-weight-bold mb-3 start-button" @click="openTaskDetail('meal-log')">
-                立即開始
-              </v-btn>
-            </v-card>
-          </div>
-        </Slide>
-        <Slide>
-          <div class="d-flex justify-center align-center">
-            <v-card outlined class="d-flex flex-column align-center carousel-card gradient-yellow">
-              <div class="icon-background mt-2">
-                <v-icon size="30" class="text-white">
-                  mdi-calendar-month-outline
-                </v-icon>
-              </div>
-              <v-card-title class="task-name">食材驗收查驗檢查紀錄</v-card-title>
-              <v-divider :thickness="7"></v-divider>
-              <v-card-text class="py-2">
-                <ul class="task-list">
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/4 蔬果類驗收</li>
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/5 肉品類驗收</li>
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/3 乾貨類驗收</li>
-                  <li><v-icon class="white-dot">mdi-check-circle</v-icon> 0/2 調味品類驗收</li>
-                </ul>
-              </v-card-text>
-              <v-divider :thickness="7"></v-divider>
-              <v-btn variant="text" class="font-weight-bold mb-3 start-button" @click="openTaskDetail('meal-log')">
+
+              <v-btn variant="text" class="font-weight-bold mb-3 start-button" @click="openTaskDetail(slide.id)">
                 立即開始
               </v-btn>
             </v-card>
@@ -226,37 +150,20 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { testSlides } from '../../data/testSlides';
 import { useRouter } from 'vue-router'
 
 import 'vue3-carousel/carousel.css'
 import { Carousel, Slide, Navigation } from 'vue3-carousel'
 
 const windowSize = ref({ x: 0, y: 0, });
+const slides = ref(testSlides);
 
-onMounted(() => {
-  onResize();
-})
-
-const currentTime = ref(new Date("2025-06-09T08:30:00"));
-const formattedCurrentTime = computed(() => {
-  const hours = currentTime.value.getHours().toString().padStart(2, '0');
-  const minutes = currentTime.value.getMinutes().toString().padStart(2, '0');
-  return `${hours}:${minutes}`;
-});
-
-// Position of the current time indicator
-const currentTimePosition = computed(() => {
-  const hours = currentTime.value.getHours();
-  const minutes = currentTime.value.getMinutes();
-  const hoursDecimal = hours + minutes / 60;
-  return (hoursDecimal - START_HOUR) * PIXELS_PER_HOUR;
-});
-
-const slidesToShow = ref(1.3);
-const carouselConfig = {
-  height: 400,
-  wrapAround: true,
-}
+// Calculate time to pixels
+const pixel_per_hour =  ref(200); // How many pixels per hour
+const START_HOUR = 7; // Our timeline starts at 7:00
+// Current time 
+const currentDateTime = ref(new Date().toLocaleString());
 
 const branch = ref('院本部');
 const branches = ref(['院本部', '中興', '仁愛', '其他分院']);
@@ -267,17 +174,6 @@ const timeMarkers = ref([
 const taskColor = ['#f5945c', '#fec76f', '#465952', '#75ba75', '#71a3c1', '#FFBE0B', '#725E54'];
 // Total completion percentage
 const totalCompletion = ref(2);
-// Calculate time to pixels
-const PIXELS_PER_HOUR = 200; // How many pixels per hour
-const START_HOUR = 7; // Our timeline starts at 7:00
-// Current time 
-const currentDateTime = ref(new Date().toLocaleString());
-
-function getTimePosition(timeString) {
-  const [hours, minutes] = timeString.split(':').map(Number);
-  const timeDecimal = hours + minutes / 60;
-  return (timeDecimal - START_HOUR) * PIXELS_PER_HOUR;
-}
 
 const tasks = ref([
   {
@@ -352,28 +248,40 @@ const tasks = ref([
   }
 ]);
 
+const slidesToShow = ref(1.3);
+const carouselConfig = {
+  height: 400,
+  wrapAround: true,
+}
+
 const router = useRouter();
 
-function openTaskDetail(taskName) {
-  router.push(`/${taskName}`)
-}
+// let timeInterval;
+onMounted(() => {
+  onResize();
+  //   timeInterval = setInterval(() => {
+//     currentTime.value = new Date();
+//   }, 60000);
+})
 
-function onResize() {
-  windowSize.value = { x: window.innerWidth, y: window.innerHeight };
-  itemsToShowByWindowSize()
-}
+// onUnmounted(() => {
+//   clearInterval(timeInterval);
+// });
 
-function itemsToShowByWindowSize() {
-  if (windowSize.value.x <= 320) {
-    slidesToShow.value = 1.4;
-  } else if (windowSize.value.x <= 800) {
-    slidesToShow.value = 1.7;
-  } else if (windowSize.value.x <= 1000) {
-    slidesToShow.value = 2.0;
-  } else {
-    slidesToShow.value = 2.5;
-  }
-}
+// Position of the current time indicator
+const currentTimePosition = computed(() => {
+  const hours = currentTime.value.getHours();
+  const minutes = currentTime.value.getMinutes();
+  const hoursDecimal = hours + minutes / 60;
+  return (hoursDecimal - START_HOUR) * pixel_per_hour.value;
+});
+
+const currentTime = ref(new Date("2025-06-09T08:30:00"));
+const formattedCurrentTime = computed(() => {
+  const hours = currentTime.value.getHours().toString().padStart(2, '0');
+  const minutes = currentTime.value.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+});
 
 const requreidHeight = ref(0);
 // Calculate task block positions and dimensions
@@ -387,8 +295,8 @@ const taskBlocks = computed(() => {
     const endDecimal = endHour + endMin / 60;
 
     // Calculate left position and width in pixels
-    const left = (startDecimal - START_HOUR) * PIXELS_PER_HOUR;
-    const width = (endDecimal - startDecimal) * PIXELS_PER_HOUR;
+    const left = (startDecimal - START_HOUR) * pixel_per_hour.value;
+    const width = (endDecimal - startDecimal) * pixel_per_hour.value;
 
     // Vertical positioning - 29px per row, with some margin
     const top = (task.row - 1) * 29;
@@ -408,8 +316,14 @@ const timelineWidth = computed(() => {
   const lastTime = timeMarkers.value[timeMarkers.value.length - 1];
   const [lastHour, lastMin] = lastTime.split(':').map(Number);
   const lastTimeDecimal = lastHour + lastMin / 60;
-  return (lastTimeDecimal - START_HOUR) * PIXELS_PER_HOUR;
+  return (lastTimeDecimal - START_HOUR) * pixel_per_hour.value;
 });
+
+function getTimePosition(timeString) {
+  const [hours, minutes] = timeString.split(':').map(Number);
+  const timeDecimal = hours + minutes / 60;
+  return (timeDecimal - START_HOUR) * pixel_per_hour.value;
+}
 
 function getCompletionBarWidth(task) {
   // Parse the task start time
@@ -433,17 +347,28 @@ function getCompletionBarWidth(task) {
   return normalWidth;
 }
 
-// // Update current time every minute
-// let timeInterval;
-// onMounted(() => {
-//   timeInterval = setInterval(() => {
-//     currentTime.value = new Date();
-//   }, 60000);
-// });
+function openTaskDetail(taskName) {
+  router.push(`/${taskName}`)
+}
 
-// onUnmounted(() => {
-//   clearInterval(timeInterval);
-// });
+function onResize() {
+  windowSize.value = { x: window.innerWidth, y: window.innerHeight };
+  pixel_per_hour.value = 200 + windowSize.value.x / 18; // Adjust pixels per hour based on window width
+  itemsToShowByWindowSize()
+}
+
+function itemsToShowByWindowSize() {
+  if (windowSize.value.x <= 320) {
+    slidesToShow.value = 1.4;
+  } else if (windowSize.value.x <= 800) {
+    slidesToShow.value = 1.7;
+  } else if (windowSize.value.x <= 1000) {
+    slidesToShow.value = 2.0;
+  } else {
+    slidesToShow.value = 2.5;
+  }
+}
+
 </script>
 
 <style scoped>

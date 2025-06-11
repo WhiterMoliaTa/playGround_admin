@@ -113,7 +113,7 @@ export const testMorningTCHGJobs = [
   },
   {
     section: "third-section",
-    title: "早餐配膳及回收作業",
+    title: "清潔餐具設備衛生",
     time: "08:40-09:30",
     items: [
       { id: 1, title: '10.依清潔檢查表，稽核廚區早餐配膳後清潔作業。', checked: false, remarks: '' },
@@ -156,7 +156,7 @@ export const testMorningTCHGJobs = [
   },
   {
     section: 'fourth-section',
-    title: '人數食材確認',
+    title: '當日膳食準備作業',
     time: '08:00-10:00',
     items: [
       { id: 1, title: '16.查詢當日膳食人數。', checked: false, remarks: '' },
@@ -182,7 +182,7 @@ export const testMorningTCHGJobs = [
   },
   {
     section: 'fifth-section',
-    title: '午餐製作作業',
+    title: '烹煮督導作業',
     time: '10:00-10:50',
     items: [
       { id: 6, title: '6.確認爐灶火源安全使用。', checked: false, remarks: '' },
@@ -194,7 +194,7 @@ export const testMorningTCHGJobs = [
   },
   {
     section: 'sixth-section',
-    title: '午餐配膳作業',
+    title: '午餐督導作業',
     time: '10:50-12:00',
     items: [
       {
@@ -236,7 +236,7 @@ export const testMorningTCHGJobs = [
   },
   {
     section: 'seventh-section',
-    title: '午餐回收清潔作業',
+    title: '補餐、午餐後清潔作業',
     time: '12:00-14:00',
     items: [
       { id: 15, title: '15.督導確認病患午餐、補餐送出(填寫漏補餐原因紀錄表)。', checked: false, remarks: '' },

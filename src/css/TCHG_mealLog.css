@@ -63,6 +63,14 @@
   background-color: #ff859d;
 }
 
+.default-signature-checkbox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 10px;
+}
+
 
 /* TODO Future visual updates if I have time: */
 .signature-line {

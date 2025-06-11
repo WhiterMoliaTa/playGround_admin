@@ -112,10 +112,14 @@
         <div>表單：供膳管理日誌</div>
         <div>時間戳記：{{ signatureTimestamp }}</div>
         <div>時段：<span class="fillTime">{{ shift === 'morning' ? '早班' :
-            shift === 'evening' ? '晚班' : 'ERROR'}}</span></div>
+          shift === 'evening' ? '晚班' : 'ERROR' }}</span></div>
       </v-card-text>
       <v-card-text>
         <canvas ref="signatureCanvas" width="450" height="200" style="border: 1px solid #ccc;"></canvas>
+      </v-card-text>
+      <v-card-text class="default-signature-checkbox">
+        <v-checkbox v-slot:append hide-details @update:modelValue="useDefaultSignature" />
+        <div>使用個人預設簽名檔</div>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -132,10 +136,11 @@ import DialogComponent from '../../components/TCHG/DialogComponent.vue';
 import RemarksDialog from '../../components/TCHG/RemarksDialog.vue';
 import { testMorningTCHGJobs } from "../../data/testTCHGJobs";
 import { testTCHGForms } from '../../data/testTCHGForms';
+import { defaultSignature } from '../../data/testSignature';
 
 const jobs = ref(testMorningTCHGJobs);
 const forms = ref(testTCHGForms);
-const signature = ref(null);
+const signature = ref(defaultSignature);
 const shift = ref('morning');
 
 onMounted(() => {
@@ -403,6 +408,18 @@ function handleTouchMove(e) {
 
 function stopDrawing() {
   isDrawing.value = false;
+}
+
+function useDefaultSignature() {
+  if (signature.value) {
+    const ctx = signatureCtx.value;
+    const img = new Image();
+    img.src = signature.value;
+    img.onload = () => {
+      ctx.clearRect(0, 0, signatureCanvas.value.width, signatureCanvas.value.height);
+      ctx.drawImage(img, 0, 0, signatureCanvas.value.width, signatureCanvas.value.height);
+    };
+  }
 }
 
 function clearSignature() {

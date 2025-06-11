@@ -1,5 +1,3 @@
-import { id } from "vuetify/locale";
-
 export const testTCHGForms =
 {
   formOne: {
