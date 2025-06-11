@@ -75,17 +75,35 @@
         </v-row>
       </div>
     </v-card>
-    <div class="d-flex justify-space-around align-center draft-func-footer">
-      <v-btn variant="flat" class="border-md" color="white" @click="tempSaveDraft" rounded>暫存草稿</v-btn>
-      <v-btn variant="flat" disabled @click="signDraft" rounded>簽章送出</v-btn>
-    </div>
     <DialogComponent v-model:show="dialogState.show" :title="dialogState.title" :check-object="dialogState.checkObject"
       :check-boxs="dialogState.checkBoxs" :form-buttons="dialogState.formButtons"
       :additional-form="dialogState.additionalForm" :form-name="dialogState.formName"
       :form-required="dialogState.formRequired" :time="dialogState.time" :reminder="dialogState.reminder"
       @addtionalFormSubmit="saveDialogAndAdditionalForm" />
     <remarks-dialog v-model:showRemarks="showRemarksDialog" :item="jobRemarks" />
+    <!-- Signature Dialog -->
+    <v-dialog v-model="showSignatureDialog" max-width="500px">
+      <v-card>
+        <v-card-title>請簽名</v-card-title>
+        <v-card-text>
+          <canvas ref="signatureCanvas" width="450" height="200" style="border: 1px solid #ccc;"></canvas>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="error" @click="clearSignature">清除</v-btn>
+          <v-btn color="primary" @click="saveSignature">確認</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
+  <div class="d-flex justify-space-around align-center draft-func-footer">
+    <v-btn variant="flat" class="border-md" color="white" @click="tempSaveDraft" rounded>暫存草稿</v-btn>
+    <v-btn variant="flat" disabled @click="signDraft" rounded>簽章送出</v-btn>
+  </div>
+  <!-- <div class="d-flex justify-end align-center mt-4">
+              <span class="mr-4">主管簽核:</span>
+              <div class="signature-line" @click="openSignatureDialog"></div>
+            </div> -->
 </template>
 
 <script setup>
@@ -250,16 +268,116 @@ function saveDialogAndAdditionalForm(allData) {
 
 }
 
-function tempSaveDraft(){
+function tempSaveDraft() {
   console.log("暫存草稿功能尚未實作");
 }
 
 function signDraft() {
   console.log("簽章送出功能尚未實作");
 }
+
+// Signature handling
+const signatureCanvas = ref(null);
+const signatureCtx = ref(null);
+const isDrawing = ref(false);
+const showSignatureDialog = ref(false);
+let lastX = 0;
+let lastY = 0;
+
+function openSignatureDialog() {
+  showSignatureDialog.value = true;
+  setTimeout(() => {
+    initSignatureCanvas();
+  }, 100);
+}
+
+function initSignatureCanvas() {
+  const canvas = signatureCanvas.value;
+  if (!canvas) return;
+
+  signatureCtx.value = canvas.getContext('2d');
+  const ctx = signatureCtx.value;
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#000';
+
+  canvas.addEventListener('mousedown', startDrawing);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stopDrawing);
+  canvas.addEventListener('mouseout', stopDrawing);
+
+  // Touch support
+  canvas.addEventListener('touchstart', handleTouch);
+  canvas.addEventListener('touchmove', handleTouchMove);
+  canvas.addEventListener('touchend', stopDrawing);
+}
+
+function startDrawing(e) {
+  isDrawing.value = true;
+  [lastX, lastY] = [e.offsetX, e.offsetY];
+}
+
+function draw(e) {
+  if (!isDrawing.value) return;
+  const ctx = signatureCtx.value;
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(e.offsetX, e.offsetY);
+  ctx.stroke();
+  [lastX, lastY] = [e.offsetX, e.offsetY];
+}
+
+function handleTouch(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const rect = signatureCanvas.value.getBoundingClientRect();
+  const offsetX = touch.clientX - rect.left;
+  const offsetY = touch.clientY - rect.top;
+
+  isDrawing.value = true;
+  [lastX, lastY] = [offsetX, offsetY];
+}
+
+function handleTouchMove(e) {
+  e.preventDefault();
+  if (!isDrawing.value) return;
+
+  const touch = e.touches[0];
+  const rect = signatureCanvas.value.getBoundingClientRect();
+  const offsetX = touch.clientX - rect.left;
+  const offsetY = touch.clientY - rect.top;
+
+  const ctx = signatureCtx.value;
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(offsetX, offsetY);
+  ctx.stroke();
+  [lastX, lastY] = [offsetX, offsetY];
+}
+
+function stopDrawing() {
+  isDrawing.value = false;
+}
+
+function clearSignature() {
+  const ctx = signatureCtx.value;
+  ctx.clearRect(0, 0, signatureCanvas.value.width, signatureCanvas.value.height);
+}
+
+function saveSignature() {
+  formData.signature = signatureCanvas.value.toDataURL('image/png');
+  showSignatureDialog.value = false;
+}
 </script>
 
 <style scoped>
 @import url('../../css/TCHG_mealLog.css');
 @import url('../../css/TCHG_mealLog_MobileS.css') (max-width: 320px) and (orientation: portrait);
+
+.signature-line {
+  width: 200px;
+  height: 2px;
+  background-color: #000;
+  cursor: pointer;
+}
 </style>

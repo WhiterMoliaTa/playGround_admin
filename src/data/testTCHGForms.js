@@ -1,3 +1,5 @@
+import { id } from "vuetify/locale";
+
 export const testTCHGForms =
 {
   formOne: {
@@ -100,8 +102,13 @@ export const testTCHGForms =
         records: [
           {
             recycleTime: '08:40', ward: '101', plate: 4,
-            dishAndLeftoverPortion: [{ dishName: 'fired egg', leftPortion: '0' },{ dishName: 'fired egg with bacon', leftPortion: '0' },{ dishName: 'fired egg with bacon and garlic', leftPortion: '0' },{ dishName: 'sausage', leftPortion: '0' }],
+            dishAndLeftoverPortion: [{ dishName: 'fired egg', leftPortion: '0' }, { dishName: 'fired egg with bacon', leftPortion: '0' }, { dishName: 'fired egg with bacon and garlic', leftPortion: '0' }, { dishName: 'sausage', leftPortion: '0' }],
             breakfast: true, lunch: null, dinner: null, remarks: ''
+          },
+          {
+            recycleTime: '11:40', ward: '101', plate: 4,
+            dishAndLeftoverPortion: [{ dishName: 'fired egg', leftPortion: '0' }, { dishName: 'fired egg with bacon', leftPortion: '0' }, { dishName: 'fired egg with bacon and garlic', leftPortion: '0' }, { dishName: 'sausage', leftPortion: '0' }],
+            breakfast: null, lunch: true, dinner: null, remarks: ''
           },
         ]
       }
@@ -175,5 +182,81 @@ export const testTCHGForms =
         ]
       }
     ],
+  },
+  formG402: {
+    additionalForm: [
+      {
+        title: '每日衛生檢查表',
+        passed: {
+          morning: false,
+          noon: false,
+          evening: false
+        },
+        sections: [
+          {
+            title: '人員衛生管理',
+            items: [
+              { id: 1, disable: { morning: false, evening: false }, content: '無手部受傷或感冒。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 2, disable: { morning: false, evening: false }, content: '不濃妝豔抹且儀態端莊。', breakfast: 'ok', lunch: null, dinner: null },
+              { id: 3, disable: { morning: false, evening: false }, content: '不蓄留指甲、塗抹指甲油及配戴飾物。', breakfast: 'bad', lunch: null, dinner: null },
+              { id: 4, disable: { morning: false, evening: false }, content: '正確穿戴工作衣帽，工作鞋襪。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 5, disable: { morning: false, evening: false }, content: '工作中不抽菸嚼檳榔、飲食或其他可能汙染食品行為。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 6, disable: { morning: false, evening: false }, content: '處理即食食品須穿戴清潔手套或手部清潔乾淨消毒。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 7, disable: { morning: false, evening: false }, content: '正確配膳戴手套口罩(無露出口鼻)帽子。 ', breakfast: 'good', lunch: null, dinner: null },
+              { id: 8, disable: { morning: false, evening: false }, content: '正確洗手消毒手部保持清潔', breakfast: 'good', lunch: null, dinner: null },
+              { id: 9, disable: { morning: false, evening: false }, content: '私人物品(含衣物)飲水、飲料管理。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 10, disable: { morning: false, evening: false }, content: '不配膳供膳須戴口罩。', breakfast: 'good', lunch: null, dinner: null },
+            ]
+          },
+          {
+            title: '作業場所衛生管理',
+            items: [
+              { id: 1, disable: { morning: false, evening: false }, content: '地面、牆壁、管線、樓板或天花板衛生(無長霉、剝落、積灰、納垢或結露)。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 2, disable: { morning: true, evening: false }, content: '排水系統、截流(油)設施清潔。', breakfast: null, lunch: null, dinner: null },
+              { id: 3, disable: { morning: false, evening: false }, content: '照明設備、空調系統清潔。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 4, disable: { morning: false, evening: false }, content: '所有出入口、門窗、孔道清潔。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 5, disable: { morning: false, evening: false }, content: '所有作業檯面清潔。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 6, disable: { morning: false, evening: false }, content: '用水處所盛水容器衛生。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 7, disable: { morning: false, evening: false }, content: '洗手乾手、消毒設備及周邊應保持清潔。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 8, disable: { morning: false, evening: false }, content: '廢棄物管理(不堆積、無異味、垃圾桶清潔有蓋)。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 9, disable: { morning: false, evening: false }, content: '清潔、化學藥劑及清潔用具器具管理。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 10, disable: { morning: false, evening: false }, content: '病媒出沒痕跡或現蹤。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 11, disable: { morning: false, evening: false }, content: '烹煮之鍋鏟砧板等設備衛生', breakfast: 'good', lunch: null, dinner: null },
+              { id: 12, disable: { morning: false, evening: false }, content: '灶台、排油煙機罩等清潔。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 13, disable: { morning: false, evening: false }, content: '清洗消毒完成餐器具放置防止二次污染。', breakfast: 'good', lunch: null, dinner: null },
+            ]
+          },
+          {
+            title: '原料半成品成品貯存管理',
+            items: [
+              {id: 1, disable: { morning: false, evening: false }, content: '依原材(物)料、半成品及成品，依清潔度及類別不同分區分層架放置，無交叉污染。', breakfast: 'good', lunch: null, dinner: null },
+              {id: 2, disable: { morning: false, evening: false }, content: '標示入庫(開封或製造)日期及有效日期，且先進先出先到期先使用。', breakfast: 'good', lunch: null, dinner: null },
+              {id: 3, disable: { morning: false, evening: false }, content: '冷凍冷藏設備保持清潔，貯存溫度(≦-18℃及0℃~7℃)符合，並定時紀錄。', breakfast: 'good', lunch: null, dinner: null },
+              {id: 4, disable: { morning: false, evening: false }, content: '設退貨區及待報廢品暫存區及妥善管理。', breakfast: 'good', lunch: null, dinner: null },
+            ]
+          },
+          {
+            title: '製備與品質管制',
+            items: [
+              { id: 1, disable: { morning: false, evening: false }, content: '作業區整體環境及設備設施須維持清潔整齊。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 2, disable: { morning: false, evening: false }, content: '各類食材暫存、清洗、分切、備料或烹煮須防止交叉汙染。 不得放置地面暫存。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 3, disable: { morning: false, evening: false }, content: '正確解凍(冷藏或包覆流水)及醃漬作業無交叉污染。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 4, disable: { morning: false, evening: false }, content: '烹調菜餚須謹守衛生行為，管控生熟食交叉污染。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 5, disable: { morning: false, evening: false }, content: '冷卻作業，須依作業基準操作並記錄。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 6, disable: { morning: false, evening: false }, content: '盛裝成品容器等須確認清潔。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 7, disable: { morning: false, evening: false }, content: '成品確認不得有後污染行為(如品嘗菜餚量測溫度)。', breakfast: 'good', lunch: null, dinner: null },
+            ]
+          },
+          {
+            title: '配膳備膳及供膳',
+            items: [
+              { id: 1, disable: { morning: false, evening: false }, content: '排盤備餐人員須戴口罩及乾淨手套，不得對食物講話或有污染菜餚等之行為。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 2, disable: { morning: false, evening: false }, content: '供餐過程有污染，或影響衛生及安全事項，須即時排除。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 3, disable: { morning: false, evening: false }, content: '供餐(膳)人員良好衛生行為。', breakfast: 'good', lunch: null, dinner: null },
+            ]
+          }
+        ]
+      }
+    ]
   }
 };

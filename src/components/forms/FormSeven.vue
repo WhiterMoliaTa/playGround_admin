@@ -99,7 +99,7 @@ const timeDialog = ref({});
 const formDone = ref(false);
 
 function checkValidRecord() {
-  formDone.value = localRecords.value.every(record => !isRecordEmpty(record));
+  formDone.value = localRecords.value.every(record => isRecordNotEmpty(record));
 };
 
 // Initialize data
@@ -140,12 +140,12 @@ function removeRecord(index) {
   }
 }
 
-function isRecordEmpty(record) {
-  return !record.company && !record.name && !record.time && !record.issues;
+function isRecordNotEmpty(record) {
+  return record.company && record.name && record.time && record.issues;
 }
 
 function tempSave() {
-  let filteredRecords = localRecords.value.filter(record => !isRecordEmpty(record));
+  let filteredRecords = localRecords.value.filter(record => isRecordNotEmpty(record));
   let newFormData = [];
   if (filteredRecords.length === 0) {
     filteredRecords = [{ company: null, name: '', time: null, issues: '' }];
@@ -158,7 +158,7 @@ function tempSave() {
 }
 
 function save() {
-  let filteredRecords = localRecords.value.filter(record => !isRecordEmpty(record));
+  let filteredRecords = localRecords.value.filter(record => isRecordNotEmpty(record));
   let newFormData = [];
   if (filteredRecords.length === 0) {
     emit('formDoneEvent', { formName: 'formSeven', state: 'success' });

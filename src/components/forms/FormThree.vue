@@ -32,11 +32,11 @@
                   variant="outlined"
                   density="compact"
                 ></v-text-field> -->
-                <v-text-field v-model="record.recycleTime" :active="timeDialog[`recyclt-${recordIndex}`]"
-                  :focused="timeDialog[`recyclt-${recordIndex}`]" label="回收時間" readonly>
-                  <v-dialog v-model="timeDialog[`recyclt-${recordIndex}`]" activator="parent" width="auto">
-                    <v-time-picker v-if="timeDialog[`recyclt-${recordIndex}`]" v-model="record.recycleTime"
-                      @update:focused="checkValidRecord"></v-time-picker>
+                <v-text-field v-model="record.recycleTime" :active="timeDialog[`recycle-${recordIndex}`]"
+                  :focused="timeDialog[`recycle-${recordIndex}`]" label="回收時間" readonly>
+                  <v-dialog v-model="timeDialog[`recycle-${recordIndex}`]" activator="parent" width="auto">
+                    <v-time-picker v-if="timeDialog[`recycle-${recordIndex}`]" v-model="record.recycleTime" scrollable
+                      format="24hr" @update:focused="checkValidRecord"></v-time-picker>
                   </v-dialog>
                 </v-text-field>
               </v-col>
@@ -56,7 +56,7 @@
 
             <div v-for="(dish, dishIndex) in record.dishAndLeftoverPortion" :key="`dish-${recordIndex}-${dishIndex}`"
               class="mb-2">
-              <v-row v-if="dishIndex > 0" class="mt-2">
+              <v-row :class="dishIndex === 0 ? 'mt-2' : ''">
                 <v-col cols="6">
                   <v-text-field v-model="dish.dishName" label="餐點名稱" variant="outlined" density="compact" hide-details
                     @update:focused="checkValidRecord"></v-text-field>
@@ -162,7 +162,6 @@ const formDone = ref(false);
 // Load form data
 onMounted(() => {
   loadFormData();
-  checkValidRecord();
 });
 
 // Watch for form config changes
@@ -194,6 +193,7 @@ function loadFormData() {
   } else {
     alert('異常：無法取得表單資料');
   }
+  checkValidRecord();
 }
 
 function createEmptyRecord() {
@@ -210,12 +210,14 @@ function createEmptyRecord() {
 }
 
 function checkValidRecord() {
-  formDone.value = localRecords.value.every(record => !isRecordEmpty(record));
+  formDone.value = localRecords.value.every(record => isRecordNotEmpty(record));
 };
 
-function isRecordEmpty(record) {
-  return !record.recycleTime && isNotBlankUtil(record.ward) && isNotBlankUtil(record.plate) &&
-    !record.dishAndLeftoverPortion.every(dish => isNotBlankUtil(dish.dishName));
+function isRecordNotEmpty(record) {
+  console.log(isNotBlankUtil(record.recycleTime) && isNotBlankUtil(record.ward) && record.plate > 0 &&
+    record.dishAndLeftoverPortion.every(dish => isNotBlankUtil(dish.dishName)));
+  return isNotBlankUtil(record.recycleTime) && isNotBlankUtil(record.ward) && record.plate > 0 &&
+    record.dishAndLeftoverPortion.every(dish => isNotBlankUtil(dish.dishName));
 }
 
 function addDish(record) {

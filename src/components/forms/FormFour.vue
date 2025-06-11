@@ -103,8 +103,6 @@ const showBreakfast = computed(() => props.time.includes('morning'));
 const showLunch = computed(() => props.time.includes('noon'));
 const showDinner = computed(() => props.time.includes('evening'));
 
-console.log('Show which meals:', showBreakfast.value, showLunch.value, showDinner.value);
-
 const formDone = ref(false);
 
 // Local form data
@@ -196,7 +194,6 @@ function save() {
 
   updateAddiForm('formFour', newFormData);
   emit('formDoneEvent', { formName: 'formFour', state: state });
-  emit('save', newFormData);
 }
 
 function cancel() {

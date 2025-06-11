@@ -138,6 +138,16 @@ export const testTCHGJobs = [
       {
         id: 5, title: '14.填寫每日衛生檢查表(TCHG-G4-02)。', checked: false,
         forms: {
+          title: "每日衛生檢查表",
+          checkObject: "每日衛生檢查",
+          formButtons: [
+            { id: 1, label: '每日衛生檢查表', formName: 'formG402', time: 'morning' }
+          ],
+          reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「每日衛生檢查表」",
+          formName: ['formG402'],
+          formRequired: true,
+          time: 'morning',
+          passed: false,
         },
         remarks: ''
       },
