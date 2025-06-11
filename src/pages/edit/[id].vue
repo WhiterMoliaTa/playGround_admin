@@ -11,7 +11,9 @@
             <v-tabs v-model="tab" bg-color="primary">
                 <v-tab value="1">詳細資訊</v-tab>
                 <v-tab value="2">節點事件</v-tab>
-                <v-tab value="3">搜尋節點文件</v-tab>
+                <v-tab value="4">案件討論</v-tab>
+                <v-tab value="3">搜尋文件</v-tab>
+                
             </v-tabs>
 
             <v-tabs-window v-model="tab">
@@ -99,8 +101,8 @@
 
                             <v-expansion-panel-text>
                                 <div v-if="editIndex === index">
-                                    <nodeEventEditor :model="editEventData" @open-file="openFile" @remove-file="removeFile"
-                                        @update:new-files="updateNewFiles" />
+                                    <nodeEventEditor :model="editEventData" @open-file="openFile"
+                                        @remove-file="removeFile" @update:new-files="updateNewFiles" />
                                     <v-divider class="my-3" />
 
                                     <v-btn color="primary" @click="saveEdit(index)">儲存</v-btn>
@@ -155,7 +157,8 @@
                                             accept=".pdf,.doc,.docx,.txt,.jpg,.png" show-size prepend-icon=""
                                             color="deep-purple-accent-4" variant="outlined" counter>
                                             <template v-slot:selection="{ originalNames }">
-                                                <template v-for="(originalName, index) in originalNames" :key="originalName">
+                                                <template v-for="(originalName, index) in originalNames"
+                                                    :key="originalName">
                                                     <v-chip v-if="index < 2" class="me-2" color="deep-purple-accent-4"
                                                         size="small" label>
                                                         {{ originalName }}
@@ -193,16 +196,16 @@
                 </v-tabs-window-item>
 
                 <v-tabs-window-item value="3">
-                    <v-card class="elevation-4 pa-4" style="border-radius: 12px;">
+                    <v-card class="pa-4" >
                         <v-text-field label="搜尋節點文件" v-model="searchQuery" clearable outlined dense hide-details
                             style="background: #f9f9f9; border-radius: 8px;">
 
                         </v-text-field>
 
                         <v-list two-line>
-                            <v-list-item v-for="file in filteredFiles" :key="file.uuid" class="file-list-item"
-                                style="border-radius: 8px;" @mouseenter="hover = file.uuid" @mouseleave="hover = null"
-                                :style="{ backgroundColor: hover === file.uuid ? '#e3f2fd' : 'transparent' }"
+                            <v-list-item v-for="file in filteredFiles" :key="file.fileId" class="file-list-item"
+                                style="border-radius: 8px;" @mouseenter="hover = file.fileId" @mouseleave="hover = null"
+                                :style="{ backgroundColor: hover === file.fileId ? '#e3f2fd' : 'transparent' }"
                                 :title="file.originalName">
                                 <template v-slot:append>
                                     <v-btn color="blue-lighten-1" icon="mdi-download" variant="text"></v-btn>
@@ -214,13 +217,19 @@
                             </v-list-item>
                         </v-list>
                     </v-card>
-
                 </v-tabs-window-item>
+                <v-tabs-window-item value="4">
+                    <v-card class="pa-4">
+                        <caseForum />
+                    </v-card>
+                </v-tabs-window-item>
+
             </v-tabs-window>
         </v-card-text>
     </v-card>
 </template>
 <script setup>
+import caseForum from '../../components/caseForum.vue';
 import { onMounted, reactive, ref, toRaw, computed } from 'vue';
 import { testCases } from '../../data/testCase';
 import { testCaseEvents, EventFiles } from '../../data/testCaseEvent';
@@ -388,7 +397,7 @@ const setNodeCaseItem = (node) => {
     });
     EventFiles.forEach(file => {
         nodeEvents.some(event => {
-            if (event.eventId === file.eventId) {
+            if (event.eventId === file.referenceId) {
                 event.files.push(file);
             }
         });
@@ -460,9 +469,16 @@ const saveNewEvent = () => {
 };
 const hover = ref(null);
 const searchQuery = ref('');
+import { forumTestData } from '../../data/testForum';
+const forumFiles = forumTestData.files;
+
+const AllFiles = computed(() => [...EventFiles, ...forumFiles]);
+
 const filteredFiles = computed(() => {
-    if (!searchQuery.value) return EventFiles;
-    return EventFiles.filter(file => file.originalName.includes(searchQuery.value));
+  if (!searchQuery.value) return AllFiles.value;
+  return AllFiles.value.filter(file =>
+    file.originalName.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
 });
 
 const selectedNodeCaseAddition = computed(() => {

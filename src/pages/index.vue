@@ -604,7 +604,7 @@ const EventFilesLen = (caseId) => {
   // 先找出此案件底下所有事件的 uuid
   const eventUuids = testCaseEvents
     .filter(event => event.caseId === caseId)
-    .map(event => event.eventId);
+    .map(event => event.referenceId);
 
   // 再統計這些事件的檔案總數
   return EventFiles.filter(file => eventUuids.includes(file.eventId)).length;
