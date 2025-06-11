@@ -74,7 +74,6 @@
 
 <script setup>
 import { ref, inject, onMounted, watch, computed } from 'vue';
-import { ca } from 'vuetify/locale';
 
 const emit = defineEmits(['cancel', 'formDoneEvent']);
 
@@ -182,13 +181,21 @@ function checkAllSelcted() {
 };
 
 function tempSave() {
-
+  let formNoProblem = formItems.value.every(section => {
+    section.items.every(item => {
+      if (showBreakfast.value && item.breakfast == null && !item.disable.morning) return false;
+      if (showLunch.value && item.lunch == null) return false;
+      if (showDinner.value && item.dinner === null && !item.disable.evening) return false;
+      if (item.breakfast !== 'good' || item.lunch !== 'good' || item.dinner !== 'good') return false;
+      return true;
+    });
+  });
   const newFormData = [{
     title: '每日衛生檢查表',
     passed: {
-      morning: showBreakfast.value,
-      noon: showLunch.value,
-      evening: showDinner.value
+      morning: showBreakfast.value && formNoProblem,
+      noon: showLunch.value && formNoProblem,
+      evening: showDinner.value && formNoProblem
     },
     sections: JSON.parse(JSON.stringify(formItems.value))
   }];
@@ -211,11 +218,11 @@ function save() {
   let newFormData = [{
     title: '每日衛生檢查表',
     passed: {
-      morning: showBreakfast.value,
-      noon: showLunch.value,
-      evening: showDinner.value
+      morning: showBreakfast && formNoProblem,
+      noon: showLunch.value && formNoProblem,
+      evening: showDinner.value && formNoProblem
     },
-    form: JSON.parse(JSON.stringify(formItems.value))
+    sections: JSON.parse(JSON.stringify(formItems.value))
   }];
 
   updateAddiForm('formG402', newFormData);
@@ -230,8 +237,9 @@ function cancel() {
 
 <style scoped>
 .form-g4-02 {
-  max-width: 100%;
+  max-height: 80vh;
   margin: 0 auto;
+  overflow-y: auto;
 }
 
 th,
@@ -241,11 +249,22 @@ td {
   vertical-align: middle;
 }
 
-/* Prevent tables from getting too tall */
 .v-table {
-  max-height: 80vh;
-  overflow-y: auto;
   font-size: 1rem;
+  border-collapse: collapse;
+}
+
+.v-table td {
+  vertical-align: middle;
+}
+
+.v-table tr:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Make the icons slightly larger for better visibility */
+.v-icon.small {
+  font-size: 18px;
 }
 
 /* Print styles */

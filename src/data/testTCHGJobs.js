@@ -1,4 +1,4 @@
-export const testTCHGJobs = [
+export const testMorningTCHGJobs = [
   {
     section: "first-section",
     title: "晨點作業",

@@ -47,7 +47,7 @@
               <template v-slot:append>
                 <div class="d-flex align-center" :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa') }">
                   <v-btn :key="`button-${index}-${item.id}`" hide-details variant="text" icon class="ma-0 pa-0"
-                    @click="handleButtonClick(item, job.section)">
+                    :disabled="!canComplete(item, job.section)" @click="handleButtonClick(item, job.section)">
                     <v-icon
                       :color="state[`button-${job.section}-${item.id}`] && item.checked ? state[`button-${job.section}-${item.id}`] : 'grey'">
                       mdi-check-circle</v-icon>
@@ -98,23 +98,46 @@
   </div>
   <div class="d-flex justify-space-around align-center draft-func-footer">
     <v-btn variant="flat" class="border-md" color="white" @click="tempSaveDraft" rounded>暫存草稿</v-btn>
-    <v-btn variant="flat" disabled @click="signDraft" rounded>簽章送出</v-btn>
+    <v-btn variant="flat" :disabled="isRootCompleted" @click="signDraft" rounded>簽章送出</v-btn>
   </div>
   <!-- <div class="d-flex justify-end align-center mt-4">
-              <span class="mr-4">主管簽核:</span>
-              <div class="signature-line" @click="openSignatureDialog"></div>
-            </div> -->
+    <span class="mr-4">主管簽核:</span>
+    <div class="signature-line" @click="openSignatureDialog"></div>
+  </div> -->
+  <v-dialog v-model="showSignatureDialog" max-width="500px">
+    <v-card class="pa-2">
+      <v-card-title>簽章送出</v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
+        <div>表單：供膳管理日誌</div>
+        <div>時間戳記：{{ signatureTimestamp }}</div>
+        <div>時段：<span class="fillTime">{{ shift === 'morning' ? '早班' :
+            shift === 'evening' ? '晚班' : 'ERROR'}}</span></div>
+      </v-card-text>
+      <v-card-text>
+        <canvas ref="signatureCanvas" width="450" height="200" style="border: 1px solid #ccc;"></canvas>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="error" @click="clearSignature">清除</v-btn>
+        <v-btn color="primary" @click="saveSignature">確認</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
 import { ref, computed, reactive, watch, onMounted, provide } from 'vue';
 import DialogComponent from '../../components/TCHG/DialogComponent.vue';
 import RemarksDialog from '../../components/TCHG/RemarksDialog.vue';
-import { testTCHGJobs } from "../../data/testTCHGJobs";
+import { testMorningTCHGJobs } from "../../data/testTCHGJobs";
 import { testTCHGForms } from '../../data/testTCHGForms';
 
-const jobs = ref(testTCHGJobs);
+const jobs = ref(testMorningTCHGJobs);
 const forms = ref(testTCHGForms);
+const signature = ref(null);
+const shift = ref('morning');
+
 onMounted(() => {
   jobs.value.forEach((job, jobIndex) => {
     job.items.forEach(item => {
@@ -164,6 +187,18 @@ onMounted(() => {
   }, 1000);
 });
 
+const signatureTimestamp = computed(() => {
+  return new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
+});
+
+const sectionsToDone = computed(() => {
+  return jobs.value.length;
+});
+
+const isRootCompleted = computed(() => {
+  return completedCount.value === sectionsToDone.value ? true : false;
+});
+
 provide('getAddiForm', (formName) => {
   return forms.value[formName]?.additionalForm || [];
 });
@@ -207,10 +242,22 @@ provide('updateAddiForm', (formName, newData) => {
 
 });
 
+function canComplete(item, jobSection) {
+  const currentJob = jobs.value.find(job => job.section === jobSection);
+  if (!currentJob) return false;
+
+  const currentItemIndex = currentJob.items.findIndex(i => i.id === item.id);
+
+  // If it's the first item, it's always completable
+  if (currentItemIndex === 0) return true;
+
+  // Check if all previous items are completed
+  return currentJob.items
+    .slice(0, currentItemIndex)
+    .every(prevItem => prevItem.checked);
+}
+
 const completedCount = ref(0);
-const sectionsToDone = computed(() => {
-  return jobs.value.length;
-});
 
 const jobRemarks = ref(null);
 
@@ -261,7 +308,6 @@ function handleButtonClick(item, jobSection) {
     item.checked = false;
   }
   updateCompletedCount();
-
 }
 
 function saveDialogAndAdditionalForm(allData) {
@@ -273,7 +319,7 @@ function tempSaveDraft() {
 }
 
 function signDraft() {
-  console.log("簽章送出功能尚未實作");
+  openSignatureDialog();
 }
 
 // Signature handling
@@ -365,7 +411,7 @@ function clearSignature() {
 }
 
 function saveSignature() {
-  formData.signature = signatureCanvas.value.toDataURL('image/png');
+  signature.value = signatureCanvas.value.toDataURL('image/png');
   showSignatureDialog.value = false;
 }
 </script>
@@ -373,11 +419,4 @@ function saveSignature() {
 <style scoped>
 @import url('../../css/TCHG_mealLog.css');
 @import url('../../css/TCHG_mealLog_MobileS.css') (max-width: 320px) and (orientation: portrait);
-
-.signature-line {
-  width: 200px;
-  height: 2px;
-  background-color: #000;
-  cursor: pointer;
-}
 </style>

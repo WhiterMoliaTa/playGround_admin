@@ -10,7 +10,7 @@
         <v-col :cols="adjustMealColSize" v-if="showLunch" class="d-flex align-center justify-center">午餐</v-col>
         <v-col :cols="adjustMealColSize" v-if="showDinner" class="d-flex align-center justify-center">晚餐</v-col>
         <!-- <v-col cols="4"></v-col> -->
-        <v-col :cols="getRemarksColSize()" class="d-flex align-center">備註</v-col>
+        <v-col :cols="getRemarksColSize" class="d-flex align-center">備註</v-col>
       </v-row>
 
       <v-divider></v-divider>
@@ -20,7 +20,7 @@
 
         <v-col :cols="adjustMealColSize" v-if="showBreakfast" class="d-flex flex-column align-center">
           <v-radio-group inline v-model="item.breakfast" class="dflex flex-column align-center" row hide-details
-            @update:modelValue="checkAllSelcted()">
+            @update:modelValue="checkAllSelcted">
             <v-radio :value="true" color="success" true-icon="mdi-check-circle" false-icon="mdi-check-circle"
               density="compact"></v-radio>
             <v-radio :value="false" color="error" true-icon="mdi-close-circle" false-icon="mdi-close-circle"
@@ -30,7 +30,7 @@
 
         <v-col :cols="adjustMealColSize" v-if="showLunch" class="d-flex flex-column align-center">
           <v-radio-group inline v-model="item.lunch" class="dflex flex-column align-center" row hide-details
-            @update:modelValue="checkAllSelcted()">
+            @update:modelValue="checkAllSelcted">
             <v-radio :value="true" color="success" true-icon="mdi-check-circle" false-icon="mdi-check-circle"
               density="compact"></v-radio>
             <v-radio :value="false" color="error" true-icon="mdi-close-circle" false-icon="mdi-close-circle"
@@ -40,7 +40,7 @@
 
         <v-col :cols="adjustMealColSize" v-if="showDinner" class="d-flex flex-column align-center">
           <v-radio-group inline v-model="item.dinner" class="dflex flex-column align-center" row hide-details
-            @update:modelValue="checkAllSelcted()">
+            @update:modelValue="checkAllSelcted">
             <v-radio :value="true" color="success" true-icon="mdi-check-circle" false-icon="mdi-check-circle"
               density="compact"></v-radio>
             <v-radio :value="false" color="error" true-icon="mdi-close-circle" false-icon="mdi-close-circle"
@@ -48,7 +48,7 @@
           </v-radio-group>
         </v-col>
 
-        <v-col :cols="getRemarksColSize()">
+        <v-col :cols="getRemarksColSize">
           <v-btn variant="text" icon @click="openRemarkDialog(item)">
             <v-icon>mdi-dots-horizontal-circle</v-icon>
           </v-btn>
@@ -108,16 +108,16 @@ const formDone = ref(false);
 // Local form data
 const formItems = ref([]);
 
-const adjustMealColSize = () => {
+const adjustMealColSize = computed(() => {
   return 5 - [showBreakfast.value, showLunch.value, showDinner.value].filter(Boolean).length;
-};
+});
 
 // Determine the size of the remarks column based on visible meal columns
-const getRemarksColSize = () => {
+const getRemarksColSize = computed(() => {
   const visibleColumns = [showBreakfast.value, showLunch.value, showDinner.value].filter(Boolean).length;
   // 12 - 5 (title column) - (2 * number of visible meal columns)
   return 12 - 5 - (adjustMealColSize * visibleColumns);
-};
+});
 
 const itemRemarks = ref(null);
 const showRemarksDialog = ref(false);
@@ -194,6 +194,7 @@ function save() {
 
   updateAddiForm('formFour', newFormData);
   emit('formDoneEvent', { formName: 'formFour', state: state });
+  cancel();
 }
 
 function cancel() {
