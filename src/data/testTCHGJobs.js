@@ -6,19 +6,19 @@ export const testTCHGJobs = [
     items: [
       {
         id: 1, title: '閱讀前日工作日誌及交班事項，並請相關人員簽核。', checked: false,
-        forms: {
-          title: "前日工作日誌",
-          checkObject: "閱讀前日工作日誌及交班事項",
-          formButtons: [
-            { id: 1, label: '交班事項', formName: 'shiftHandoverLog', time: 'morning' }
-          ],
-          reminder: "請閱讀「交班事項」「前日工作日誌」",
-          formName: ['shiftHandoverLog'],
-          formRequired: true,
-          time: 'morning',
-          passed: false,
-        }
-        , remarks: ''
+        // forms: {
+        //   title: "前日工作日誌",
+        //   checkObject: "閱讀前日工作日誌及交班事項",
+        //   formButtons: [
+        //     { id: 1, label: '交班事項', formName: 'shiftHandoverLog', time: 'morning' }
+        //   ],
+        //   reminder: "請閱讀「交班事項」「前日工作日誌」",
+        //   formName: ['shiftHandoverLog'],
+        //   formRequired: true,
+        //   time: 'morning',
+        //   passed: false,
+        // },
+        remarks: ''
       },
       { id: 2, title: '檢查瓦斯漏氣受信總機指示燈號正常。', checked: false, remarks: '' },
       {
@@ -27,9 +27,9 @@ export const testTCHGJobs = [
           title: "檢核確認",
           checkObject: "確認員工到班及服裝儀容",
           checkBoxs: [
-            { id: 1, label: '員工到班', checked: false },
-            { id: 2, label: '服裝儀容符合規定', checked: false },
-            { id: 3, label: '個人儀容符合規定', checked: false }
+            { id: 1, label: '員工到班', checked: true },
+            { id: 2, label: '服裝儀容符合規定', checked: true },
+            { id: 3, label: '個人儀容符合規定', checked: true }
           ],
           reminder: "檢核項目符合規範請點選「確認」\n若有不符合規範項目,請填寫「人事管理紀錄表」",
           formName: ['formFive'],
@@ -96,7 +96,7 @@ export const testTCHGJobs = [
           title: "進貨廠商管理紀錄",
           checkObject: "進貨廠商管理",
           checkBoxs: [
-            { id: 1, label: '無異常', checked: false },
+            { id: 1, label: '無異常', checked: true },
           ],
           // formButtons: [
           //   { id: 1, label: '進貨廠商管理紀錄', formName: 'formSeven', time: 'morning' },
@@ -159,12 +159,12 @@ export const testTCHGJobs = [
           title: "菜餚品質與數量檢討紀錄",
           checkObject: "菜餚品質與數量檢討",
           formButtons: [
-            { id: 1, label: '菜餚品質與數量檢討紀錄', formName: 'formFour', time: 'afternoon' }
+            { id: 1, label: '菜餚品質與數量檢討紀錄', formName: 'formFour', time: 'noon' }
           ],
           reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「菜餚品質與數量檢討紀錄」",
           formName: ['formFour'],
           formRequired: true,
-          time: 'afternoon',
+          time: 'morning',
           passed: false,
         },
       }

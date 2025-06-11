@@ -6,10 +6,10 @@
 
       <v-row class="my-2 font-weight-bold text-center">
         <v-col cols="5" class="d-flex align-center">檢核項目</v-col>
-        <!-- <v-col cols="2" v-if="showBreakfast" class="d-flex align-center justify-center">早餐</v-col>
-        <v-col cols="2" v-if="showLunch" class="d-flex align-center justify-center">午餐</v-col>
-        <v-col cols="2" v-if="showDinner" class="d-flex align-center justify-center">晚餐</v-col> -->
-        <v-col cols="4"></v-col>
+        <v-col :cols="adjustMealColSize" v-if="showBreakfast" class="d-flex align-center justify-center">早餐</v-col>
+        <v-col :cols="adjustMealColSize" v-if="showLunch" class="d-flex align-center justify-center">午餐</v-col>
+        <v-col :cols="adjustMealColSize" v-if="showDinner" class="d-flex align-center justify-center">晚餐</v-col>
+        <!-- <v-col cols="4"></v-col> -->
         <v-col :cols="getRemarksColSize()" class="d-flex align-center">備註</v-col>
       </v-row>
 
@@ -18,7 +18,7 @@
       <v-row v-for="item in formItems" :key="item.id" class="my-3">
         <v-col cols="5" class="d-flex align-center">{{ item.title }}</v-col>
 
-        <v-col cols="4" v-if="showBreakfast" class="d-flex flex-column align-center">
+        <v-col :cols="adjustMealColSize" v-if="showBreakfast" class="d-flex flex-column align-center">
           <v-radio-group inline v-model="item.breakfast" class="dflex flex-column align-center" row hide-details
             @update:modelValue="checkAllSelcted()">
             <v-radio :value="true" color="success" true-icon="mdi-check-circle" false-icon="mdi-check-circle"
@@ -28,9 +28,9 @@
           </v-radio-group>
         </v-col>
 
-        <v-col cols="4" v-if="showLunch" class="d-flex flex-column align-center">
+        <v-col :cols="adjustMealColSize" v-if="showLunch" class="d-flex flex-column align-center">
           <v-radio-group inline v-model="item.lunch" class="dflex flex-column align-center" row hide-details
-            @update="checkAllSelcted()">
+            @update:modelValue="checkAllSelcted()">
             <v-radio :value="true" color="success" true-icon="mdi-check-circle" false-icon="mdi-check-circle"
               density="compact"></v-radio>
             <v-radio :value="false" color="error" true-icon="mdi-close-circle" false-icon="mdi-close-circle"
@@ -38,9 +38,9 @@
           </v-radio-group>
         </v-col>
 
-        <v-col cols="4" v-if="showDinner" class="d-flex flex-column align-center">
+        <v-col :cols="adjustMealColSize" v-if="showDinner" class="d-flex flex-column align-center">
           <v-radio-group inline v-model="item.dinner" class="dflex flex-column align-center" row hide-details
-            @update="checkAllSelcted()">
+            @update:modelValue="checkAllSelcted()">
             <v-radio :value="true" color="success" true-icon="mdi-check-circle" false-icon="mdi-check-circle"
               density="compact"></v-radio>
             <v-radio :value="false" color="error" true-icon="mdi-close-circle" false-icon="mdi-close-circle"
@@ -103,16 +103,22 @@ const showBreakfast = computed(() => props.time.includes('morning'));
 const showLunch = computed(() => props.time.includes('noon'));
 const showDinner = computed(() => props.time.includes('evening'));
 
+console.log('Show which meals:', showBreakfast.value, showLunch.value, showDinner.value);
+
 const formDone = ref(false);
 
 // Local form data
 const formItems = ref([]);
 
+const adjustMealColSize = () => {
+  return 5 - [showBreakfast.value, showLunch.value, showDinner.value].filter(Boolean).length;
+};
+
 // Determine the size of the remarks column based on visible meal columns
 const getRemarksColSize = () => {
   const visibleColumns = [showBreakfast.value, showLunch.value, showDinner.value].filter(Boolean).length;
   // 12 - 5 (title column) - (2 * number of visible meal columns)
-  return 12 - 5 - (4 * visibleColumns);
+  return 12 - 5 - (adjustMealColSize * visibleColumns);
 };
 
 const itemRemarks = ref(null);
@@ -181,7 +187,7 @@ function save() {
     if (showDinner.value && item.dinner !== true) return false;
     return true;
   });
-  let state = formNoProblem ? 'success' : 'error'; 
+  let state = formNoProblem ? 'success' : 'error';
 
   let newFormData = [{
     title: '菜餚品質與數量檢討紀錄',
@@ -189,7 +195,7 @@ function save() {
   }];
 
   updateAddiForm('formFour', newFormData);
-  emit('formDoneEvent', { formName: 'formFour',state: state});
+  emit('formDoneEvent', { formName: 'formFour', state: state });
   emit('save', newFormData);
 }
 

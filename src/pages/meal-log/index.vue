@@ -75,10 +75,10 @@
         </v-row>
       </div>
     </v-card>
-    <v-container class="d-flex justify-space-around align-center draft-func-footer">
+    <div class="d-flex justify-space-around align-center draft-func-footer">
       <v-btn variant="flat" class="border-md" color="white" @click="tempSaveDraft" rounded>暫存草稿</v-btn>
       <v-btn variant="flat" disabled @click="signDraft" rounded>簽章送出</v-btn>
-    </v-container>
+    </div>
     <DialogComponent v-model:show="dialogState.show" :title="dialogState.title" :check-object="dialogState.checkObject"
       :check-boxs="dialogState.checkBoxs" :form-buttons="dialogState.formButtons"
       :additional-form="dialogState.additionalForm" :form-name="dialogState.formName"
@@ -248,6 +248,14 @@ function handleButtonClick(item, jobSection) {
 
 function saveDialogAndAdditionalForm(allData) {
 
+}
+
+function tempSaveDraft(){
+  console.log("暫存草稿功能尚未實作");
+}
+
+function signDraft() {
+  console.log("簽章送出功能尚未實作");
 }
 </script>
 

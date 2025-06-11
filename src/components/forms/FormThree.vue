@@ -14,21 +14,13 @@
             </v-row>
             <v-row>
               <v-col cols="4" v-if="showBreakfast" class="d-flex flex-column align-center">
-                <v-checkbox-btn
-                  v-model="record.breakfast"
-                  color="success"
-                  true-icon="mdi-check-circle"
-                  false-icon="mdi-close-circle-outline"
-                ></v-checkbox-btn>
+                <v-checkbox-btn v-model="record.breakfast" color="success" true-icon="mdi-check-circle"
+                  false-icon="mdi-close-circle-outline" @update:focused="checkValidRecord"></v-checkbox-btn>
               </v-col>
-        
+
               <v-col cols="4" v-if="showLunch" class="d-flex flex-column align-center">
-                <v-checkbox-btn
-                  v-model="record.lunch"
-                  color="success"
-                  true-icon="mdi-check-circle"
-                  false-icon="mdi-close-circle-outline"
-                ></v-checkbox-btn>
+                <v-checkbox-btn v-model="record.lunch" color="success" true-icon="mdi-check-circle"
+                  false-icon="mdi-close-circle-outline" @update:focused="checkValidRecord"></v-checkbox-btn>
               </v-col>
             </v-row>
             <v-row>
@@ -40,86 +32,49 @@
                   variant="outlined"
                   density="compact"
                 ></v-text-field> -->
-                <v-text-field
-                  v-model="record.recycleTime"
-                  :active="timeDialog[`recyclt-${recordIndex}`]"
-                  :focused="timeDialog[`recyclt-${recordIndex}`]"
-                  label="回收時間"
-                  readonly
-                >
-                  <v-dialog
-                    v-model="timeDialog[`recyclt-${recordIndex}`]"
-                    activator="parent"
-                    width="auto"
-                  >
-                    <v-time-picker
-                      v-if="timeDialog[`recyclt-${recordIndex}`]"
-                      v-model="record.recycleTime"
-                    ></v-time-picker>
+                <v-text-field v-model="record.recycleTime" :active="timeDialog[`recyclt-${recordIndex}`]"
+                  :focused="timeDialog[`recyclt-${recordIndex}`]" label="回收時間" readonly>
+                  <v-dialog v-model="timeDialog[`recyclt-${recordIndex}`]" activator="parent" width="auto">
+                    <v-time-picker v-if="timeDialog[`recyclt-${recordIndex}`]" v-model="record.recycleTime"
+                      @update:focused="checkValidRecord"></v-time-picker>
                   </v-dialog>
                 </v-text-field>
               </v-col>
               <v-col cols="6">
-                <v-text-field
-                  v-model="record.ward"
-                  label="病房"
-                  variant="outlined"
-                  density="compact"
-                ></v-text-field>
+                <v-text-field v-model="record.ward" label="病房" variant="outlined" density="compact" hide-details
+                  @update:focused="checkValidRecord"></v-text-field>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
-                <v-text-field
-                  v-model="record.plate"
-                  label="盤數"
-                  type="number"
-                  variant="outlined"
-                  density="compact"
-                ></v-text-field>
+                <v-text-field v-model="record.plate" label="盤數" type="number" variant="outlined" density="compact"
+                  hide-details @update:focused="checkValidRecord"></v-text-field>
               </v-col>
             </v-row>
             <!-- Dish and Leftover Portions -->
             <v-card-subtitle class="px-0 pt-2">餐點剩餘份量</v-card-subtitle>
-        
-            <div v-for="(dish, dishIndex) in record.dishAndLeftoverPortion" :key="`dish-${recordIndex}-${dishIndex}`" class="mb-2">
-              <v-row>
+
+            <div v-for="(dish, dishIndex) in record.dishAndLeftoverPortion" :key="`dish-${recordIndex}-${dishIndex}`"
+              class="mb-2">
+              <v-row v-if="dishIndex > 0" class="mt-2">
                 <v-col cols="6">
-                  <v-text-field
-                    v-model="dish.dishName"
-                    label="餐點名稱"
-                    variant="outlined"
-                    density="compact"
-                  ></v-text-field>
+                  <v-text-field v-model="dish.dishName" label="餐點名稱" variant="outlined" density="compact" hide-details
+                    @update:focused="checkValidRecord"></v-text-field>
                 </v-col>
                 <v-col cols="5">
-                  <v-text-field
-                    v-model="dish.leftPortion"
-                    label="剩餘份量"
-                    variant="outlined"
-                    density="compact"
-                  ></v-text-field>
+                  <v-text-field v-model="dish.leftPortion" label="剩餘份量" variant="outlined" density="compact"
+                    hide-details @update:focused="checkValidRecord"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="d-flex align-center justify-center">
-                  <v-btn
-                    variant="text"
-                    icon="mdi-delete"
-                    size="small"
-                    color="error"
+                  <v-btn variant="text" icon="mdi-delete" size="small" color="error"
                     @click="removeDish(record, dishIndex)"
-                    :disabled="record.dishAndLeftoverPortion.length <= 1"
-                  ></v-btn>
+                    :disabled="record.dishAndLeftoverPortion.length <= 1"></v-btn>
                 </v-col>
               </v-row>
             </div>
             <v-row class="mt-2 mb-4">
               <v-col cols="12" class="d-flex justify-end">
-                <v-btn
-                  prepend-icon="mdi-plus"
-                  variant="outlined"
-                  size="small"
-                  @click="addDish(record)"
-                >
+                <v-btn prepend-icon="mdi-plus" variant="outlined" size="small" @click="addDish(record)">
                   新增餐點
                 </v-btn>
               </v-col>
@@ -127,24 +82,15 @@
             <!-- Remarks -->
             <v-row>
               <v-col cols="12">
-                <v-textarea
-                  v-model="record.remarks"
-                  label="備註"
-                  variant="outlined"
-                  density="compact"
-                ></v-textarea>
+                <v-textarea v-model="record.remarks" label="備註" variant="outlined" density="compact"
+                  @update:focused="checkValidRecord"></v-textarea>
               </v-col>
             </v-row>
             <!-- Delete Record Button -->
             <v-row>
               <v-col cols="12" class="d-flex justify-end">
-                <v-btn
-                  color="error"
-                  variant="text"
-                  icon="mdi-delete"
-                  @click="removeRecord(recordIndex)"
-                  :disabled="localRecords.length <= 1"
-                ></v-btn>
+                <v-btn color="error" variant="text" icon="mdi-delete" @click="removeRecord(recordIndex)"
+                  :disabled="localRecords.length <= 1"></v-btn>
               </v-col>
             </v-row>
           </v-card>
@@ -154,11 +100,7 @@
       <!-- Add New Record Button -->
       <v-row class="my-3">
         <v-col cols="12" class="d-flex justify-center">
-          <v-btn 
-            prepend-icon="mdi-plus" 
-            variant="outlined"
-            @click="addNewRecord"
-          >
+          <v-btn prepend-icon="mdi-plus" variant="outlined" @click="addNewRecord">
             新增記錄
           </v-btn>
         </v-col>
@@ -169,8 +111,12 @@
       <!-- Action Buttons -->
       <v-row>
         <v-col cols="12" class="d-flex justify-end">
-          <v-btn color="error" variant="text" class="mr-2" @click="cancel">取消</v-btn>
-          <v-btn color="primary" @click="save">儲存</v-btn>
+          <v-btn variant="outlined" rounded @click="tempSave()">暫存</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="deep-orange-lighten-4" class="text-white" :variant="!formDone ? 'outlined' : 'elevated'"
+            :readonly="!formDone" rounded @click="save()">儲存</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn variant="outlined" rounded class="mr-2" @click="cancel()">取消</v-btn>
         </v-col>
       </v-row>
     </v-card>
@@ -179,6 +125,7 @@
 
 <script setup>
 import { ref, inject, computed, watch, onMounted } from 'vue';
+import { isNotBlankUtil } from '../../utils/stringUtil';
 
 const props = defineProps({
   title: {
@@ -195,7 +142,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['save', 'cancel']);
+const emit = defineEmits(['save', 'cancel', 'formDoneEvent']);
 
 // Get form data access from parent
 const getAddiForm = inject('getAddiForm');
@@ -210,9 +157,12 @@ const showDinner = computed(() => props.time.includes('evening'));
 const localRecords = ref([]);
 const timeDialog = ref({});
 
+const formDone = ref(false);
+
 // Load form data
 onMounted(() => {
   loadFormData();
+  checkValidRecord();
 });
 
 // Watch for form config changes
@@ -221,14 +171,23 @@ watch(() => props.formConfig, () => {
 }, { deep: true });
 
 function loadFormData() {
-  const formData = getAddiForm('formThree');
+  let formData = getAddiForm('formThree');
   console.log('Loaded form data:', formData);
-  
+
   if (formData && formData.length > 0) {
-    const firstForm = formData[0];
-    
+    let firstForm = formData[0];
     if (firstForm.records && Array.isArray(firstForm.records)) {
-      localRecords.value = JSON.parse(JSON.stringify(firstForm.records));
+      let allRecords = JSON.parse(JSON.stringify(firstForm.records));
+
+      let filteredRecords = allRecords.filter(record => {
+        if (props.time.includes('morning') && record.breakfast !== null) return true;
+        if (props.time.includes('noon') && record.lunch !== null) return true;
+        if (props.time.includes('evening') && record.dinner !== null) return true;
+
+        // If no meal time check has been set yet, include this record for the current meal time
+        return record.breakfast === null && record.lunch === null && record.dinner === null;
+      });
+      localRecords.value = filteredRecords.length > 0 ? filteredRecords : [createEmptyRecord()];
     } else {
       alert('異常：無法取得表單資料');
     }
@@ -237,14 +196,38 @@ function loadFormData() {
   }
 }
 
+function createEmptyRecord() {
+  return {
+    recycleTime: '',
+    ward: '',
+    plate: 0,
+    dishAndLeftoverPortion: [{ dishName: '', leftPortion: '' }],
+    breakfast: props.time.includes('morning') ? false : null,
+    lunch: props.time.includes('noon') ? false : null,
+    dinner: props.time.includes('evening') ? false : null,
+    remarks: ''
+  };
+}
+
+function checkValidRecord() {
+  formDone.value = localRecords.value.every(record => !isRecordEmpty(record));
+};
+
+function isRecordEmpty(record) {
+  return !record.recycleTime && isNotBlankUtil(record.ward) && isNotBlankUtil(record.plate) &&
+    !record.dishAndLeftoverPortion.every(dish => isNotBlankUtil(dish.dishName));
+}
+
 function addDish(record) {
   record.dishAndLeftoverPortion.push({ dishName: '', leftPortion: '' });
+  checkValidRecord();
 }
 
 function removeDish(record, dishIndex) {
   if (record.dishAndLeftoverPortion.length > 1) {
     record.dishAndLeftoverPortion.splice(dishIndex, 1);
   }
+  checkValidRecord();
 }
 
 function addNewRecord() {
@@ -264,45 +247,54 @@ function removeRecord(index) {
   if (localRecords.value.length > 1) {
     localRecords.value.splice(index, 1);
   }
+  checkValidRecord();
 }
 
 function isRecordValid(record) {
   // Check required fields
   if (!record.recycleTime || !record.ward) return false;
-  
+
   // Check that all dishes have both name and portion
   for (const dish of record.dishAndLeftoverPortion) {
     if (!dish.dishName || !dish.leftPortion) return false;
   }
-  
+
   // Check meal checkboxes based on visible columns
   if (showBreakfast.value && record.breakfast !== true) return false;
   if (showLunch.value && record.lunch !== true) return false;
   if (showDinner.value && record.dinner !== true) return false;
-  
+
   return true;
 }
 
-function save() {
+function tempSave() {
   // Check if all records are valid
-  const allValid = localRecords.value.every(isRecordValid);
-  
-  // Create a passed object with the appropriate time period
-  const passed = {
-    morning: showBreakfast.value ? allValid : false,
-    noon: showLunch.value ? allValid : false,
-    evening: showDinner.value ? allValid : false
-  };
-  
+  const allValid = localRecords.value.every(record => isRecordValid(record));
+
   const newFormData = [{
     title: '病人餐點回收及盤餘抽查記錄',
-    passed: passed,
+    passed: allValid,
     records: JSON.parse(JSON.stringify(localRecords.value))
   }];
 
   // Update form data
   updateAddiForm('formThree', newFormData);
-  emit('save', newFormData);
+}
+
+function save() {
+  // Check if all records are valid
+  const allValid = localRecords.value.every(record => isRecordValid(record));
+
+  const newFormData = [{
+    title: '病人餐點回收及盤餘抽查記錄',
+    passed: allValid,
+    records: JSON.parse(JSON.stringify(localRecords.value))
+  }];
+
+  // Update form data
+  emit('formDoneEvent', { formName: 'formThree', state: allValid ? 'success' : 'error' });
+  updateAddiForm('formThree', newFormData);
+  cancel();
 }
 
 function cancel() {
