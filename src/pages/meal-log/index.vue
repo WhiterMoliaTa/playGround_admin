@@ -75,35 +75,21 @@
         </v-row>
       </div>
     </v-card>
-    <DialogComponent v-model:show="dialogState.show" :title="dialogState.title" :check-object="dialogState.checkObject"
-      :check-boxs="dialogState.checkBoxs" :form-buttons="dialogState.formButtons"
-      :additional-form="dialogState.additionalForm" :form-name="dialogState.formName"
-      :form-required="dialogState.formRequired" :time="dialogState.time" :reminder="dialogState.reminder"
-      @addtionalFormSubmit="saveDialogAndAdditionalForm" />
-    <remarks-dialog v-model:showRemarks="showRemarksDialog" :item="jobRemarks" />
-    <!-- Signature Dialog -->
-    <v-dialog v-model="showSignatureDialog" max-width="500px">
-      <v-card>
-        <v-card-title>請簽名</v-card-title>
-        <v-card-text>
-          <canvas ref="signatureCanvas" width="450" height="200" style="border: 1px solid #ccc;"></canvas>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="error" @click="clearSignature">清除</v-btn>
-          <v-btn color="primary" @click="saveSignature">確認</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </div>
   <div class="d-flex justify-space-around align-center draft-func-footer">
     <v-btn variant="flat" class="border-md" color="white" @click="tempSaveDraft" rounded>暫存草稿</v-btn>
-    <v-btn variant="flat" :disabled="isRootCompleted" @click="signDraft" rounded>簽章送出</v-btn>
+    <v-btn variant="flat" :disabled="!isRootCompleted" @click="signDraft" rounded>簽章送出</v-btn>
   </div>
   <!-- <div class="d-flex justify-end align-center mt-4">
     <span class="mr-4">主管簽核:</span>
     <div class="signature-line" @click="openSignatureDialog"></div>
   </div> -->
+  <DialogComponent v-model:show="dialogState.show" :title="dialogState.title" :check-object="dialogState.checkObject"
+    :check-boxs="dialogState.checkBoxs" :form-buttons="dialogState.formButtons"
+    :additional-form="dialogState.additionalForm" :form-name="dialogState.formName"
+    :form-required="dialogState.formRequired" :time="dialogState.time" :reminder="dialogState.reminder"
+    @addtionalFormSubmit="saveDialogAndAdditionalForm" />
+  <remarks-dialog v-model:showRemarks="showRemarksDialog" :item="jobRemarks" />
   <v-dialog v-model="showSignatureDialog" max-width="500px">
     <v-card class="pa-2">
       <v-card-title>簽章送出</v-card-title>
@@ -123,8 +109,8 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="error" @click="clearSignature">清除</v-btn>
-        <v-btn color="primary" @click="saveSignature">確認</v-btn>
+        <v-btn color="primary" @click="saveSignatureAndSend">簽章送出</v-btn>
+        <v-btn color="error" @click="cancelSendSignature">取消</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -137,6 +123,9 @@ import RemarksDialog from '../../components/TCHG/RemarksDialog.vue';
 import { testMorningTCHGJobs } from "../../data/testTCHGJobs";
 import { testTCHGForms } from '../../data/testTCHGForms';
 import { defaultSignature } from '../../data/testSignature';
+import { useRouter } from 'vue-router'
+
+const router = useRouter();
 
 const jobs = ref(testMorningTCHGJobs);
 const forms = ref(testTCHGForms);
@@ -246,6 +235,10 @@ provide('updateAddiForm', (formName, newData) => {
   }
 
 });
+
+function backToMealSys() {
+  router.push(`/TCHGmealSys`);
+}
 
 function canComplete(item, jobSection) {
   const currentJob = jobs.value.find(job => job.section === jobSection);
@@ -422,13 +415,20 @@ function useDefaultSignature() {
   }
 }
 
-function clearSignature() {
+function cancelSendSignature() {
+  showSignatureDialog.value = false;
   const ctx = signatureCtx.value;
   ctx.clearRect(0, 0, signatureCanvas.value.width, signatureCanvas.value.height);
 }
 
-function saveSignature() {
+function saveSignatureAndSend() {
   signature.value = signatureCanvas.value.toDataURL('image/png');
+  sessionStorage.setItem('signature', signature.value);
+  sessionStorage.setItem('signatureTimestamp', signatureTimestamp.value);
+  sessionStorage.setItem('signatureShift', shift.value);
+  sessionStorage.setItem('signatureBranch', branch.value);
+  sessionStorage.setItem('jobs', JSON.stringify(jobs.value));
+  backToMealSys();
   showSignatureDialog.value = false;
 }
 </script>
