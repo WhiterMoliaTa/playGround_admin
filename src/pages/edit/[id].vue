@@ -11,9 +11,9 @@
             <v-tabs v-model="tab" bg-color="primary">
                 <v-tab value="1">詳細資訊</v-tab>
                 <v-tab value="2">節點事件</v-tab>
-                <v-tab value="4">案件討論</v-tab>
-                <v-tab value="3">搜尋文件</v-tab>
-                
+                <v-tab value="3">案件討論</v-tab>
+                <v-tab value="4">搜尋文件</v-tab>
+
             </v-tabs>
 
             <v-tabs-window v-model="tab">
@@ -194,9 +194,13 @@
                         </v-btn>
                     </v-card>
                 </v-tabs-window-item>
-
                 <v-tabs-window-item value="3">
-                    <v-card class="pa-4" >
+                    <v-card class="pa-4">
+                        <caseForum />
+                    </v-card>
+                </v-tabs-window-item>
+                <v-tabs-window-item value="4">
+                    <v-card class="pa-4">
                         <v-text-field label="搜尋節點文件" v-model="searchQuery" clearable outlined dense hide-details
                             style="background: #f9f9f9; border-radius: 8px;">
 
@@ -218,11 +222,7 @@
                         </v-list>
                     </v-card>
                 </v-tabs-window-item>
-                <v-tabs-window-item value="4">
-                    <v-card class="pa-4">
-                        <caseForum />
-                    </v-card>
-                </v-tabs-window-item>
+
 
             </v-tabs-window>
         </v-card-text>
@@ -475,10 +475,10 @@ const forumFiles = forumTestData.files;
 const AllFiles = computed(() => [...EventFiles, ...forumFiles]);
 
 const filteredFiles = computed(() => {
-  if (!searchQuery.value) return AllFiles.value;
-  return AllFiles.value.filter(file =>
-    file.originalName.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
+    if (!searchQuery.value) return AllFiles.value;
+    return AllFiles.value.filter(file =>
+        file.originalName.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
 });
 
 const selectedNodeCaseAddition = computed(() => {
