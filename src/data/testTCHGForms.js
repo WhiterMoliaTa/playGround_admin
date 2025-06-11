@@ -1,4 +1,4 @@
-export const forms =
+export const testTCHGForms =
 {
   formOne: {
     additionalForm: [

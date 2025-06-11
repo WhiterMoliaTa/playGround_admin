@@ -34,3 +34,12 @@ const menuItems = [
   { text: '供膳管理系統', to: '/TCHGmealSys'}
 ]
 </script>
+
+<style scope>
+.v-container:has(.meal-log-page){
+  padding: 0;
+}
+.v-container:has(.tchg-meal-sys){
+  padding: 0;
+}
+</style>

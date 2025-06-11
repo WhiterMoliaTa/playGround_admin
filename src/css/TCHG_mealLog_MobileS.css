@@ -1,0 +1,48 @@
+@media(max-width: 320px) and (orientation: portrait) {
+    .breadcrumb {
+        font-size: 0.6rem !important;
+    }
+
+    .v-list-group__items .v-list-item {
+        padding-inline-start: 48px !important;
+    }
+
+    .v-list-group__items .v-list-item .v-list-item__content {
+        display: flex !important;
+    }
+
+    .v-list-group__items .v-list-item .v-list-item-title {
+        font-size: 0.8rem;
+        white-space: wrap;
+        height: 60px;
+    }
+
+    .task-timeline {
+        position: relative;
+        padding-left: 12px;
+    }
+
+    .timeline-indicator {
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        border-left: 4px dotted #ccc;
+        height: 90%;
+    }
+
+    .associated-forms {
+        height: 30%;
+    }
+
+    .draft-func-footer {
+        background-color: rgb(199, 230, 255);
+        position: sticky;
+        bottom: 0;
+    }
+
+    .meal-list-item-title {
+        font-size: 1rem;
+    }
+}

@@ -1,109 +1,104 @@
 <template>
-  <div class="d-flex justify-space-between align-center pa-2">
-    <h1>供膳管理日誌</h1>
-    <nav>
-      <ul class="breadcrumb">
-        <span v-for="(breadcrumb, index) in breadcrumbs" :key=index>
-          <router-link :to="breadcrumb.path">{{ breadcrumb.label }}</router-link>
-          <span v-if="index < breadcrumbs.length - 1"> / </span>
-        </span>
-      </ul>
-    </nav>
-  </div>
-  <div class="d-flex justify-space-between align-center pa-2">
-    <div>
-      <v-icon>mdi-clock-outline</v-icon>
-      {{ currentTime }}
+  <div class="meal-log-page">
+    <div class="d-flex justify-space-between align-center pa-2 mx-2">
+      <h2>供膳管理日誌</h2>
+      <nav>
+        <ul class="breadcrumb">
+          <span v-for="(breadcrumb, index) in breadcrumbs" :key=index>
+            <router-link :to="breadcrumb.path">{{ breadcrumb.label }}</router-link>
+            <span v-if="index < breadcrumbs.length - 1"> / </span>
+          </span>
+        </ul>
+      </nav>
     </div>
-    <div>
-      <v-select v-model="branch" :items="branches" label="" class="ml-4" />
+    <div class="d-flex justify-space-between align-center pa-2 mx-2">
+      <div>
+        <v-icon>mdi-clock-outline</v-icon>
+        {{ currentTime }}
+      </div>
+      <div>
+        <v-select v-model="branch" :items="branches" label="" class="ml-4" />
+      </div>
     </div>
-  </div>
-  <v-card>
-    <div class="d-flex justify-space-between align-center pa-2">
-      <div>日誌檢核表</div>
-      <v-chip color="purple" text-color="white">{{ completedCount }}/{{ sectionsToDone }}</v-chip>
-    </div>
-
-    <v-list>
-      <v-list-group v-for="(job, index) in jobs" :key="job.section" :value="job.section">
-        <template v-slot:activator="{ props }">
-          <v-list-item v-bind="props" :title="job.time"
-            :subtitle="`${job.title} (${job.items.filter(i => i.checked).length}/${job.items.length})`"
-            class="font-weight-bold">
-            <template v-slot:prepend>
-              <v-icon color="amber">mdi-circle</v-icon>
-            </template>
-          </v-list-item>
-        </template>
-
-        <div class="task-timeline">
-          <v-list-item v-for="item in job.items" :key="`${index}-${item.id}`" :value="`${index}-${item.id}-val`"
-            lines="one" class="task-item">
-            <template v-slot:prepend>
-              <div class="timeline-indicator"></div>
-            </template>
-            <v-list-item-title :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa'), 'height': '48px' }"
-              class="pl-3 d-flex align-center">{{ item.title }}</v-list-item-title>
-
-            <template v-slot:append>
-              <div class="d-flex align-center" :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa') }">
-                <v-btn :key="`button-${index}-${item.id}`" hide-details variant="text" icon class="ma-0 pa-0"
-                  @click="handleButtonClick(item, job.section)">
-                  <v-icon
-                    :color="state[`button-${job.section}-${item.id}`] && item.checked ? state[`button-${job.section}-${item.id}`] : 'grey'">
-                    mdi-check-circle</v-icon>
-                </v-btn>
-                <v-btn variant="text" icon @click="openRemarkDialog(item)">
-                  <v-icon>mdi-dots-horizontal-circle</v-icon>
-                </v-btn>
-              </div>
-            </template>
-          </v-list-item>
-        </div>
-      </v-list-group>
-    </v-list>
-  </v-card>
-  <v-card class="associated-forms mt-5">
-    <div class="d-flex justify-space-between align-center pa-2">
-      <div>關聯表單</div>
-    </div>
-    <div class="pa-4">
-      <v-row>
-        <!-- Iterate through forms dynamically -->
-        <v-col v-for="(form, formName) in forms" :key="formName">
-          <div class="associate-from">{{ form.additionalForm[0]?.title || formName }}</div>
-        </v-col>
-      </v-row>
-    </div>
-  </v-card>
-  <DialogComponent v-model:show="dialogState.show" :title="dialogState.title" :check-object="dialogState.checkObject"
-    :check-boxs="dialogState.checkBoxs" :form-buttons="dialogState.formButtons"
-    :additional-form="dialogState.additionalForm" :form-name="dialogState.formName"
-    :form-required="dialogState.formRequired" :time="dialogState.time" :reminder="dialogState.reminder"
-    @addtionalFormSubmit="saveDialogAndAdditionalForm" />
-  <v-dialog v-model="showRemarksDialog">
     <v-card>
-      <v-card-title class="text-center">備註</v-card-title>
-      <v-card-text>
-        <v-textarea v-model="jobsRemarks.remarks" label="特殊狀況" rows="3" />
-      </v-card-text>
-      <v-card-actions>
-        <v-btn color="primary" @click="updateJobRemark">確認</v-btn>
-        <v-btn color="secondary" @click="closeRemarksDialog">取消</v-btn>
-      </v-card-actions>
+      <div class="d-flex justify-space-between align-center pa-2">
+        <div>日誌檢核表</div>
+        <v-chip color="purple" text-color="white">{{ completedCount }}/{{ sectionsToDone }}</v-chip>
+      </div>
+      <v-list>
+        <v-list-group v-for="(job, index) in jobs" :key="job.section" :value="job.section">
+          <template v-slot:activator="{ props }">
+            <v-list-item v-bind="props" :title="job.time"
+              :subtitle="`${job.title} (${job.items.filter(i => i.checked).length}/${job.items.length})`"
+              class="font-weight-bold">
+              <template v-slot:prepend>
+                <v-icon color="amber">mdi-circle</v-icon>
+              </template>
+            </v-list-item>
+          </template>
+          <div class="task-timeline">
+            <v-list-item v-for="item in job.items" :key="`${index}-${item.id}`" :value="`${index}-${item.id}-val`"
+              lines="one" class="task-item">
+              <template v-slot:prepend>
+                <div class="timeline-indicator"></div>
+              </template>
+              <v-list-item-title :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa') }"
+                class="pl-3 d-flex align-center meal-list-item-title">{{ item.title }}</v-list-item-title>
+              <template v-slot:append>
+                <div class="d-flex align-center" :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa') }">
+                  <v-btn :key="`button-${index}-${item.id}`" hide-details variant="text" icon class="ma-0 pa-0"
+                    @click="handleButtonClick(item, job.section)">
+                    <v-icon
+                      :color="state[`button-${job.section}-${item.id}`] && item.checked ? state[`button-${job.section}-${item.id}`] : 'grey'">
+                      mdi-check-circle</v-icon>
+                  </v-btn>
+                  <v-btn variant="text" icon @click="openRemarkDialog(item)">
+                    <v-icon>mdi-dots-horizontal-circle</v-icon>
+                  </v-btn>
+                </div>
+              </template>
+            </v-list-item>
+          </div>
+        </v-list-group>
+      </v-list>
     </v-card>
-  </v-dialog>
+    <v-card class="associated-forms mt-5">
+      <div class="d-flex justify-space-between align-center pa-2">
+        <div>關聯表單</div>
+      </div>
+      <div class="pa-4">
+        <v-row>
+          <!-- Iterate through forms dynamically -->
+          <v-col v-for="(form, formName) in forms" :key="formName">
+            <div class="associate-from">{{ form.additionalForm[0]?.title || formName }}</div>
+          </v-col>
+        </v-row>
+      </div>
+    </v-card>
+    <v-container class="d-flex justify-space-around align-center draft-func-footer">
+      <v-btn variant="flat" class="border-md" color="white" @click="tempSaveDraft" rounded>暫存草稿</v-btn>
+      <v-btn variant="flat" disabled @click="signDraft" rounded>簽章送出</v-btn>
+    </v-container>
+    <DialogComponent v-model:show="dialogState.show" :title="dialogState.title" :check-object="dialogState.checkObject"
+      :check-boxs="dialogState.checkBoxs" :form-buttons="dialogState.formButtons"
+      :additional-form="dialogState.additionalForm" :form-name="dialogState.formName"
+      :form-required="dialogState.formRequired" :time="dialogState.time" :reminder="dialogState.reminder"
+      @addtionalFormSubmit="saveDialogAndAdditionalForm" />
+    <remarks-dialog v-model:showRemarks="showRemarksDialog" :item="jobRemarks" />
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, reactive, watch, onMounted, provide } from 'vue';
 import DialogComponent from '../../components/TCHG/DialogComponent.vue';
-import { jobs } from "../../data/testTCHGJobs";
-import { forms } from '../../data/testTCHGForms';
+import RemarksDialog from '../../components/TCHG/RemarksDialog.vue';
+import { testTCHGJobs } from "../../data/testTCHGJobs";
+import { testTCHGForms } from '../../data/testTCHGForms';
 
+const jobs = ref(testTCHGJobs);
+const forms = ref(testTCHGForms);
 onMounted(() => {
-  jobs.forEach((job, jobIndex) => {
+  jobs.value.forEach((job, jobIndex) => {
     job.items.forEach(item => {
       state.value[`button-${job.section}-${item.id}`] = "success";
     });
@@ -132,28 +127,43 @@ const dialogState = reactive({
   reminder: ''
 });
 
-const jobsRemarks = ref(null);
 const showRemarksDialog = ref(false);
 const state = ref({});
 
+watch(() =>
+  jobs.value.filter(job => Array.isArray(job.items))
+    .map(job => job.items.map(item => item.checked))
+  ,
+  () => updateCompletedCount(),
+  { deep: true }
+);
+
+onMounted(() => {
+  updateCompletedCount();
+  setInterval(() => {
+    let localDateString = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
+    currentTime.value = localDateString;
+  }, 1000);
+});
+
 provide('getAddiForm', (formName) => {
-  return forms[formName]?.additionalForm || [];
+  return forms.value[formName]?.additionalForm || [];
 });
 
 provide('modifyJobPass', (formName, time, pass) => {
-
-  const job = jobs.find(j =>
-    j.items.some(item =>
-      item.forms &&
-      item.forms.formName.includes(formName) &&
-      (!time || item.forms.time === time)
+  const job = jobs.value.find(j =>
+    j.items.some(item => {
+      return (item.forms &&
+        item.forms.formName === formName &&
+        (!time || item.forms.time === time))
+    }
     )
   );
   console.log(`Job found: ${job ? job : 'none'}`);
   if (job) {
     const section = job.section;
     const item = job.items.find(item =>
-      item.forms && item.forms.formName?.includes(formName) && (!time || item.forms.time === time)
+      item.forms && item.forms.formName === formName && (!time || item.forms.time === time)
     );
     if (item && item.forms) {
       item.forms.passed = pass;
@@ -167,7 +177,7 @@ provide('modifyJobPass', (formName, time, pass) => {
 });
 
 provide('updateAddiForm', (formName, newData) => {
-  const form = forms[formName];
+  const form = forms.value[formName];
 
   if (form && form.additionalForm) {
     if (Array.isArray(newData)) {
@@ -181,25 +191,19 @@ provide('updateAddiForm', (formName, newData) => {
 
 const completedCount = ref(0);
 const sectionsToDone = computed(() => {
-  return jobs.length;
+  return jobs.value.length;
 });
 
+const jobRemarks = ref(null);
+
 function openRemarkDialog(item) {
-  jobsRemarks.value = item || '';
+  jobRemarks.value = item || '';
   showRemarksDialog.value = true;
-}
-
-function updateJobRemark() {
-  closeRemarksDialog();
-}
-
-function closeRemarksDialog() {
-  showRemarksDialog.value = false;
 }
 
 function updateCompletedCount() {
   let completed = 0;
-  jobs.forEach(job => {
+  jobs.value.forEach(job => {
     completed += (job.items.filter(item => item.checked).length / job.items.length) | 0;
   });
   completedCount.value = completed;
@@ -215,7 +219,7 @@ function handleButtonClick(item, jobSection) {
     if (currentForms.formName) {
       currentForms.formName.forEach(form => {
         formsCollection[form] =
-          forms[form]?.additionalForm || [];
+          forms.value[form]?.additionalForm || [];
       });
     }
     Object.assign(dialogState, {
@@ -245,46 +249,9 @@ function handleButtonClick(item, jobSection) {
 function saveDialogAndAdditionalForm(allData) {
 
 }
-
-watch(() =>
-  jobs
-    .filter(job => Array.isArray(job.items))
-    .map(job => job.items.map(item => item.checked))
-  ,
-  () => updateCompletedCount(),
-  { deep: true }
-);
-
-onMounted(() => {
-  updateCompletedCount();
-  setInterval(() => {
-    let localDateString = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
-    currentTime.value = localDateString;
-  }, 1000);
-});
 </script>
 
 <style scoped>
-.v-list-group__items .v-list-item {
-  padding-inline-start: 48px !important;
-}
-
-.task-timeline {
-  position: relative;
-  padding-left: 12px;
-}
-
-.timeline-indicator {
-  position: absolute;
-  left: 15px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  border-left: 4px dotted #ccc;
-  height: 90%;
-}
-
-.associated-forms {
-  height: 30%;
-}
+@import url('../../css/TCHG_mealLog.css');
+@import url('../../css/TCHG_mealLog_MobileS.css') (max-width: 320px) and (orientation: portrait);
 </style>
