@@ -31,7 +31,8 @@ const menuItems = [
   { text: '照片PDF-OCR', to: '/photo-pdf-ocr' },
   { text: '文字PDF-Reader', to: '/text-pdf-reader' },
   { text: '供膳管理日誌', to: '/meal-log' },
-  { text: '供膳管理系統', to: '/TCHGmealSys'}
+  { text: '供膳管理系統', to: '/TCHGmealSys'},
+  { text: '供膳衛生安全管理作業系統', to: 'TCHGMealLogin'}
 ]
 </script>
 

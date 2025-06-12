@@ -24,6 +24,7 @@ declare module 'vue-router/auto-routes' {
     '/meal-log/': RouteRecordInfo<'/meal-log/', '/meal-log', Record<never, never>, Record<never, never>>,
     '/photo-ocr/': RouteRecordInfo<'/photo-ocr/', '/photo-ocr', Record<never, never>, Record<never, never>>,
     '/photo-pdf-ocr/': RouteRecordInfo<'/photo-pdf-ocr/', '/photo-pdf-ocr', Record<never, never>, Record<never, never>>,
+    '/TCHGMeallogin/': RouteRecordInfo<'/TCHGMeallogin/', '/TCHGMeallogin', Record<never, never>, Record<never, never>>,
     '/TCHGmealSys/': RouteRecordInfo<'/TCHGmealSys/', '/TCHGmealSys', Record<never, never>, Record<never, never>>,
     '/text-pdf-reader/': RouteRecordInfo<'/text-pdf-reader/', '/text-pdf-reader', Record<never, never>, Record<never, never>>,
   }
