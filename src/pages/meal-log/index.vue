@@ -96,8 +96,6 @@
     :form-required="dialogState.formRequired" :time="dialogState.time" :reminder="dialogState.reminder"
     @addtionalFormSubmit="saveDialogAndAdditionalForm" />
   <remarks-dialog v-model:showRemarks="showRemarksDialog" :item="jobRemarks" />
-  <DialogReadForm v-model:show="showReadonlyForm" @update:showReadOnly="showReadonlyForm = $event"
-    :form-data="forms[readForm]" />
   <v-dialog v-model="showSignatureDialog" max-width="500px">
     <v-card class="pa-2">
       <v-card-title>簽章送出</v-card-title>
@@ -127,7 +125,6 @@
 <script setup>
 import { ref, computed, reactive, watch, onMounted, provide } from 'vue';
 import DialogComponent from '../../components/TCHG/DialogComponent.vue';
-import DialogReadForm from '../../components/TCHG/DialogReadForm.vue';
 import RemarksDialog from '../../components/TCHG/RemarksDialog.vue';
 import { testMorningTCHGJobs } from "../../data/testTCHGJobs";
 import { testTCHGForms } from '../../data/testTCHGForms';

@@ -118,7 +118,7 @@ const showDinner = computed(() => props.time.includes('evening') || !props.time)
 // Local form data
 const formItems = ref([]);
 
-// 可寫死 我不知道隨你
+// 可寫死
 const getRemarksColSize = () => {
   const visibleColumns = [showBreakfast.value, showLunch.value, showDinner.value].filter(Boolean).length;
   return 12 - 5 - (3 * visibleColumns);
