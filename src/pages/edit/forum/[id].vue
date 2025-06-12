@@ -257,11 +257,12 @@ const addComment = async () => {
   }
 
   comments.value.push(newComment)
+  forumTestData.comments.push(newComment) // 新增：同步到全域資料
 
   if (newCommentFiles.value && newCommentFiles.value.length > 0) {
     newCommentFiles.value.forEach((file, index) => {
       const newFileId = 'f' + Date.now() + index
-      files.value.push({
+      const fileObj = {
         fileId: newFileId,
         referenceId: newCommentId,
         originalName: file.name,
@@ -275,7 +276,9 @@ const addComment = async () => {
         updatedTime: now,
         status: 'Alive',
         type: 'caseForum',
-      })
+      }
+      files.value.push(fileObj)
+      forumTestData.files.push(fileObj) // 新增：同步到全域資料
     })
   }
 

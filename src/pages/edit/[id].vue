@@ -156,19 +156,15 @@
                                         <v-file-input v-model="newEvent.files" label="上傳相關檔案" multiple
                                             accept=".pdf,.doc,.docx,.txt,.jpg,.png" show-size prepend-icon=""
                                             color="deep-purple-accent-4" variant="outlined" counter>
-                                            <template v-slot:selection="{ originalNames }">
-                                                <template v-for="(originalName, index) in originalNames"
-                                                    :key="originalName">
-                                                    <v-chip v-if="index < 2" class="me-2" color="deep-purple-accent-4"
-                                                        size="small" label>
-                                                        {{ originalName }}
+                                            <template v-slot:selection="{ fileNames }">
+                                                <template v-for="(name, idx) in fileNames.slice(0, 2)" :key="name">
+                                                    <v-chip class="me-2" color="deep-purple-accent-4" size="small" label>
+                                                        {{ name }}
                                                     </v-chip>
-
-                                                    <span v-else-if="index === 2"
-                                                        class="text-overline text-grey-darken-3 mx-2">
-                                                        +{{ newEvent.files.length - 2 }} File(s)
-                                                    </span>
                                                 </template>
+                                                <span v-if="fileNames.length > 2" class="text-overline text-grey-darken-3 mx-2">
+                                                    +{{ fileNames.length - 2 }} File(s)
+                                                </span>
                                             </template>
                                         </v-file-input>
                                     </v-col>
@@ -457,7 +453,7 @@ const saveNewEvent = () => {
     newEvent.files?.forEach(file => {
         EventFiles.push({
             fileId: crypto.randomUUID(),
-            eventId: newEventData.uuid,
+            referenceId: newEventData.eventId,
             originalName: file.name,
         });
     });
