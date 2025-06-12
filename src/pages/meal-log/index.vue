@@ -1,5 +1,5 @@
 <template>
-  <div class="meal-log-page">
+  <div class="meal-log-page" @scroll.passive="onScroll">
     <div class="d-flex justify-space-between align-center pa-2 mx-2">
       <h2>供膳管理日誌</h2>
       <nav>
@@ -12,15 +12,15 @@
       </nav>
     </div>
     <div class="d-flex justify-space-between align-center pa-2 mx-2">
-      <div>
+      <div class="current-time">
         <v-icon>mdi-clock-outline</v-icon>
         {{ currentTime }}
       </div>
-      <div>
-        <v-select v-model="branch" :items="branches" label="" class="ml-4" />
+      <div class="branch-selection">
+        <v-select v-model="branch" hide-details :items="branches" label="" class="ml-4" />
       </div>
     </div>
-    <v-card>
+    <v-card class="mx-3">
       <div class="d-flex justify-space-between align-center pa-2">
         <div>日誌檢核表</div>
         <v-chip color="purple" text-color="white">{{ completedCount }}/{{ sectionsToDone }}</v-chip>
@@ -62,12 +62,12 @@
         </v-list-group>
       </v-list>
     </v-card>
-    <v-card class="associated-forms mt-5">
+    <v-card class="associated-forms mt-5 mx-3">
       <div class="d-flex justify-space-between align-center pa-2">
         <div>關聯表單</div>
       </div>
       <div class="pa-4">
-        <v-row>
+        <v-row class="associate-forms-row" no-gutters>
           <!-- Iterate through forms dynamically -->
           <v-col v-for="(form, formName) in forms" :key="formName">
             <div class="associate-from">{{ form.additionalForm[0]?.title || formName }}</div>
@@ -75,10 +75,13 @@
         </v-row>
       </div>
     </v-card>
-  </div>
-  <div class="d-flex justify-space-around align-center draft-func-footer">
-    <v-btn variant="flat" class="border-md" color="white" @click="tempSaveDraft" rounded>暫存草稿</v-btn>
-    <v-btn variant="flat" :disabled="!isRootCompleted" @click="signDraft" rounded>簽章送出</v-btn>
+    <div class="d-flex justify-space-around align-center draft-func-footer">
+      <v-btn variant="flat" class="border-md ml-10" color="white" @click="tempSaveDraft" rounded>暫存草稿</v-btn>
+      <v-btn variant="flat" class="mr-10" :disabled="!isRootCompleted" @click="signDraft" rounded>簽章送出</v-btn>
+      <v-btn variant="text" v-show="showBackToTop" icon :ripple="false" @click="backToTop" class="back-to-top">
+        <v-icon class="back-to-top-icon">mdi-chevron-up-circle</v-icon>
+      </v-btn>
+    </div>
   </div>
   <!-- <div class="d-flex justify-end align-center mt-4">
     <span class="mr-4">主管簽核:</span>
@@ -131,15 +134,7 @@ const jobs = ref(testMorningTCHGJobs);
 const forms = ref(testTCHGForms);
 const signature = ref(defaultSignature);
 const shift = ref('morning');
-
-onMounted(() => {
-  jobs.value.forEach((job, jobIndex) => {
-    job.items.forEach(item => {
-      state.value[`button-${job.section}-${item.id}`] = "success";
-    });
-  });
-  updateCompletedCount();
-});
+const showBackToTop = ref(false);
 
 const breadcrumbs = [
   { label: '首頁', path: '/' },
@@ -174,12 +169,19 @@ watch(() =>
 );
 
 onMounted(() => {
-  updateCompletedCount();
   setInterval(() => {
     let localDateString = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
     currentTime.value = localDateString;
   }, 1000);
+
+  jobs.value.forEach((job, jobIndex) => {
+    job.items.forEach(item => {
+      state.value[`button-${job.section}-${item.id}`] = "success";
+    });
+  });
+  updateCompletedCount();
 });
+
 
 const signatureTimestamp = computed(() => {
   return new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
@@ -238,6 +240,11 @@ provide('updateAddiForm', (formName, newData) => {
 
 function backToMealSys() {
   router.push(`/TCHGmealSys`);
+}
+
+function onScroll(event) {
+  const scrollTop = event.target.scrollTop;
+  showBackToTop.value = scrollTop > 100;
 }
 
 function canComplete(item, jobSection) {
@@ -318,6 +325,10 @@ function tempSaveDraft() {
 
 function signDraft() {
   openSignatureDialog();
+}
+
+function backToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Signature handling

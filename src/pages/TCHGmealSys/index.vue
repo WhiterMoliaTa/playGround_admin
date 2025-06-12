@@ -118,7 +118,8 @@
           </v-sheet>
         </v-card-text>
       </v-card>
-      <v-btn rounded-sm class="mb-2 mx-4 need-to-sign-btn" display="d-flex justify-space-around align-center">
+      <p class="ml-4 my-2">簽核表單</p>
+      <v-btn rounded-sm variant="flat" class="mb-2 mx-4 need-to-sign-btn" display="d-flex justify-space-around align-center">
         <template v-slot:prepend>
           <div>
             <v-icon size="30" style="transform: scaleX(-1);">mdi-gavel</v-icon>
@@ -131,7 +132,7 @@
           </div>
         </template>
       </v-btn>
-      <v-btn rounded-sm class="mb-2 mx-4 signed-btn">
+      <v-btn rounded-sm variant="flat" class="mb-2 mx-4 signed-btn">
         <template v-slot:prepend>
           <div>
             <v-icon size="30" style="transform: scaleX(-1); rotate: -45deg;">mdi-gavel</v-icon>

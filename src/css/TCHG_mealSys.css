@@ -264,7 +264,9 @@
 }
 
 .need-to-sign-btn {
-  background-color: #f8acac;
+  background-color: #f7cdcd;
+  border: 1px solid #c9819e;
+  height: 50px;
 }
 
 :deep(.need-to-sign-btn) {
@@ -272,9 +274,17 @@
   justify-content: space-around;
   align-items: center;
 }
+:deep(.need-to-sign-btn .v-btn__prepend i) {
+  color: #883d5b;
+}
+:deep(.need-to-sign-btn .sign-text-caption-background){
+  color: white;
+}
 
 .signed-btn {
-  background-color: #98db9a;
+  background-color: #cbf8cc;
+  border: 1px solid #74a175;
+  height: 50px;
 }
 
 :deep(.signed-btn) {
@@ -282,9 +292,15 @@
   justify-content: space-around;
   align-items: center;
 }
+:deep(.signed-btn .v-btn__prepend i) {
+  color: #74a175;
+}
+:deep(.signed-btn .sign-text-caption-background) {
+  color: white;
+}
 
 .sign-text-caption-background {
-  background-color: #8d8d8d50;
+  background-color: #0000002c;
   border-color: #00000062;
   border-width: 0.1rem;
   width: 2rem;
