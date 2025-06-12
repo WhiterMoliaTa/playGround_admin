@@ -95,4 +95,35 @@ export const forumTestData = {
       type: "caseForum",
     },
   ],
+  tags: [
+    {
+      tagId: "t1",
+      name: "新功能",
+      referenceType: "discussion",
+      referenceId: "d1",
+      color: "blue", // 新增顏色
+    },
+    {
+      tagId: "t2",
+      name: "通知",
+      referenceType: "discussion",
+      referenceId: "d2",
+      color: "green", // 新增顏色
+    },
+    {
+      tagId: "t3",
+      name: "指南",
+      referenceType: "discussion",
+      referenceId: "d3",
+      color: "purple", // 新增顏色
+    },
+    {
+      tagId: "t4",
+      name: "維護",
+      referenceType: "discussion",
+      referenceId: "d2",
+      color: "orange", // 新增顏色
+    },
+    // 可以根據需要繼續擴充
+  ],
 };

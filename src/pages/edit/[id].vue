@@ -8,7 +8,7 @@
             </v-col>
         </v-card-title>
         <v-card-text>
-            <v-tabs v-model="tab" bg-color="primary">
+            <v-tabs v-model="currentTab" bg-color="primary" @update:modelValue="updateTabInQuery">
                 <v-tab value="1">詳細資訊</v-tab>
                 <v-tab value="2">節點事件</v-tab>
                 <v-tab value="3">案件討論</v-tab>
@@ -16,7 +16,7 @@
 
             </v-tabs>
 
-            <v-tabs-window v-model="tab">
+            <v-tabs-window v-model="currentTab">
                 <v-tabs-window-item value="1">
                     <v-card class="position-relative">
                         <v-btn class="position-absolute" style="top: 10px; right: 10px;z-index: 10;" color="primary"
@@ -201,7 +201,7 @@
                 </v-tabs-window-item>
                 <v-tabs-window-item value="4">
                     <v-card class="pa-4">
-                        <v-text-field label="搜尋節點文件" v-model="searchQuery" clearable outlined dense hide-details
+                        <v-text-field label="搜尋節點/討論區文件" v-model="searchQuery" clearable outlined dense hide-details
                             style="background: #f9f9f9; border-radius: 8px;">
 
                         </v-text-field>
@@ -236,9 +236,11 @@ import { testCaseEvents, EventFiles } from '../../data/testCaseEvent';
 import caseDialogView from '../../components/caseDialogView.vue';
 import caseDialogEdit from '../../components/caseDialogEdit.vue';
 import { cloneDeep } from 'lodash';
-import { useRoute } from 'vue-router';
+import { useRoute,useRouter } from 'vue-router';
 import { useToast } from "vue-toastification";
 const route = useRoute();
+const router = useRouter()
+
 const editCase = ref(null);
 const editCaseDialog = ref(false);
 const getEditCase = () => {
@@ -247,7 +249,10 @@ const getEditCase = () => {
     editCase.value = testCases.find(c => c.uuid === caseId) || null;
     // console.log('Edit case data:', toRaw(editCase.value));
 };
-
+const currentTab = ref(route.query.tab || 'info')
+const updateTabInQuery = (value) => {
+  router.replace({ query: { ...route.query, tab: value } })
+}
 onMounted(() => {
     getEditCase();
 });
@@ -264,7 +269,6 @@ const saveCase = (caseData) => {
     getEditCase(); // Refresh the case data after saving
 }
 
-const tab = ref("1");
 
 const necessaryNodes = [
     'docReceived',
