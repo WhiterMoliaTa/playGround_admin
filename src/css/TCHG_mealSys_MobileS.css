@@ -88,4 +88,76 @@
     flex: 1;
     overflow-y: auto;
   }
+
+  .time-bubble {
+    position: absolute;
+    top: 10px;
+    left: -28px;
+    background-color: white;
+    border-radius: 16px;
+    padding: 4px 12px;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 11;
+  }
+
+  .time-line {
+    position: absolute;
+    top: 45px;
+    width: 2px;
+    right: 1.5px;
+    background: repeating-linear-gradient(to bottom, #FF7373 0, #FF7373 5px, transparent 5px, transparent 10px);
+    z-index: 10;
+  }
+
+  .timeline-container {
+    position: relative;
+    /* padding-top: 20px;
+  padding-left: 30px; */
+    padding: 20px 30px 0px 30px;
+    overflow-x: auto;
+    height: 330px;
+  }
+
+  .timeline-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .timeline-header {
+    position: relative;
+    height: 30px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    margin-bottom: 10px;
+  }
+
+  .time-marker {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.6);
+    top: 0;
+  }
+
+  /* Add a tick mark under each time label */
+  .time-marker::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .timeline-content {
+    position: relative;
+    margin-top: 20px;
+    height: 140px;
+  }
+
+  .total-timeline {
+    width: var(--timeline-total-width);
+    transform: translateY(var(--requreid-height));
+  }
 }

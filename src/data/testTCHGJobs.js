@@ -1,4 +1,4 @@
-export const jobs = [
+export const testMorningTCHGJobs = [
   {
     section: "first-section",
     title: "晨點作業",
@@ -6,19 +6,19 @@ export const jobs = [
     items: [
       {
         id: 1, title: '閱讀前日工作日誌及交班事項，並請相關人員簽核。', checked: false,
-        forms: {
-          title: "前日工作日誌",
-          checkObject: "閱讀前日工作日誌及交班事項",
-          formButtons: [
-            { id: 1, label: '交班事項', formName: 'shiftHandoverLog', time: 'morning' }
-          ],
-          reminder: "請閱讀「交班事項」「前日工作日誌」",
-          formName: ['shiftHandoverLog'],
-          formRequired: true,
-          time: 'morning',
-          passed: false,
-        }
-        , remarks: ''
+        // forms: {
+        //   title: "前日工作日誌",
+        //   checkObject: "閱讀前日工作日誌及交班事項",
+        //   formButtons: [
+        //     { id: 1, label: '交班事項', formName: 'shiftHandoverLog', time: 'morning' }
+        //   ],
+        //   reminder: "請閱讀「交班事項」「前日工作日誌」",
+        //   formName: ['shiftHandoverLog'],
+        //   formRequired: true,
+        //   time: 'morning',
+        //   passed: false,
+        // },
+        remarks: ''
       },
       { id: 2, title: '檢查瓦斯漏氣受信總機指示燈號正常。', checked: false, remarks: '' },
       {
@@ -27,9 +27,9 @@ export const jobs = [
           title: "檢核確認",
           checkObject: "確認員工到班及服裝儀容",
           checkBoxs: [
-            { id: 1, label: '員工到班', checked: false },
-            { id: 2, label: '服裝儀容符合規定', checked: false },
-            { id: 3, label: '個人儀容符合規定', checked: false }
+            { id: 1, label: '員工到班', checked: true },
+            { id: 2, label: '服裝儀容符合規定', checked: true },
+            { id: 3, label: '個人儀容符合規定', checked: true }
           ],
           reminder: "檢核項目符合規範請點選「確認」\n若有不符合規範項目,請填寫「人事管理紀錄表」",
           formName: ['formFive'],
@@ -96,7 +96,7 @@ export const jobs = [
           title: "進貨廠商管理紀錄",
           checkObject: "進貨廠商管理",
           checkBoxs: [
-            { id: 1, label: '無異常', checked: false },
+            { id: 1, label: '無異常', checked: true },
           ],
           // formButtons: [
           //   { id: 1, label: '進貨廠商管理紀錄', formName: 'formSeven', time: 'morning' },
@@ -113,7 +113,7 @@ export const jobs = [
   },
   {
     section: "third-section",
-    title: "早餐配膳及回收作業",
+    title: "清潔餐具設備衛生",
     time: "08:40-09:30",
     items: [
       { id: 1, title: '10.依清潔檢查表，稽核廚區早餐配膳後清潔作業。', checked: false, remarks: '' },
@@ -138,6 +138,16 @@ export const jobs = [
       {
         id: 5, title: '14.填寫每日衛生檢查表(TCHG-G4-02)。', checked: false,
         forms: {
+          title: "每日衛生檢查表",
+          checkObject: "每日衛生檢查",
+          formButtons: [
+            { id: 1, label: '每日衛生檢查表', formName: 'formG402', time: 'morning' }
+          ],
+          reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「每日衛生檢查表」",
+          formName: ['formG402'],
+          formRequired: true,
+          time: 'morning',
+          passed: false,
         },
         remarks: ''
       },
@@ -146,7 +156,7 @@ export const jobs = [
   },
   {
     section: 'fourth-section',
-    title: '人數食材確認',
+    title: '當日膳食準備作業',
     time: '08:00-10:00',
     items: [
       { id: 1, title: '16.查詢當日膳食人數。', checked: false, remarks: '' },
@@ -159,12 +169,12 @@ export const jobs = [
           title: "菜餚品質與數量檢討紀錄",
           checkObject: "菜餚品質與數量檢討",
           formButtons: [
-            { id: 1, label: '菜餚品質與數量檢討紀錄', formName: 'formFour', time: 'afternoon' }
+            { id: 1, label: '菜餚品質與數量檢討紀錄', formName: 'formFour', time: 'noon' }
           ],
           reminder: "檢核項目填寫完畢請點選「確認」\n若無請填寫「菜餚品質與數量檢討紀錄」",
           formName: ['formFour'],
           formRequired: true,
-          time: 'afternoon',
+          time: 'morning',
           passed: false,
         },
       }
@@ -172,7 +182,7 @@ export const jobs = [
   },
   {
     section: 'fifth-section',
-    title: '午餐製作作業',
+    title: '烹煮督導作業',
     time: '10:00-10:50',
     items: [
       { id: 6, title: '6.確認爐灶火源安全使用。', checked: false, remarks: '' },
@@ -184,7 +194,7 @@ export const jobs = [
   },
   {
     section: 'sixth-section',
-    title: '午餐配膳作業',
+    title: '午餐督導作業',
     time: '10:50-12:00',
     items: [
       {
@@ -226,7 +236,7 @@ export const jobs = [
   },
   {
     section: 'seventh-section',
-    title: '午餐回收清潔作業',
+    title: '補餐、午餐後清潔作業',
     time: '12:00-14:00',
     items: [
       { id: 15, title: '15.督導確認病患午餐、補餐送出(填寫漏補餐原因紀錄表)。', checked: false, remarks: '' },

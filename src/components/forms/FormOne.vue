@@ -5,7 +5,7 @@
       <v-card-subtitle class="text-center pb-4">配膳線上督餐作業查檢表</v-card-subtitle>
       <v-container>
         <div>
-          <div>日期：2025/6/8 上午11:58:03</div>
+          <div>日期：2025/6/11 上午11:58:03</div>
           <div>時段：<span class="fillTime">{{ time === 'morning' ? '早餐' :
             time === 'noon' ? '午餐' : '晚餐' }}</span></div>
         </div>

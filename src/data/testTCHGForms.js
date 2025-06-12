@@ -1,4 +1,4 @@
-export const forms =
+export const testTCHGForms =
 {
   formOne: {
     additionalForm: [
@@ -10,18 +10,18 @@ export const forms =
           evening: false
         },
         form: [
-          { id: 1, title: '1.保溫配膳車依菜色需求加熱(或擺放熱水)，水位須到達指定位置、熱度到達指定溫度(設定溫度≧80℃)。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 2, title: '2.確認病患用餐車已洗淨並預熱(加熱型，設定≧70℃)。', breakfast: true, lunch: null, dinner: null, remarks: '' },
-          { id: 3, title: '3.配膳前環境的清潔符合作業規範（以 75%酒精消毒輸送帶、配膳區域地面乾燥、無積水等）', breakfast: true, lunch: null, dinner: null, remarks: '' },
-          { id: 4, title: '4.病患餐具或免洗餐具，配膳前置放於正確位置。', breakfast: false, lunch: null, dinner: null, remarks: '' },
-          { id: 5, title: '5.配膳器具，例如：勺子、夾子、煎鏟等，配膳前依菜色正確選用。', breakfast: true, lunch: null, dinner: null, remarks: '' },
-          { id: 6, title: '6. 配膳前熱食溫度需達≧60℃；冷食(分切水果)需維持設定0℃~7℃(依內控不定期抽測)。', breakfast: true, lunch: null, dinner: null, remarks: '' },
-          { id: 7, title: '7.配膳前正確洗淨雙手、佩戴外科口罩、乾淨手套、髮帽完全包覆頭髮、耳朵等。', breakfast: false, lunch: null, dinner: null, remarks: '' },
-          { id: 8, title: '8.雙手如有傷口(無則免填)應適當包紮並穿戴乳膠手套。', breakfast: false, lunch: null, dinner: null, remarks: '' },
-          { id: 9, title: '9.配膳人員就定位並避免危害食品衛生及交互污染之行為，例如：聊天、唱歌、嚼口香糖等。', breakfast: false, lunch: null, dinner: null, remarks: '' },
-          { id: 10, title: '10.依照餐卡所標示飲食種類及份量正確配膳。', breakfast: true, lunch: null, dinner: null, remarks: '' },
-          { id: 11, title: '11.留存備檢餐，各種菜餚皆須留存。', breakfast: true, lunch: null, dinner: null, remarks: '' },
-          { id: 12, title: '12.配膳線上作業結束後，剩餘主食及菜餚處理。', breakfast: true, lunch: null, dinner: null, remarks: '' }
+          { id: 1, title: '1.保溫配膳車依菜色需求加熱(或擺放熱水)，水位須到達指定位置、熱度到達指定溫度(設定溫度≧80℃)。', breakfast: true, lunch: true, dinner: null, remarks: '' },
+          { id: 2, title: '2.確認病患用餐車已洗淨並預熱(加熱型，設定≧70℃)。', breakfast: true, lunch: true, dinner: null, remarks: '' },
+          { id: 3, title: '3.配膳前環境的清潔符合作業規範（以 75%酒精消毒輸送帶、配膳區域地面乾燥、無積水等）', breakfast: true, lunch: true, dinner: null, remarks: '' },
+          { id: 4, title: '4.病患餐具或免洗餐具，配膳前置放於正確位置。', breakfast: false, lunch: true, dinner: null, remarks: '' },
+          { id: 5, title: '5.配膳器具，例如：勺子、夾子、煎鏟等，配膳前依菜色正確選用。', breakfast: true, lunch: true, dinner: null, remarks: '' },
+          { id: 6, title: '6. 配膳前熱食溫度需達≧60℃；冷食(分切水果)需維持設定0℃~7℃(依內控不定期抽測)。', breakfast: true, lunch: true, dinner: null, remarks: '' },
+          { id: 7, title: '7.配膳前正確洗淨雙手、佩戴外科口罩、乾淨手套、髮帽完全包覆頭髮、耳朵等。', breakfast: false, lunch: true, dinner: null, remarks: '' },
+          { id: 8, title: '8.雙手如有傷口(無則免填)應適當包紮並穿戴乳膠手套。', breakfast: false, lunch: true, dinner: null, remarks: '' },
+          { id: 9, title: '9.配膳人員就定位並避免危害食品衛生及交互污染之行為，例如：聊天、唱歌、嚼口香糖等。', breakfast: false, lunch: true, dinner: null, remarks: '' },
+          { id: 10, title: '10.依照餐卡所標示飲食種類及份量正確配膳。', breakfast: true, lunch: true, dinner: null, remarks: '' },
+          { id: 11, title: '11.留存備檢餐，各種菜餚皆須留存。', breakfast: true, lunch: true, dinner: null, remarks: '' },
+          { id: 12, title: '12.配膳線上作業結束後，剩餘主食及菜餚處理。', breakfast: true, lunch: true, dinner: null, remarks: '' }
         ]
       },
     ]
@@ -36,12 +36,12 @@ export const forms =
           evening: false
         },
         section1: [
-          { id: 1, title: '1.依送餐簡表檢查所有餐車飲食類類別及數量是否正確。', breakfast: true, lunch: null, dinner: null, remarks: '' },
-          { id: 2, title: '2.餐車實際送出及結束時間是否正常。', breakfast: true, lunch: null, dinner: null, remarks: '' },
+          { id: 1, title: '1.依送餐簡表檢查所有餐車飲食類類別及數量是否正確。', breakfast: true, lunch: true, dinner: null, remarks: '' },
+          { id: 2, title: '2.餐車實際送出及結束時間是否正常。', breakfast: true, lunch: true, dinner: null, remarks: '' },
         ],
         section2: [
-          { id: 1, title: '第一部餐車送出時間', breakfast: '07:20', lunch: null, dinner: null, remarks: '' },
-          { id: 2, title: '最後一部餐車送出時間', breakfast: '07:30', lunch: null, dinner: null, remarks: '' },
+          { id: 1, title: '第一部餐車送出時間', breakfast: '07:20', lunch: '11:20', dinner: null, remarks: '' },
+          { id: 2, title: '最後一部餐車送出時間', breakfast: '07:30', lunch: '11:40', dinner: null, remarks: '' },
         ]
       }
     ],
@@ -99,9 +99,14 @@ export const forms =
         },
         records: [
           {
-            recycleTime: '', ward: '', plate: 0,
-            dishAndLeftoverPortion: [{ dishName: '', leftPortion: '' }],
-            breakfast: null, lunch: null, dinner: null, remarks: ''
+            recycleTime: '08:40', ward: '101', plate: 4,
+            dishAndLeftoverPortion: [{ dishName: 'fired egg', leftPortion: '0' }, { dishName: 'fired egg with bacon', leftPortion: '0' }, { dishName: 'fired egg with bacon and garlic', leftPortion: '0' }, { dishName: 'sausage', leftPortion: '0' }],
+            breakfast: true, lunch: null, dinner: null, remarks: ''
+          },
+          {
+            recycleTime: '11:40', ward: '101', plate: 4,
+            dishAndLeftoverPortion: [{ dishName: 'fired egg', leftPortion: '0' }, { dishName: 'fired egg with bacon', leftPortion: '0' }, { dishName: 'fired egg with bacon and garlic', leftPortion: '0' }, { dishName: 'sausage', leftPortion: '0' }],
+            breakfast: null, lunch: true, dinner: null, remarks: ''
           },
         ]
       }
@@ -117,8 +122,8 @@ export const forms =
           evening: false
         },
         form: [
-          { id: 1, title: '1.菜量設計是否合理', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 2, title: '2.菜餚品質(賣像)是否優質', breakfast: null, lunch: null, dinner: null, remarks: '' }
+          { id: 1, title: '1.菜量設計是否合理', breakfast: true, lunch: null, dinner: null, remarks: '' },
+          { id: 2, title: '2.菜餚品質(賣像)是否優質', breakfast: true, lunch: null, dinner: null, remarks: '' }
         ]
       }
     ],
@@ -175,5 +180,81 @@ export const forms =
         ]
       }
     ],
+  },
+  formG402: {
+    additionalForm: [
+      {
+        title: '每日衛生檢查表',
+        passed: {
+          morning: false,
+          noon: false,
+          evening: false
+        },
+        sections: [
+          {
+            title: '人員衛生管理',
+            items: [
+              { id: 1, disable: { morning: false, evening: false }, content: '無手部受傷或感冒。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 2, disable: { morning: false, evening: false }, content: '不濃妝豔抹且儀態端莊。', breakfast: 'ok', lunch: null, dinner: null },
+              { id: 3, disable: { morning: false, evening: false }, content: '不蓄留指甲、塗抹指甲油及配戴飾物。', breakfast: 'bad', lunch: null, dinner: null },
+              { id: 4, disable: { morning: false, evening: false }, content: '正確穿戴工作衣帽，工作鞋襪。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 5, disable: { morning: false, evening: false }, content: '工作中不抽菸嚼檳榔、飲食或其他可能汙染食品行為。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 6, disable: { morning: false, evening: false }, content: '處理即食食品須穿戴清潔手套或手部清潔乾淨消毒。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 7, disable: { morning: false, evening: false }, content: '正確配膳戴手套口罩(無露出口鼻)帽子。 ', breakfast: 'good', lunch: null, dinner: null },
+              { id: 8, disable: { morning: false, evening: false }, content: '正確洗手消毒手部保持清潔', breakfast: 'good', lunch: null, dinner: null },
+              { id: 9, disable: { morning: false, evening: false }, content: '私人物品(含衣物)飲水、飲料管理。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 10, disable: { morning: false, evening: false }, content: '不配膳供膳須戴口罩。', breakfast: 'good', lunch: null, dinner: null },
+            ]
+          },
+          {
+            title: '作業場所衛生管理',
+            items: [
+              { id: 1, disable: { morning: false, evening: false }, content: '地面、牆壁、管線、樓板或天花板衛生(無長霉、剝落、積灰、納垢或結露)。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 2, disable: { morning: true, evening: false }, content: '排水系統、截流(油)設施清潔。', breakfast: null, lunch: null, dinner: null },
+              { id: 3, disable: { morning: false, evening: false }, content: '照明設備、空調系統清潔。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 4, disable: { morning: false, evening: false }, content: '所有出入口、門窗、孔道清潔。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 5, disable: { morning: false, evening: false }, content: '所有作業檯面清潔。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 6, disable: { morning: false, evening: false }, content: '用水處所盛水容器衛生。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 7, disable: { morning: false, evening: false }, content: '洗手乾手、消毒設備及周邊應保持清潔。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 8, disable: { morning: false, evening: false }, content: '廢棄物管理(不堆積、無異味、垃圾桶清潔有蓋)。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 9, disable: { morning: false, evening: false }, content: '清潔、化學藥劑及清潔用具器具管理。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 10, disable: { morning: false, evening: false }, content: '病媒出沒痕跡或現蹤。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 11, disable: { morning: false, evening: false }, content: '烹煮之鍋鏟砧板等設備衛生', breakfast: 'good', lunch: null, dinner: null },
+              { id: 12, disable: { morning: false, evening: false }, content: '灶台、排油煙機罩等清潔。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 13, disable: { morning: false, evening: false }, content: '清洗消毒完成餐器具放置防止二次污染。', breakfast: 'good', lunch: null, dinner: null },
+            ]
+          },
+          {
+            title: '原料半成品成品貯存管理',
+            items: [
+              {id: 1, disable: { morning: false, evening: false }, content: '依原材(物)料、半成品及成品，依清潔度及類別不同分區分層架放置，無交叉污染。', breakfast: 'good', lunch: null, dinner: null },
+              {id: 2, disable: { morning: false, evening: false }, content: '標示入庫(開封或製造)日期及有效日期，且先進先出先到期先使用。', breakfast: 'good', lunch: null, dinner: null },
+              {id: 3, disable: { morning: false, evening: false }, content: '冷凍冷藏設備保持清潔，貯存溫度(≦-18℃及0℃~7℃)符合，並定時紀錄。', breakfast: 'good', lunch: null, dinner: null },
+              {id: 4, disable: { morning: false, evening: false }, content: '設退貨區及待報廢品暫存區及妥善管理。', breakfast: 'good', lunch: null, dinner: null },
+            ]
+          },
+          {
+            title: '製備與品質管制',
+            items: [
+              { id: 1, disable: { morning: false, evening: false }, content: '作業區整體環境及設備設施須維持清潔整齊。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 2, disable: { morning: false, evening: false }, content: '各類食材暫存、清洗、分切、備料或烹煮須防止交叉汙染。 不得放置地面暫存。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 3, disable: { morning: false, evening: false }, content: '正確解凍(冷藏或包覆流水)及醃漬作業無交叉污染。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 4, disable: { morning: false, evening: false }, content: '烹調菜餚須謹守衛生行為，管控生熟食交叉污染。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 5, disable: { morning: false, evening: false }, content: '冷卻作業，須依作業基準操作並記錄。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 6, disable: { morning: false, evening: false }, content: '盛裝成品容器等須確認清潔。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 7, disable: { morning: false, evening: false }, content: '成品確認不得有後污染行為(如品嘗菜餚量測溫度)。', breakfast: 'good', lunch: null, dinner: null },
+            ]
+          },
+          {
+            title: '配膳備膳及供膳',
+            items: [
+              { id: 1, disable: { morning: false, evening: false }, content: '排盤備餐人員須戴口罩及乾淨手套，不得對食物講話或有污染菜餚等之行為。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 2, disable: { morning: false, evening: false }, content: '供餐過程有污染，或影響衛生及安全事項，須即時排除。', breakfast: 'good', lunch: null, dinner: null },
+              { id: 3, disable: { morning: false, evening: false }, content: '供餐(膳)人員良好衛生行為。', breakfast: 'good', lunch: null, dinner: null },
+            ]
+          }
+        ]
+      }
+    ]
   }
 };

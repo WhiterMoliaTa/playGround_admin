@@ -3,7 +3,7 @@
     <v-card>
       <v-toolbar>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
-        <v-btn icon="mdi-close" @click="closeDialog()"></v-btn>
+        <v-btn icon="mdi-close" @click="closeDialog"></v-btn>
       </v-toolbar>
       <v-card-text>
         檢核項目{{ checkObject }}
@@ -11,7 +11,7 @@
 
       <v-card-text>
         <v-checkbox v-for="checkBox in checkBoxs" :key="checkBox.id" v-model="checkBox.checked" :label="checkBox.label"
-          @update:modelValue="checkBoxCheck()" :rules="baseCheckRules">
+          @update:modelValue="checkBoxCheck" :rules="baseCheckRules">
         </v-checkbox>
       </v-card-text>
       <v-card-text>

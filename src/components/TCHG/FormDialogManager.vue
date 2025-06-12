@@ -62,6 +62,14 @@
         @formDoneEvent="handleFormDone($event)"
       />
     </div>
+    <div v-else-if="props.form === 'formG402'">
+      <FormG402 :formConfig="formConfig" 
+        :time="props.time"
+        @formDoneEvent="handleFormDone($event)"
+        @save="handleSave" 
+        @cancel="handleCancel" 
+      />
+    </div>
   </v-dialog>
 </template>
 <script setup>
@@ -74,6 +82,7 @@ import FormFour from '../forms/FormFour.vue';
 import FormFive from '../forms/FormFive.vue';
 import FormSeven from '../forms/FormSeven.vue';
 import ShiftHandoverLog from '../forms/ShiftHandoverLog.vue';
+import FormG402 from '../forms/FormG402.vue';
 
 const emit = defineEmits(['update:showForm', 'submitForm', 'currentformDone']);
 

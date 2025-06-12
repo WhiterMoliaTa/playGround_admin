@@ -50,9 +50,9 @@ const props = defineProps({
 
 const logEntry = ref([{
     content: '病房xxx燈泡壞掉',
-    signature: '../../../src/assets/Dr-Dickinson-signature-png.png',
+    signature: './Dr-Dickinson-signature-png.png',
     processHandleDesc: '已經置換燈泡',
-    handlerSignature: '../../../src/assets/Dr-Dickinson-signature-png.png'
+    handlerSignature: './Dr-Dickinson-signature-png.png'
 }]);
 
 // watch(() => props.formConfig, (newVal) => {

@@ -217,7 +217,7 @@ async function save() {
 }
 
 async function tempSave() {
-  let filteredRecords = localRecords.value.filter(record => !isRecordEmpty(record));
+  let filteredRecords = localRecords.value.filter(record => isRecordNotEmpty(record));
   if (filteredRecords.length > 0) {
     const processedRecords = await Promise.all(
       filteredRecords.map(async record => {
