@@ -66,7 +66,7 @@
       <v-divider></v-divider>
 
 
-      <!-- TODO 設定min max 可能要整個大改 -->
+      <!-- TODO 設定v-time-picker 彼此設定 min max -->
       <v-row v-for="item in section2Items" :key="item.id" class="my-3">
         <v-col cols="5" class="d-flex align-center">{{ item.title }}</v-col>
 
@@ -74,8 +74,8 @@
           <v-text-field v-model="item.breakfast" :active="timeDialog[`breakfast-${item.id}`]"
             :focused="timeDialog[`breakfast-${item.id}`]" label="時間" readonly>
             <v-dialog v-model="timeDialog[`breakfast-${item.id}`]" activator="parent" width="auto">
-              <v-time-picker v-if="timeDialog[`breakfast-${item.id}`]" v-model="item.breakfast" format="24hr"
-                scrollable @update:modelValue="checkClockAllDone()"></v-time-picker>
+              <v-time-picker v-if="timeDialog[`breakfast-${item.id}`]" v-model="item.breakfast" format="24hr" scrollable
+                @update:modelValue="checkClockAllDone()"></v-time-picker>
             </v-dialog>
           </v-text-field>
         </v-col>
@@ -84,8 +84,8 @@
           <v-text-field v-model="item.lunch" :active="timeDialog[`lunch-${item.id}`]"
             :focused="timeDialog[`lunch-${item.id}`]" label="時間" readonly>
             <v-dialog v-model="timeDialog[`lunch-${item.id}`]" activator="parent" width="auto">
-              <v-time-picker v-if="timeDialog[`lunch-${item.id}`]" v-model="item.lunch" format="24hr"
-                scrollable @update:modelValue="checkClockAllDone()"></v-time-picker>
+              <v-time-picker v-if="timeDialog[`lunch-${item.id}`]" v-model="item.lunch" format="24hr" scrollable
+                @update:modelValue="checkClockAllDone()"></v-time-picker>
             </v-dialog>
           </v-text-field>
         </v-col>
@@ -94,8 +94,8 @@
           <v-text-field v-model="item.dinner" :active="timeDialog[`dinner-${item.id}`]"
             :focused="timeDialog[`dinner-${item.id}`]" label="時間" readonly>
             <v-dialog v-model="timeDialog[`dinner-${item.id}`]" activator="parent" width="auto">
-              <v-time-picker v-if="timeDialog[`dinner-${item.id}`]" v-model="item.dinner" format="24hr"
-                scrollable @update:modelValue="checkClockAllDone()"></v-time-picker>
+              <v-time-picker v-if="timeDialog[`dinner-${item.id}`]" v-model="item.dinner" format="24hr" scrollable
+                @update:modelValue="checkClockAllDone()"></v-time-picker>
             </v-dialog>
           </v-text-field>
         </v-col>
@@ -223,10 +223,11 @@ watch(() => props.formConfig, () => {
 }, { deep: true });
 
 function loadFormData() {
+  // 改成api取得
   const formData = getAddiForm('formTwo');
 
-  if (formData && formData.length > 0) {
-    const firstForm = formData[0];
+  if (formData) {
+    const firstForm = formData;
 
     if (firstForm.section1 && Array.isArray(firstForm.section1)) {
       // Create a deep copy to avoid reference issues
@@ -263,25 +264,35 @@ function loadFormData() {
 function tempSave() {
 
   // Create new form data
-  const newFormData = [{
+  const newFormData = {
     title: '出餐作業查檢表',
+    passed: {
+      morning: showBreakfast.value && formDone.value,
+      noon: showLunch.value && formDone.value,
+      evening: showDinner.value && formDone.value
+    },
     section1: JSON.parse(JSON.stringify(section1Items.value)),
     section2: JSON.parse(JSON.stringify(section2Items.value))
-  }];
+  };
 
-  // Update form data
+  // 改成api呼叫
   updateAddiForm('formTwo', newFormData);
 }
 
 function save() {
-  const newFormData = [{
+  const newFormData = {
     title: '出餐作業查檢表',
+    passed: {
+      morning: showBreakfast.value && formDone.value,
+      noon: showLunch.value && formDone.value,
+      evening: showDinner.value && formDone.value
+    },
     section1: JSON.parse(JSON.stringify(section1Items.value)),
     section2: JSON.parse(JSON.stringify(section2Items.value))
-  }];
-
+  };
+  // 改成api呼叫
   updateAddiForm('formTwo', newFormData);
-  emit('formDoneEvent', {formName:'formTwo', state: 'success'});
+  emit('formDoneEvent', { formName: 'formTwo', state: 'success' });
   cancel();
 }
 

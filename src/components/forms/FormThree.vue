@@ -170,11 +170,12 @@ watch(() => props.formConfig, () => {
 }, { deep: true });
 
 function loadFormData() {
+  // 改成api取得
   let formData = getAddiForm('formThree');
   console.log('Loaded form data:', formData);
 
-  if (formData && formData.length > 0) {
-    let firstForm = formData[0];
+  if (formData) {
+    let firstForm = formData;
     if (firstForm.records && Array.isArray(firstForm.records)) {
       let allRecords = JSON.parse(JSON.stringify(firstForm.records));
 
@@ -273,13 +274,17 @@ function tempSave() {
   // Check if all records are valid
   const allValid = localRecords.value.every(record => isRecordValid(record));
 
-  const newFormData = [{
+  const newFormData = {
     title: '病人餐點回收及盤餘抽查記錄',
-    passed: allValid,
+    passed: {
+      morning: showBreakfast.value && allValid,
+      noon: showLunch.value && allValid,
+      evening: showDinner.value && allValid
+    },
     records: JSON.parse(JSON.stringify(localRecords.value))
-  }];
+  };
 
-  // Update form data
+  // 改成api呼叫
   updateAddiForm('formThree', newFormData);
 }
 
@@ -287,13 +292,17 @@ function save() {
   // Check if all records are valid
   const allValid = localRecords.value.every(record => isRecordValid(record));
 
-  const newFormData = [{
+  const newFormData = {
     title: '病人餐點回收及盤餘抽查記錄',
-    passed: allValid,
+    passed: {
+      morning: showBreakfast.value && allValid,
+      noon: showLunch.value && allValid,
+      evening: showDinner.value && allValid
+    },
     records: JSON.parse(JSON.stringify(localRecords.value))
-  }];
+  };
 
-  // Update form data
+  // 改成api呼叫
   emit('formDoneEvent', { formName: 'formThree', state: allValid ? 'success' : 'error' });
   updateAddiForm('formThree', newFormData);
   cancel();
@@ -317,7 +326,7 @@ function cancel() {
 }
 
 .records-container {
-  max-height: 70vh;
+  max-height: 60vh;
   overflow-y: auto;
 }
 </style>

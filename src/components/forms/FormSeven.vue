@@ -80,6 +80,10 @@ const props = defineProps({
     type: String,
     default: '進貨廠商管理紀錄'
   },
+  time: {
+    type: String,
+    default: ''
+  },
   formConfig: {
     type: Object,
     default: () => ({})
@@ -113,12 +117,13 @@ watch(() => props.formConfig, () => {
 }, { deep: true });
 
 function loadFormData() {
+  // 改成api取得
   const additionalForm = getAddiForm('formSeven');
 
-  if (additionalForm && additionalForm.length > 0 && additionalForm[0].records) {
+  if (additionalForm && additionalForm.records) {
 
-    if (additionalForm[0].records.length > 0) {
-      localRecords.value = JSON.parse(JSON.stringify(additionalForm[0].records));
+    if (additionalForm.records.length > 0) {
+      localRecords.value = JSON.parse(JSON.stringify(additionalForm.records));
     } else {
       localRecords.value = [{ company: null, name: '', time: null, issues: '' }];
     }
@@ -132,9 +137,7 @@ function addNewRecord() {
 }
 
 function removeRecord(index) {
-  // if (index > 0) { // Don't remove the first record
-  //   localRecords.value.splice(index, 1);
-  // }
+  // Don't remove the first record
   if (localRecords.value.length > 1) {
     localRecords.value.splice(index, 1);
   }
@@ -150,10 +153,18 @@ function tempSave() {
   if (filteredRecords.length === 0) {
     filteredRecords = [{ company: null, name: '', time: null, issues: '' }];
   } else {
-    newFormData = [{
+    newFormData = {
+      title: props.title,
+      passed: {
+        //反正有寫表代表有問題所以直接!props.time
+        morning: !props.time.includes('morning'),
+        noon: !props.time.includes('noon'),
+        evening: !props.time.includes('evening')
+      },
       records: filteredRecords
-    }];
+    };
   }
+  // 改成api呼叫
   updateAddiForm('formSeven', newFormData);
 }
 
@@ -168,6 +179,7 @@ function save() {
   newFormData = [{
     records: filteredRecords
   }];
+  // 改成api呼叫
   updateAddiForm('formSeven', newFormData);
   cancel();
 }

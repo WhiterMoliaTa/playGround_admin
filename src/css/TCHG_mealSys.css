@@ -309,3 +309,10 @@
   vertical-align: middle;
   line-height: 2rem;
 }
+
+.copyright {
+  color: #888;
+  font-size: 0.8rem;
+  margin-top: 2rem;
+  text-align: center;
+}

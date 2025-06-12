@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <v-card class="form-one-and-two">
       <v-toolbar>
@@ -13,7 +13,6 @@
 
       <v-card-text>
         <v-window v-model="activeTab">
-          <!-- First Form: 配膳線上督餐作業查檢表 -->
           <v-window-item :value="0">
             <v-card flat>
               <v-row class="mb-2">
@@ -53,7 +52,6 @@
             </v-card>
           </v-window-item>
 
-          <!-- Second Form: 出餐作業查檢表 -->
           <v-window-item :value="1">
             <v-card flat>
               <v-card-subtitle class="font-weight-bold px-0">檢核項目</v-card-subtitle>
@@ -101,7 +99,7 @@
                 <v-col :cols="timeBasedCols.remarks" class="text-center font-weight-bold">特殊狀況</v-col>
               </v-row>
 
-              <!-- Use form2 array in second form section -->
+
               <v-row v-for="item in formData[1]?.form2 || []" :key="item.id" class="my-2" align="center">
                 <v-col :cols="timeBasedCols.title">{{ item.title }}</v-col>
 
@@ -154,9 +152,9 @@
       </v-card-actions>
     </v-card>
   </div>
-</template>
+</template> -->
 
-<script setup>
+<!-- <script setup>
 import { ref, inject, onMounted, computed, watch } from 'vue';
 
 const props = defineProps({
@@ -256,9 +254,9 @@ function save() {
 function cancel() {
   emit('cancel');
 }
-</script>
+</script> -->
 
-<style scoped>
+<!-- <style scoped>
 .form-one-and-two {
   max-height: 80vh;
   overflow-y: auto;
@@ -266,4 +264,4 @@ function cancel() {
 * {
   touch-action: none;
 }
-</style>
+</style> -->

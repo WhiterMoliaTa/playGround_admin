@@ -76,6 +76,7 @@
 import { ref, inject, computed, watch, onMounted } from 'vue';
 
 import RemarksDialog from '../TCHG/RemarksDialog.vue';
+import { pasteRegex } from '@tiptap/extension-link';
 
 const props = defineProps({
   title: {
@@ -94,28 +95,24 @@ const props = defineProps({
 
 const emit = defineEmits(['save', 'cancel', 'formDoneEvent']);
 
-// Get form data access from parent
 const getAddiForm = inject('getAddiForm');
 const updateAddiForm = inject('updateAddiForm');
 
-// Time-based display
 const showBreakfast = computed(() => props.time.includes('morning'));
 const showLunch = computed(() => props.time.includes('noon'));
 const showDinner = computed(() => props.time.includes('evening'));
 
 const formDone = ref(false);
 
-// Local form data
 const formItems = ref([]);
 
 const adjustMealColSize = computed(() => {
   return 5 - [showBreakfast.value, showLunch.value, showDinner.value].filter(Boolean).length;
 });
 
-// Determine the size of the remarks column based on visible meal columns
+//可寫死 我不知道隨你
 const getRemarksColSize = computed(() => {
   const visibleColumns = [showBreakfast.value, showLunch.value, showDinner.value].filter(Boolean).length;
-  // 12 - 5 (title column) - (2 * number of visible meal columns)
   return 12 - 5 - (adjustMealColSize * visibleColumns);
 });
 
@@ -127,12 +124,10 @@ function openRemarkDialog(item) {
   showRemarksDialog.value = true;
 }
 
-// Load form data
 onMounted(() => {
   loadFormData();
 });
 
-// Watch for form config changes
 watch(() => props.formConfig, () => {
   loadFormData();
 }, { deep: true });
@@ -147,10 +142,11 @@ function checkAllSelcted() {
 };
 
 function loadFormData() {
+  // 改成api取得
   let additionalForm = getAddiForm('formFour');
 
-  if (additionalForm && additionalForm.length > 0) {
-    let firstForm = additionalForm[0];
+  if (additionalForm) {
+    let firstForm = additionalForm;
 
     if (firstForm.form && Array.isArray(firstForm.form)) {
       formItems.value = JSON.parse(JSON.stringify(firstForm.form));
@@ -170,11 +166,16 @@ function loadFormData() {
 
 function tempSave() {
 
-  const newFormData = [{
+  const newFormData = {
     title: '菜餚品質與數量檢討記錄',
+    passed: {
+      morning: showBreakfast.value && formItems.value.every(item => item.breakfast !== null),
+      noon: showLunch.value && formItems.value.every(item => item.lunch !== null),
+      evening: showDinner.value && formItems.value.every(item => item.dinner !== null)
+    },
     form: JSON.parse(JSON.stringify(formItems.value))
-  }];
-
+  };
+  // 改成api呼叫
   updateAddiForm('formFour', newFormData);
 }
 
@@ -187,11 +188,16 @@ function save() {
   });
   let state = formNoProblem ? 'success' : 'error';
 
-  let newFormData = [{
+  let newFormData = {
     title: '菜餚品質與數量檢討紀錄',
+    passed: {
+      morning: showBreakfast.value && formNoProblem,
+      noon: showLunch.value && formNoProblem,
+      evening: showDinner.value && formNoProblem
+    },
     form: JSON.parse(JSON.stringify(formItems.value))
-  }];
-
+  };
+// 改成api呼叫
   updateAddiForm('formFour', newFormData);
   emit('formDoneEvent', { formName: 'formFour', state: state });
   cancel();

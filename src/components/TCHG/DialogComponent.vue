@@ -170,10 +170,12 @@ function ableToCloseDialog() {
     });
   }
   if(props.formName[0] === 'formFive'){
-    getAddiForm('formFive')[0].records.length === 0 ? allFormNoError = true : allFormNoError = false;
+    // 改成api取得
+    getAddiForm('formFive').records.length === 0 ? allFormNoError = true : allFormNoError = false;
   }
   if(props.formName[0] === 'formSeven'){
-    getAddiForm('formSeven')[0].records.length === 0 ? allFormNoError = true : allFormNoError = false;
+    // 改成api取得
+    getAddiForm('formSeven').records.length === 0 ? allFormNoError = true : allFormNoError = false;
   }
   modifyPass(props.formName, props.time, allFormNoError);
   showDialog.value = false;

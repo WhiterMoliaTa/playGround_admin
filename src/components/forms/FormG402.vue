@@ -15,7 +15,7 @@
       </thead>
       <tbody>
         <!-- Loop through sections -->
-        <template v-for="(section, sectionIndex) in formConfig[0].sections" :key="`section-${sectionIndex}`">
+        <template v-for="(section, sectionIndex) in formConfig.sections" :key="`section-${sectionIndex}`">
           <!-- Loop through items in each section -->
           <tr v-for="(item, itemIndex) in section.items" :key="`item-${sectionIndex}-${itemIndex}`">
             <!-- Section title - only show on first row of each section -->
@@ -29,7 +29,7 @@
             <!-- Morning checkbox -->
             <td v-if="showBreakfast" class="text-center">
               <v-btn :disabled="item.disable?.morning" icon density="compact" variant="text"
-                @click="toggleState(section.title, itemIndex, 'breakfast')" class="mx-2">
+                @click="switchState(section.title, itemIndex, 'breakfast')" class="mx-2">
                 <v-icon v-if="item.breakfast !== null" :color="getStateColor(item.breakfast)"
                   :icon="getStateIcon(item.breakfast)" @update:modelValue="checkAllSelcted"></v-icon>
                 <span v-else class="text-grey text-body-2">-</span>
@@ -39,7 +39,7 @@
             <!-- Noon checkbox -->
             <td v-if="showLunch" class="text-center">
               <v-btn :disabled="item.disable?.noon" icon density="compact" variant="text"
-                @click="toggleState(section.title, itemIndex, 'lunch')" class="mx-2">
+                @click="switchState(section.title, itemIndex, 'lunch')" class="mx-2">
                 <v-icon v-if="item.lunch !== null" :color="getStateColor(item.lunch)" :icon="getStateIcon(item.lunch)"
                   @update:modelValue="checkAllSelcted"></v-icon>
                 <span v-else class="text-grey text-body-2">-</span>
@@ -49,7 +49,7 @@
             <!-- Evening checkbox -->
             <td v-if="showDinner" class="text-center">
               <v-btn :disabled="item.disable?.evening" icon density="compact" variant="text"
-                @click="toggleState(section.title, itemIndex, 'dinner')" class="mx-2">
+                @click="switchState(section.title, itemIndex, 'dinner')" class="mx-2">
                 <v-icon v-if="item.dinner !== null" :color="getStateColor(item.dinner)"
                   :icon="getStateIcon(item.dinner)" @update:modelValue="checkAllSelcted"></v-icon>
                 <span v-else class="text-grey text-body-2">-</span>
@@ -110,9 +110,10 @@ const showLunch = computed(() => props.time.includes('noon'));
 const showDinner = computed(() => props.time.includes('evening'));
 
 function loadFormData() {
+  // 改成api取得
   let additionalForm = getAddiForm('formG402');
-  if (additionalForm && additionalForm.length > 0) {
-    let firstForm = additionalForm[0];
+  if (additionalForm) {
+    let firstForm = additionalForm;
     if (firstForm.sections && Array.isArray(firstForm.sections)) {
       formItems.value = JSON.parse(JSON.stringify(firstForm.sections));
     } else {
@@ -126,7 +127,6 @@ function loadFormData() {
 
 const formDone = ref(false);
 
-// Helper functions for the state toggle
 function getStateColor(state) {
   if (state === 'good') return 'success';
   if (state === 'ok') return 'warning';
@@ -141,13 +141,10 @@ function getStateIcon(state) {
   return '';
 }
 
-// Function to toggle between states (good > ok > bad > good...)
-function toggleState(sectionKey, itemIndex, mealTime) {
-  // Get the section key in lowercase for mapping to formData
-  const normalizedSectionKey = sectionKey.toLowerCase().replace(/\s+/g, '');
+function switchState(sectionKey, itemIndex, mealTime) {
 
   // Get the current item
-  const item = props.formConfig[0].sections
+  const item = props.formConfig.sections
     .find(s => s.title === sectionKey).items[itemIndex];
 
   // Cycle through states: null -> 'good' -> 'ok' -> bad -> loop back to 'good'
@@ -190,7 +187,7 @@ function tempSave() {
       return true;
     });
   });
-  const newFormData = [{
+  const newFormData = {
     title: '每日衛生檢查表',
     passed: {
       morning: showBreakfast.value && formNoProblem,
@@ -198,8 +195,8 @@ function tempSave() {
       evening: showDinner.value && formNoProblem
     },
     sections: JSON.parse(JSON.stringify(formItems.value))
-  }];
-
+  };
+  //改成api呼叫
   updateAddiForm('formG402', newFormData);
 }
 
@@ -215,7 +212,7 @@ function save() {
   });
   let state = formNoProblem ? 'success' : 'error';
 
-  let newFormData = [{
+  let newFormData = {
     title: '每日衛生檢查表',
     passed: {
       morning: showBreakfast && formNoProblem,
@@ -223,8 +220,8 @@ function save() {
       evening: showDinner.value && formNoProblem
     },
     sections: JSON.parse(JSON.stringify(formItems.value))
-  }];
-
+  };
+  //改成api呼叫
   updateAddiForm('formG402', newFormData);
   emit('formDoneEvent', { formName: 'formG402', state: state });
   cancel();
@@ -262,16 +259,7 @@ td {
   background-color: rgba(0, 0, 0, 0.04);
 }
 
-/* Make the icons slightly larger for better visibility */
 .v-icon.small {
   font-size: 18px;
 }
-
-/* Print styles */
-/* @media print {
-  .v-checkbox {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-} */
 </style>

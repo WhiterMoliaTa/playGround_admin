@@ -62,7 +62,7 @@
 
     .timeline-indicator {
         position: absolute;
-        left: 15px;
+        left: 10px;
         top: 0;
         bottom: 0;
         width: 2px;
@@ -112,7 +112,7 @@
         color: #43c3c5;
     }
 
-    /* TODO Future visual updates if I have time: */
+    /* TODO Visual Update that did not make in*/
     .signature-line {
         width: 200px;
         height: 2px;

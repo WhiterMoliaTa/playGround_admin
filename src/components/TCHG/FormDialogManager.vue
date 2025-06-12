@@ -74,7 +74,6 @@
 </template>
 <script setup>
 import { computed } from 'vue';
-import FormOneAndTwo from '../forms/FormOneAndTwo.vue';
 import FormOne from '../forms/formOne.vue';
 import FormTwo from '../forms/formTwo.vue';
 import FormThree from '../forms/FormThree.vue';

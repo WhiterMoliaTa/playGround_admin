@@ -22,14 +22,15 @@
           <v-card class="pa-3">
             <v-row>
               <v-col class="d-flex">
-                <v-select class="mr-3" v-model="record.personnel" @update:focused="checkValidRecord()" :items="personnelOptions.map(option => option.name)"
-                  label="請選擇人員" outlined></v-select>
+                <v-select class="mr-3" v-model="record.personnel" @update:focused="checkValidRecord()"
+                  :items="personnelOptions.map(option => option.name)" label="請選擇人員" outlined></v-select>
                 <v-select v-model="record.jobTitle" readonly :items="[getJobTitle(record.personnel)]" label="人員職稱"
                   outlined></v-select>
               </v-col>
             </v-row>
 
-            <v-textarea v-model="record.notes" label="特殊狀況紀錄" @update:focused="checkValidRecord()" outlined rows="4"></v-textarea>
+            <v-textarea v-model="record.notes" label="特殊狀況紀錄" @update:focused="checkValidRecord()" outlined
+              rows="4"></v-textarea>
 
             <v-row>
               <v-col cols="12">
@@ -108,26 +109,28 @@ const open = ref([]);
 const formDone = ref(false);
 
 function checkValidRecord() {
-  formDone.value = localRecords.value.length > 0 && localRecords.value.every(record => 
+  formDone.value = localRecords.value.length > 0 && localRecords.value.every(record =>
     isNotBlankUtil(record.personnel) && isNotBlankUtil(record.notes));
 };
 
 onMounted(() => {
   loadFormData();
   checkValidRecord();
-  if(localRecords.value.length > 0) {
+  if (localRecords.value.length > 0) {
     open.value = ['record-0'];
   }
 });
 
 function loadFormData() {
+  // 改成api取得
   let additionalForm = getAddiForm('formFive');
-  if (additionalForm && additionalForm.length > 0) {
-    formData.value = additionalForm[0];
+  console.log('additionalForm', additionalForm);
+  if (additionalForm) {
+    formData.value = additionalForm;
     const records = JSON.parse(JSON.stringify(formData.value.records));
     records.forEach(record => {
-      if (record.image && typeof record.image === 'string' && 
-          record.image.startsWith('data:')) {
+      if (record.image && typeof record.image === 'string' &&
+        record.image.startsWith('data:')) {
         record.image = base64ToFile(record.image);
       }
     });
@@ -181,8 +184,8 @@ function newEmptyRecord() {
     image: null,
   }
   localRecords.value.push(newRecord);
-  nextTick( async() => {
-    autoScroll.value.$el.scrollIntoView({ behavior: 'smooth'});
+  nextTick(async () => {
+    autoScroll.value.$el.scrollIntoView({ behavior: 'smooth' });
   });
 }
 
@@ -204,13 +207,27 @@ async function save() {
         return processedRecord;
       })
     );
-    const newFormData = [{
+    const newFormData = {
+      title: props.title,
+      passed: {
+        morning: props.time.includes('morning'),
+        noon: props.time.includes('noon'),
+        evening: props.time.includes('evening'),
+      },
       records: processedRecords
-    }];
+    };
+    // 改成api呼叫
     updateAddiForm('formFive', newFormData);
     emit('formDoneEvent', { formName: 'formFive', state: 'error' });
   } else {
-    updateAddiForm('formFive', [{ records: [{ personnel: '', jobTitle: '', notes: '', image: null }] }]);
+    // 改成api呼叫
+    updateAddiForm('formFive', {
+      title: props.title, passed: {
+        morning: props.time.includes('morning') ? false : true,
+        noon: props.time.includes('noon') ? false : true,
+        evening: props.time.includes('evening') ? false : true,
+      }, records: [{ personnel: '', jobTitle: '', notes: '', image: null }]
+    });
     emit('formDoneEvent', { formName: 'formFive', state: 'success' });
   }
   emit('cancel');
@@ -225,16 +242,26 @@ async function tempSave() {
         if (record.image instanceof File) {
           processedRecord.image = await fileToBase64(record.image);
         }
-        
         return processedRecord;
       })
     );
-    const newFormData = [{
+    const newFormData = {
+      title: props.title,
+      passed: {
+        morning: props.time.includes('morning') ? false : true,
+        noon: props.time.includes('noon') ? false : true,
+        evening: props.time.includes('evening') ? false : true,
+      },
       records: processedRecords
-    }];
+    };
+    // 改成api呼叫
     updateAddiForm('formFive', newFormData);
   } else {
-    updateAddiForm('formFive', [{ records: [{ personnel: '', jobTitle: '', notes: '', image: null }] }]);
+    // 改成api呼叫
+    updateAddiForm('formFive', {
+      title: props.title, passed: { morning: false, noon: false, evening: false },
+      records: [{ personnel: '', jobTitle: '', notes: '', image: null }]
+    });
   }
 }
 
@@ -248,7 +275,7 @@ function fileToBase64(file) {
       resolve(file);
       return;
     }
-    
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
@@ -260,19 +287,19 @@ function base64ToFile(dataUrl, filename = 'image.jpg') {
   if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
     return null;
   }
-  
+
   // Extract the content type and base64 data
   const arr = dataUrl.split(',');
   const mime = arr[0].match(/:(.*?);/)[1];
   const bstr = atob(arr[1]);
   let n = bstr.length;
   const u8arr = new Uint8Array(n);
-  
+
   // Convert to binary data
   while (n--) {
     u8arr[n] = bstr.charCodeAt(n);
   }
-  
+
   // Create and return File object
   return new File([u8arr], filename, { type: mime });
 }

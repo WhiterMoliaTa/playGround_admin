@@ -55,8 +55,9 @@
                 </ul>
               </v-card-text>
 
-              <v-btn variant="text" :color="slideDone[`${slide.id}`] ? 'yellow' : 'black'" class="font-weight-bold mb-3 start-button" @click="openTaskDetail(slide.id)">
-                {{ slideDone[`${slide.id}`]? '今日已完成' : '立即開始'}}
+              <v-btn variant="text" :color="slideDone[`${slide.id}`] ? 'yellow' : 'black'"
+                class="font-weight-bold mb-3 start-button" @click="openTaskDetail(slide.id)">
+                {{ slideDone[`${slide.id}`] ? '今日已完成' : '立即開始' }}
               </v-btn>
             </v-card>
           </div>
@@ -107,19 +108,22 @@
             }"></v-divider>
             <div class="task-block"
               :style="{ width: `700px`, left: `30px`, transform: `translateY(${requreidHeight / 2 - 26}px)` }">
-              <div class="task-completion-bar" :style="ifSet ? { 'background-color': `${taskColor[5]}`, width: `60%` } : ``"></div>
-              <div class="task-completion-task">{{ ifSet ? '9/15' : '0/15'}}</div>
+              <div class="task-completion-bar"
+                :style="ifSet ? { 'background-color': `${taskColor[5]}`, width: `60%` } : ``"></div>
+              <div class="task-completion-task">{{ ifSet ? '9/15' : '0/15' }}</div>
             </div>
             <div class="task-block"
               :style="{ width: `930px`, left: `500px`, transform: `translateY(${requreidHeight / 2}px)` }">
-              <div class="task-completion-bar" :style="ifSet ? { 'background-color': `${taskColor[6]}`, width: `80%` } : ``"></div>
-              <div class="task-completion-task">{{ ifSet ? '18/21' : '0/21'}}</div>
+              <div class="task-completion-bar"
+                :style="ifSet ? { 'background-color': `${taskColor[6]}`, width: `80%` } : ``"></div>
+              <div class="task-completion-task">{{ ifSet ? '18/21' : '0/21' }}</div>
             </div>
           </v-sheet>
         </v-card-text>
       </v-card>
       <p class="ml-4 my-2">簽核表單</p>
-      <v-btn rounded-sm variant="flat" class="mb-2 mx-4 need-to-sign-btn" display="d-flex justify-space-around align-center">
+      <v-btn rounded-sm variant="flat" class="mb-2 mx-4 need-to-sign-btn"
+        display="d-flex justify-space-around align-center">
         <template v-slot:prepend>
           <div>
             <v-icon size="30" style="transform: scaleX(-1);">mdi-gavel</v-icon>
@@ -141,10 +145,13 @@
         </template>
         <template v-slot:append>
           <div class="sign-text-caption-background">
-            <span>{{ ifSet ? 26 : 21}}</span>
+            <span>{{ ifSet ? 26 : 21 }}</span>
           </div>
         </template>
       </v-btn>
+    </div>
+    <div class="copyright">
+      Copyright © 臺北市立聯合醫院所有
     </div>
   </div>
 </template>

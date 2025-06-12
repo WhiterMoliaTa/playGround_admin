@@ -32,7 +32,7 @@
               :subtitle="`${job.title} (${job.items.filter(i => i.checked).length}/${job.items.length})`"
               class="font-weight-bold">
               <template v-slot:prepend>
-                <v-icon color="amber">mdi-circle</v-icon>
+                <v-icon color="amber" :size="listStatusIconSize">mdi-circle</v-icon>
               </template>
             </v-list-item>
           </template>
@@ -43,11 +43,12 @@
                 <div class="timeline-indicator"></div>
               </template>
               <v-list-item-title class="pl-3 d-flex align-center meal-list-item-title"
-                :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa'), width:'100%'}">{{ item.title }}</v-list-item-title>
-              <!-- <template v-slot:append> -->
+                :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa'), width: '100%' }">{{ item.title
+                }}</v-list-item-title>
               <div class="d-flex align-center" :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa') }">
                 <v-btn :key="`button-${index}-${item.id}`" hide-details variant="text" icon class="ma-0 pa-0"
-                  :disabled="!canComplete(item, job.section)" @click="handleButtonClick(item, job.section)">
+                   :disabled="!canComplete(item, job.section)" @click="handleButtonClick(item, job.section)">
+                   <!--TODO 防section跟section之間的canComplete -->
                   <v-icon
                     :color="state[`button-${job.section}-${item.id}`] && item.checked ? state[`button-${job.section}-${item.id}`] : 'grey'">
                     mdi-check-circle</v-icon>
@@ -56,7 +57,6 @@
                   <v-icon>mdi-dots-horizontal-circle</v-icon>
                 </v-btn>
               </div>
-              <!-- </template> -->
             </v-list-item>
           </div>
         </v-list-group>
@@ -70,10 +70,10 @@
         <v-row class="associate-forms-row">
           <!-- Iterate through forms dynamically -->
           <v-col cols="5" v-for="(form, formName) in forms" :key="formName">
-            <!-- <div class="associate-from">{{ form.additionalForm[0]?.title || formName }}</div> -->
-            <div class="associate-form" variant="text"  @click="openReadOnlyForm(formName)">{{ form.additionalForm[0].title ||
+            <div class="associate-form" variant="text" @click="openReadOnlyForm(formName)">{{ form.additionalForm.title
+              ||
               formName
-            }}</div>
+              }}</div>
           </v-col>
         </v-row>
       </div>
@@ -143,6 +143,8 @@ const shift = ref('morning');
 const showBackToTop = ref(false);
 const readForm = ref('');
 const showReadonlyForm = ref(false);
+const listStatusIcon = ref([]);
+const listStatusIconSize = ref(10);
 
 const breadcrumbs = [
   { label: '首頁', path: '/' },
@@ -205,6 +207,8 @@ const isRootCompleted = computed(() => {
 });
 
 provide('getAddiForm', (formName) => {
+  console.log(`Fetching additional form for: ${formName}`);
+  console.log(forms.value[formName]?.additionalForm || []);
   return forms.value[formName]?.additionalForm || [];
 });
 
@@ -234,21 +238,20 @@ provide('modifyJobPass', (formName, time, pass) => {
   }
 });
 
+
+// 改成api呼叫
 provide('updateAddiForm', (formName, newData) => {
   const form = forms.value[formName];
 
   if (form && form.additionalForm) {
-    if (Array.isArray(newData)) {
-      form.additionalForm = [...newData];
-    } else {
-      form.additionalForm.push(newData);
-    }
+    form.additionalForm = {...newData};
+    console.log(`Form data`, {...newData});
+    console.log(`Form ${formName} updated with new data:`, form.additionalForm);
   }
-
 });
 
 function onResize() {
-  // window.innerWidth
+  listStatusIconSize.value = Math.max(window.innerWidth / 100, 15);
 }
 
 function backToMealSys() {
