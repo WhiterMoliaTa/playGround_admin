@@ -1,5 +1,5 @@
 <template>
-  <div class="meal-log-page" @scroll.passive="onScroll">
+  <div class="meal-log-page" @scroll.passive="onScroll" ref="mealLogPage">
     <div class="d-flex justify-space-between align-center pa-2 mx-2">
       <h2>供膳管理日誌</h2>
       <nav>
@@ -159,6 +159,7 @@ const dialogState = reactive({
 
 const showRemarksDialog = ref(false);
 const state = ref({});
+const mealLogPage = ref(null);
 
 watch(() =>
   jobs.value.filter(job => Array.isArray(job.items))
@@ -243,10 +244,13 @@ function backToMealSys() {
 }
 
 function onScroll(event) {
-  const scrollTop = event.target.scrollTop;
-  showBackToTop.value = scrollTop > 100;
+  const container = event.target;
+  const scrollTop = container.scrollTop;
+  const containerHeight = container.clientHeight;
+  const scrollHeight = container.scrollHeight;
+  
+  showBackToTop.value = scrollTop > (scrollHeight - containerHeight) * 0.3;
 }
-
 function canComplete(item, jobSection) {
   const currentJob = jobs.value.find(job => job.section === jobSection);
   if (!currentJob) return false;
@@ -328,7 +332,9 @@ function signDraft() {
 }
 
 function backToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (mealLogPage) {
+    mealLogPage.value.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
 
 // Signature handling

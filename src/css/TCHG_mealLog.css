@@ -66,6 +66,7 @@
     width: 100%;
     height: 90px;
     background-color: #eef2fe;
+    z-index: 10;
 }
 
 .meal-list-item-title {

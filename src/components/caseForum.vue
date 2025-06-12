@@ -2,13 +2,66 @@
   <v-container>
     <v-row class="d-flex align-center mb-4">
       <v-col cols="12" sm="9" class="d-flex align-center">
-        <v-text-field v-model="searchKeyword" label="搜尋討論（標題或內容）" clearable hide-details variant="outlined"
-          style="max-width: 320px; margin-right: 12px;" />
-        <v-select v-model="sortType" hide-details variant="outlined" :items="[
-          { title: '留言最多', value: 'mostComment' },
-          { title: '最新發表', value: 'newest' },
-          { title: '留言最少', value: 'leastComment' }
-        ]" label="排序" dense outlined style="max-width: 140px;" />
+        <v-text-field
+          v-model="searchKeyword"
+          label="搜尋討論（標題或內容）"
+          clearable
+          hide-details
+          variant="outlined"
+          style="max-width: 320px; margin-right: 12px;"
+        />
+        <v-select
+          v-model="sortType"
+          hide-details
+          variant="outlined"
+          :items="[
+            { title: '留言最多', value: 'mostComment' },
+            { title: '最新發表', value: 'newest' },
+            { title: '留言最少', value: 'leastComment' }
+          ]"
+          label="排序"
+          dense
+          outlined
+          style="max-width: 140px;"
+        />
+        <!-- 標籤篩選按鈕與選單 -->
+        <v-menu v-model="tagMenu" :close-on-content-click="false" offset-y>
+          <template #activator="{ props }">
+            <v-btn v-bind="props" icon color="primary" class="ml-2" title="標籤篩選" variant="text">
+              <v-icon>mdi-filter-variant-plus</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item>
+              <v-select
+                v-model="selectedTagFilters"
+                :items="tagFilterOptions"
+                label="選擇標籤"
+                multiple
+                clearable
+                hide-details
+                chips
+                style="min-width: 200px;"
+              />
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <!-- 已選標籤 chip -->
+        <div class="ml-2" style="display: flex; align-items: center;">
+          <v-chip
+            v-for="tag in selectedTagFilters"
+            :key="tag"
+            color="primary"
+            size="small"
+            class="ma-1"
+            label
+            variant="tonal"
+            closable
+            @click:close="removeTagFilter(tag)"
+          >
+            {{ tag }}
+          </v-chip>
+        </div>
       </v-col>
       <v-col cols="12" sm="3" class="d-flex align-center justify-end">
         <v-btn color="primary" @click="dialogAdd = true">新增討論</v-btn>
@@ -16,6 +69,7 @@
     </v-row>
 
     <v-list two-line>
+      <!-- 在討論列表中顯示標籤（tags） -->
       <v-list-item v-for="discussion in discussionsWithMeta" :key="discussion.discussionId" class="discussion-item"
         @click="onClickDiscussion(discussion)" link>
         <div class="discussion-row">
@@ -35,7 +89,23 @@
                 <div class="user-name">{{ discussion.createdBy }}</div>
                 <div class="worktitle">{{ discussion.workTitle || '職稱未設定' }}</div>
               </div>
-              <div class="discussion-title">{{ discussion.title }}</div>
+              <div class="discussion-title" style="display: flex; align-items: center;">
+                {{ discussion.title }}
+                <template v-if="discussion.tags && discussion.tags.length">
+                  <v-chip
+                    v-for="tagObj in discussion.tagsObj"
+                    :key="tagObj.tagId"
+                    :color="tagObj.color || 'primary'"
+                    size="small"
+                    class="ma-1 ml-2"
+                    label
+                    variant="tonal"
+                    style="vertical-align: middle;"
+                  >
+                    {{ tagObj.name }}
+                  </v-chip>
+                </template>
+              </div>
             </div>
             <div class="content">
               <template v-if="discussion.lastComment">
@@ -76,6 +146,25 @@
           <v-form ref="form" v-model="formValid">
             <v-text-field v-model="newDiscussion.title" label="標題" :rules="[v => !!v || '標題不可為空']" required />
             <v-textarea v-model="newDiscussion.content" label="內容" rows="4" :rules="[v => !!v || '內容不可為空']" required />
+            <v-combobox
+              v-model="newDiscussion.tag"
+              :items="tagSelectOptions"
+              label="標籤（可輸入新標籤或選擇現有）"
+              clearable
+              hide-selected
+              allow-overflow
+              small-chips
+              @update:modelValue="onTagChange"
+            />
+            <v-select
+              v-model="newDiscussion.tagColor"
+              :items="tagColorOptions"
+              label="標籤顏色"
+              item-title="label"
+              item-value="value"
+              clearable
+              :disabled="isTagColorDisabled"
+            />
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -98,6 +187,7 @@ const router = useRouter()
 const discussions = ref([...forumTestData.discussions])
 const comments = ref([...forumTestData.comments])
 const files = ref([...forumTestData.files])
+const tags = ref([...forumTestData.tags]) // 新增：tags
 
 const searchKeyword = ref('')
 const dialogAdd = ref(false)
@@ -105,7 +195,19 @@ const dialogAdd = ref(false)
 const newDiscussion = ref({
   title: '',
   content: '',
+  tag: '',
+  tagColor: '', // 新增：標籤顏色
 })
+
+const tagColorOptions = [
+  { label: '藍色', value: 'blue' },
+  { label: '綠色', value: 'green' },
+  { label: '紫色', value: 'purple' },
+  { label: '橘色', value: 'orange' },
+  { label: '紅色', value: 'red' },
+  { label: '灰色', value: 'grey' },
+  { label: '黃色', value: 'yellow' },
+]
 
 const form = ref(null)
 const formValid = ref(false)
@@ -128,14 +230,45 @@ function timeAgo(isoString) {
   return `${Math.floor(diff / 86400)}天前`
 }
 
+// 標籤篩選按鈕與選單
+const tagMenu = ref(false)
+
+// 標籤篩選器
+const selectedTagFilters = ref([])
+
+// 標籤選項（顯示所有唯一標籤名稱）
+const tagFilterOptions = computed(() =>
+  Array.from(new Set(tags.value.map(t => t.name)))
+)
+
+// 移除已選標籤
+function removeTagFilter(tag) {
+  selectedTagFilters.value = selectedTagFilters.value.filter(t => t !== tag)
+}
+
 const filteredDiscussions = computed(() => {
-  if (!searchKeyword.value) return discussions.value
-  const keyword = searchKeyword.value.trim().toLowerCase()
-  return discussions.value.filter(
-    (d) =>
-      d.title.toLowerCase().includes(keyword) ||
-      d.content.toLowerCase().includes(keyword)
-  )
+  let result = discussions.value
+  // 標題/內容搜尋
+  if (searchKeyword.value) {
+    const keyword = searchKeyword.value.trim().toLowerCase()
+    result = result.filter(
+      (d) =>
+        d.title.toLowerCase().includes(keyword) ||
+        d.content.toLowerCase().includes(keyword)
+    )
+  }
+  // 標籤篩選（AND 條件：所有選取標籤都要有）
+  if (selectedTagFilters.value.length > 0) {
+    result = result.filter(d => {
+      const discussionTags = tags.value.filter(
+        t => t.referenceType === 'discussion' && t.referenceId === d.discussionId
+      )
+      const tagNames = discussionTags.map(t => t.name)
+      // 所有選取標籤都必須包含
+      return selectedTagFilters.value.every(tag => tagNames.includes(tag))
+    })
+  }
+  return result
 })
 
 const discussionsWithMeta = computed(() => {
@@ -145,12 +278,12 @@ const discussionsWithMeta = computed(() => {
     let fileCount = 0
 
     // 加上「主題本身」的檔案數
-    const topicFiles = files.value.filter(f => f.referenceId === d.discussionId && f.status === 'A')
+    const topicFiles = files.value.filter(f => f.referenceId === d.discussionId && f.status === 'Alive')
     fileCount += topicFiles.length
 
     // 加上「留言」的檔案數
     relatedComments.forEach(c => {
-      const commentFiles = files.value.filter(f => f.referenceId === c.commentId && f.status === 'A')
+      const commentFiles = files.value.filter(f => f.referenceId === c.commentId && f.status === 'Alive')
       fileCount += commentFiles.length
     })
 
@@ -162,6 +295,8 @@ const discussionsWithMeta = computed(() => {
       )
     }
 
+    // 新增：取得標籤
+    const discussionTags = tags.value.filter(t => t.referenceType === 'discussion' && t.referenceId === d.discussionId)
     return {
       ...d,
       fileCount,
@@ -169,6 +304,8 @@ const discussionsWithMeta = computed(() => {
       avatarUrl: d.avatarUrl || '',
       workTitle: d.workTitle || '',
       lastComment,
+      tags: discussionTags.map(t => t.name),
+      tagsObj: discussionTags, // 新增：傳遞整個 tag 物件
     }
   })
 
@@ -182,6 +319,19 @@ const discussionsWithMeta = computed(() => {
   }
   return arr
 })
+
+// 新增：新增標籤功能
+const addTag = (name, referenceType, referenceId, color) => {
+  const newTag = {
+    tagId: 't' + Date.now(),
+    name,
+    referenceType,
+    referenceId,
+    color: color || 'primary', // 新增顏色
+  }
+  tags.value.push(newTag)
+  forumTestData.tags.push(newTag)
+}
 
 const addDiscussion = async () => {
   const valid = await form.value.validate()
@@ -199,12 +349,24 @@ const addDiscussion = async () => {
     updatedTime: now,
     updatedBy: 'user-new',
     status: 'O',
-    avatarUrl: '', // 這裡也要帶
+    avatarUrl: '',
     workTitle: '',
   })
 
+  // 新增：如果有輸入標籤，則新增標籤，帶入顏色
+  if (newDiscussion.value.tag && newDiscussion.value.tag.trim()) {
+    addTag(
+      newDiscussion.value.tag.trim(),
+      'discussion',
+      newId,
+      newDiscussion.value.tagColor || 'primary'
+    )
+  }
+
   newDiscussion.value.title = ''
   newDiscussion.value.content = ''
+  newDiscussion.value.tag = ''
+  newDiscussion.value.tagColor = ''
   dialogAdd.value = false
   form.value.resetValidation()
   router.push(`/edit/forum/${newId}`)
@@ -212,6 +374,27 @@ const addDiscussion = async () => {
 
 const onClickDiscussion = (discussion) => {
   router.push(`/edit/forum/${discussion.discussionId}`)
+}
+
+// 取得現有標籤名稱（唯一）
+const tagSelectOptions = computed(() =>
+  Array.from(new Set(tags.value.map(t => t.name)))
+)
+
+// 新增：標籤顏色是否被禁用
+const isTagColorDisabled = ref(false)
+
+// 新增：當標籤變更時，處理標籤顏色
+function onTagChange(val) {
+  // 檢查是否選擇了現有標籤
+  const existTag = tags.value.find(t => t.name === val)
+  if (existTag) {
+    newDiscussion.value.tagColor = existTag.color || 'primary'
+    isTagColorDisabled.value = true
+  } else {
+    newDiscussion.value.tagColor = ''
+    isTagColorDisabled.value = false
+  }
 }
 </script>
 
