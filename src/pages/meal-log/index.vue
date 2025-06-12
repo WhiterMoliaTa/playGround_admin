@@ -68,7 +68,6 @@
       </div>
       <div class="pa-4">
         <v-row class="associate-forms-row">
-          <!-- Iterate through forms dynamically -->
           <v-col cols="5" v-for="(form, formName) in forms" :key="formName">
             <div class="associate-form" variant="text" @click="openReadOnlyForm(formName)">{{ form.additionalForm.title
               ||
@@ -86,10 +85,6 @@
       </v-btn>
     </div>
   </div>
-  <!-- <div class="d-flex justify-end align-center mt-4">
-    <span class="mr-4">主管簽核:</span>
-    <div class="signature-line" @click="openSignatureDialog"></div>
-  </div> -->
   <DialogComponent v-model:show="dialogState.show" :title="dialogState.title" :check-object="dialogState.checkObject"
     :check-boxs="dialogState.checkBoxs" :form-buttons="dialogState.formButtons"
     :additional-form="dialogState.additionalForm" :form-name="dialogState.formName"

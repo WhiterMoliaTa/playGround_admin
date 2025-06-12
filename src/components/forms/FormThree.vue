@@ -4,7 +4,6 @@
       <v-card-title class="text-center pb-0">{{ title }}</v-card-title>
       <v-card-subtitle class="text-center pb-4">病人餐點回收及盤餘抽查記錄</v-card-subtitle>
       <v-container class="records-container">
-        <!-- Main Records Loop -->
         <div v-for="(record, recordIndex) in localRecords" :key="recordIndex" class="record-container mb-6">
           <v-card class="pa-3" variant="outlined">
             <!-- Meal Checkboxes -->
@@ -25,13 +24,6 @@
             </v-row>
             <v-row>
               <v-col cols="6">
-                <!-- <v-text-field
-                  v-model="record.recycleTime"
-                  label="回收時間"
-                  type="time"
-                  variant="outlined"
-                  density="compact"
-                ></v-text-field> -->
                 <v-text-field v-model="record.recycleTime" :active="timeDialog[`recycle-${recordIndex}`]"
                   :focused="timeDialog[`recycle-${recordIndex}`]" label="回收時間" readonly>
                   <v-dialog v-model="timeDialog[`recycle-${recordIndex}`]" activator="parent" width="auto">

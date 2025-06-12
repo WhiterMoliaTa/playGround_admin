@@ -36,12 +36,6 @@
       </v-container>
     </v-card>
   </v-dialog>
-  <!-- <form-dialog-component
-        v-model:showForm="showFormDialog"
-        :form-config="formConfig"
-        :fillFormTime="new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })"
-        @submitForm="saveAdditionalForm"
-    /> -->
   <form-dialog-manager v-model:showForm="showFormDialog" :form="form" :time="time" :form-config="formConfig"
     @currentformDone="updateFormDone($event, time)" />
 </template>

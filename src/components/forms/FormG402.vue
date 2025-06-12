@@ -14,11 +14,8 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Loop through sections -->
         <template v-for="(section, sectionIndex) in formConfig.sections" :key="`section-${sectionIndex}`">
-          <!-- Loop through items in each section -->
           <tr v-for="(item, itemIndex) in section.items" :key="`item-${sectionIndex}-${itemIndex}`">
-            <!-- Section title - only show on first row of each section -->
             <td v-if="itemIndex === 0" :rowspan="section.items.length" class="text-center align-middle">
               {{ section.title }}
             </td>

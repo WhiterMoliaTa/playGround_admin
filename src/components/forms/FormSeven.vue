@@ -17,15 +17,11 @@
         <tbody>
           <tr v-for="(record, index) in localRecords" :key="index" class="text-center">
             <td>
-              <!-- <v-select v-model="record.company" :items="companyOptions" label="選擇廠商" variant="outlined"
-                density="compact" hide-details></v-select> -->
               <v-text-field v-model="record.comapany" @update:focused="checkValidRecord()" type="text" label="廠商"
                 variant="outlined" density="compact" hide-details></v-text-field>
             </td>
             <td>
               <div class="flex-column">
-                <!-- <v-text-field v-model="record.time" type="time" label="時間" variant="outlined" density="compact"
-                  hide-details class="mr-1"></v-text-field> -->
                 <v-text-field v-model="record.time" :active="timeDialog[`record-${index}`]"
                   :focused="timeDialog[`record-${index}`]" label="時間" readonly>
                   <v-dialog v-model="timeDialog[`record-${index}`]" activator="parent" width="auto">

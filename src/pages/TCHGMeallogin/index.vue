@@ -5,8 +5,6 @@
       <img src="./hospital-logo.png" alt="Hospital Logo" class="hospital-logo" />
     </div>
 
-    我現在是海量emit 跟props傳遞資料非常痛苦 應該是每次omMounted都要call一次api調資料應該會比較好但我沒空設計api了 反正我都寫動態了架構雖然很爛要大改
-
     <!-- Login form card -->
     <v-card class="login-card">
       <v-card-title class="app-title">供膳衛生安全管理作業系統</v-card-title>

@@ -9,7 +9,6 @@
         <v-col :cols="adjustMealColSize" v-if="showBreakfast" class="d-flex align-center justify-center">早餐</v-col>
         <v-col :cols="adjustMealColSize" v-if="showLunch" class="d-flex align-center justify-center">午餐</v-col>
         <v-col :cols="adjustMealColSize" v-if="showDinner" class="d-flex align-center justify-center">晚餐</v-col>
-        <!-- <v-col cols="4"></v-col> -->
         <v-col :cols="getRemarksColSize" class="d-flex align-center">備註</v-col>
       </v-row>
 

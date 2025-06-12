@@ -20,7 +20,6 @@
       </v-menu>
     </v-app-bar>
     <div class="bg-grey-lighten-3 d-flex flex-column">
-      <!-- Page Header -->
       <div class="d-flex align-center mt-2 mx-4 pa-1">
         <h1 class="text-h5 font-weight-bold">任務看板</h1>
         <v-spacer></v-spacer>
@@ -74,7 +73,6 @@
             {{ ifSet ? 97 : totalCompletion }}<span class="text-h6 text-grey-darken-1">%</span>
             <div class="text-caption text-grey-darken-1 mb-1">/ 任務完成度</div>
           </div>
-          <!-- Timeline -->
           <v-sheet class="timeline-container mt-6">
             <!-- Time markers -->
             <div class="timeline-header" :style="{ width: `${timelineWidth}px` }">
@@ -97,6 +95,7 @@
                 <div class="task-completion-task">{{ task.completion }}/{{ task.needToComplete }}</div>
               </div>
               <!-- Current time indicator -->
+               <!-- currentTimePosition目前是寫死 -->
               <div class="current-time-indicator" :style="{ left: `${currentTimePosition}px` }">
                 <div class="time-bubble">{{ formattedCurrentTime }}</div>
                 <div class="time-line" :style="{ height: `${requreidHeight}px` }"></div>

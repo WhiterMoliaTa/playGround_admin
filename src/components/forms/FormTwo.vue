@@ -11,6 +11,7 @@
         <!-- <v-col cols="3" v-if="showBreakfast" class="d-flex flex-column align-center">早餐</v-col>
         <v-col cols="3" v-if="showLunch" class="d-flex flex-column align-center">午餐</v-col>
         <v-col cols="3" v-if="showDinner" class="d-flex flex-column align-center">晚餐</v-col> -->
+        <!-- 依照需求改回去△ -->
         <v-col cols="4"></v-col>
         <v-col :cols="getRemarksColSize()" class="d-flex flex-column align-center">備註</v-col>
       </v-row>
@@ -41,12 +42,6 @@
         </v-col>
 
         <v-col :cols="getRemarksColSize()" class="d-flex flex-column justify-center align-center">
-          <!-- <v-text-field
-            v-model="item.remarks"
-            variant="outlined"
-            density="compact"
-            hide-details
-          ></v-text-field> -->
           <v-btn variant="text" icon @click="openRemarkDialog(item)">
             <v-icon>mdi-dots-horizontal-circle</v-icon>
           </v-btn>
