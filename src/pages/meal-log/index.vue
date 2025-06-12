@@ -1,5 +1,5 @@
 <template>
-  <div class="meal-log-page" @scroll.passive="onScroll" ref="mealLogPage">
+  <div class="meal-log-page" @scroll.passive="onScroll" ref="mealLogPage" v-resize="onResize">
     <div class="d-flex justify-space-between align-center pa-2 mx-2">
       <h2>供膳管理日誌</h2>
       <nav>
@@ -42,21 +42,21 @@
               <template v-slot:prepend>
                 <div class="timeline-indicator"></div>
               </template>
-              <v-list-item-title :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa') }"
-                class="pl-3 d-flex align-center meal-list-item-title">{{ item.title }}</v-list-item-title>
-              <template v-slot:append>
-                <div class="d-flex align-center" :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa') }">
-                  <v-btn :key="`button-${index}-${item.id}`" hide-details variant="text" icon class="ma-0 pa-0"
-                    :disabled="!canComplete(item, job.section)" @click="handleButtonClick(item, job.section)">
-                    <v-icon
-                      :color="state[`button-${job.section}-${item.id}`] && item.checked ? state[`button-${job.section}-${item.id}`] : 'grey'">
-                      mdi-check-circle</v-icon>
-                  </v-btn>
-                  <v-btn variant="text" icon @click="openRemarkDialog(item)">
-                    <v-icon>mdi-dots-horizontal-circle</v-icon>
-                  </v-btn>
-                </div>
-              </template>
+              <v-list-item-title class="pl-3 d-flex align-center meal-list-item-title"
+                :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa'), width:'100%'}">{{ item.title }}</v-list-item-title>
+              <!-- <template v-slot:append> -->
+              <div class="d-flex align-center" :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa') }">
+                <v-btn :key="`button-${index}-${item.id}`" hide-details variant="text" icon class="ma-0 pa-0"
+                  :disabled="!canComplete(item, job.section)" @click="handleButtonClick(item, job.section)">
+                  <v-icon
+                    :color="state[`button-${job.section}-${item.id}`] && item.checked ? state[`button-${job.section}-${item.id}`] : 'grey'">
+                    mdi-check-circle</v-icon>
+                </v-btn>
+                <v-btn variant="text" icon @click="openRemarkDialog(item)">
+                  <v-icon>mdi-dots-horizontal-circle</v-icon>
+                </v-btn>
+              </div>
+              <!-- </template> -->
             </v-list-item>
           </div>
         </v-list-group>
@@ -67,10 +67,13 @@
         <div>關聯表單</div>
       </div>
       <div class="pa-4">
-        <v-row class="associate-forms-row" no-gutters>
+        <v-row class="associate-forms-row">
           <!-- Iterate through forms dynamically -->
-          <v-col v-for="(form, formName) in forms" :key="formName">
-            <div class="associate-from">{{ form.additionalForm[0]?.title || formName }}</div>
+          <v-col cols="5" v-for="(form, formName) in forms" :key="formName">
+            <!-- <div class="associate-from">{{ form.additionalForm[0]?.title || formName }}</div> -->
+            <div class="associate-form" variant="text"  @click="openReadOnlyForm(formName)">{{ form.additionalForm[0].title ||
+              formName
+            }}</div>
           </v-col>
         </v-row>
       </div>
@@ -93,6 +96,8 @@
     :form-required="dialogState.formRequired" :time="dialogState.time" :reminder="dialogState.reminder"
     @addtionalFormSubmit="saveDialogAndAdditionalForm" />
   <remarks-dialog v-model:showRemarks="showRemarksDialog" :item="jobRemarks" />
+  <DialogReadForm v-model:show="showReadonlyForm" @update:showReadOnly="showReadonlyForm = $event"
+    :form-data="forms[readForm]" />
   <v-dialog v-model="showSignatureDialog" max-width="500px">
     <v-card class="pa-2">
       <v-card-title>簽章送出</v-card-title>
@@ -122,6 +127,7 @@
 <script setup>
 import { ref, computed, reactive, watch, onMounted, provide } from 'vue';
 import DialogComponent from '../../components/TCHG/DialogComponent.vue';
+import DialogReadForm from '../../components/TCHG/DialogReadForm.vue';
 import RemarksDialog from '../../components/TCHG/RemarksDialog.vue';
 import { testMorningTCHGJobs } from "../../data/testTCHGJobs";
 import { testTCHGForms } from '../../data/testTCHGForms';
@@ -135,6 +141,8 @@ const forms = ref(testTCHGForms);
 const signature = ref(defaultSignature);
 const shift = ref('morning');
 const showBackToTop = ref(false);
+const readForm = ref('');
+const showReadonlyForm = ref(false);
 
 const breadcrumbs = [
   { label: '首頁', path: '/' },
@@ -239,6 +247,10 @@ provide('updateAddiForm', (formName, newData) => {
 
 });
 
+function onResize() {
+  // window.innerWidth
+}
+
 function backToMealSys() {
   router.push(`/TCHGmealSys`);
 }
@@ -248,9 +260,15 @@ function onScroll(event) {
   const scrollTop = container.scrollTop;
   const containerHeight = container.clientHeight;
   const scrollHeight = container.scrollHeight;
-  
+
   showBackToTop.value = scrollTop > (scrollHeight - containerHeight) * 0.3;
 }
+function backToTop() {
+  if (mealLogPage) {
+    mealLogPage.value.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
 function canComplete(item, jobSection) {
   const currentJob = jobs.value.find(job => job.section === jobSection);
   if (!currentJob) return false;
@@ -331,11 +349,11 @@ function signDraft() {
   openSignatureDialog();
 }
 
-function backToTop() {
-  if (mealLogPage) {
-    mealLogPage.value.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+function openReadOnlyForm(formName) {
+  readForm.value = formName;
+  showReadonlyForm.value = true;
 }
+
 
 // Signature handling
 const signatureCanvas = ref(null);

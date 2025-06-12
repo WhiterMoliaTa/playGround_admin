@@ -50,7 +50,6 @@
 import { ref, computed, watch, inject } from 'vue';
 import FormDialogComponent from './FormDialogComponent.vue';
 import FormDialogManager from './FormDialogManager.vue';
-import { fa } from 'vuetify/locale';
 
 const modifyPass = inject('modifyJobPass');
 const getAddiForm = inject('getAddiForm');

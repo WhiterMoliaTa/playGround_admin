@@ -31,8 +31,8 @@
         padding-inline-start: 48px !important;
     }
 
-    .v-list-group__items .v-list-item .v-list-item__content {
-        display: flex !important;
+    :deep(.task-timeline .v-list-item .v-list-item__content) {
+        display: flex;
     }
 
     .v-list-group__items .v-list-item .v-list-item-title {
@@ -41,7 +41,18 @@
     }
 
     .associate-forms-row {
+        height: 15vh;
         display: flex;
+        flex-wrap: nowrap;
+        overflow-y: scroll;
+    }
+
+    .associate-forms-row .v-col {
+        text-align: center;
+    }
+
+    .associate-forms-row::-webkit-scrollbar {
+        display: none;
     }
 
     .task-timeline {

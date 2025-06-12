@@ -46,48 +46,6 @@ export const testTCHGForms =
       }
     ],
   },
-  formOneAndTwo: {
-    additionalForm: [
-      {
-        title: '配膳線上督餐作業查檢表',
-        passed: {
-          morning: false,
-          noon: false,
-          evening: false
-        },
-        form: [
-          { id: 1, title: '1.保溫配膳車依菜色需求加熱(或擺放熱水)，水位須到達指定位置、熱度到達指定溫度(設定溫度≧80℃)。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 2, title: '2.確認病患用餐車已洗淨並預熱(加熱型，設定≧70℃)。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 3, title: '3.配膳前環境的清潔符合作業規範（以 75%酒精消毒輸送帶、配膳區域地面乾燥、無積水等）', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 4, title: '4.病患餐具或免洗餐具，配膳前置放於正確位置。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 5, title: '5.配膳器具，例如：勺子、夾子、煎鏟等，配膳前依菜色正確選用。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 6, title: '6. 配膳前熱食溫度需達≧60℃；冷食(分切水果)需維持設定0℃~7℃(依內控不定期抽測)。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 7, title: '7.配膳前正確洗淨雙手、佩戴外科口罩、乾淨手套、髮帽完全包覆頭髮、耳朵等。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 8, title: '8.雙手如有傷口(無則免填)應適當包紮並穿戴乳膠手套。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 9, title: '9.配膳人員就定位並避免危害食品衛生及交互污染之行為，例如：聊天、唱歌、嚼口香糖等。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 10, title: '10.依照餐卡所標示飲食種類及份量正確配膳。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 11, title: '11.留存備檢餐，各種菜餚皆須留存。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 12, title: '12.配膳線上作業結束後，剩餘主食及菜餚處理。', breakfast: null, lunch: null, dinner: null, remarks: '' }
-        ]
-      },
-      {
-        title: '出餐作業查檢表',
-        passed: {
-          morning: false,
-          noon: false,
-          evening: false
-        },
-        section1: [
-          { id: 1, title: '1.依送餐簡表檢查所有餐車飲食類類別及數量是否正確。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 2, title: '2.餐車實際送出及結束時間是否正常。', breakfast: null, lunch: null, dinner: null, remarks: '' },
-        ],
-        section2: [
-          { id: 1, title: '第一部餐車送出時間', breakfast: null, lunch: null, dinner: null, remarks: '' },
-          { id: 2, title: '最後一部餐車送出時間', breakfast: null, lunch: null, dinner: null, remarks: '' },
-        ]
-      }
-    ]
-  },
   formThree: {
     additionalForm: [
       {

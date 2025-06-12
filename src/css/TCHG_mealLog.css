@@ -30,18 +30,29 @@
     padding-inline-start: 48px !important;
 }
 
-.v-list-group__items .v-list-item .v-list-item__content {
-    display: flex !important;
+:deep(.task-timeline .v-list-item .v-list-item__content) {
+    display: flex;
+    justify-content: space-between;
 }
 
 .v-list-group__items .v-list-item .v-list-item-title {
     font-size: 1rem;
     white-space: wrap;
-    height: 48px;
 }
 
 .associate-forms-row {
+    height: 100px;
     display: flex;
+    flex-wrap: nowrap;
+    overflow-y: scroll;
+}
+
+.associate-forms-row .v-col {
+    text-align: center;
+}
+
+.associate-forms-row::-webkit-scrollbar {
+    display: none;
 }
 
 .task-timeline {
