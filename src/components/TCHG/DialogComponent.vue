@@ -150,13 +150,9 @@ function ableToCloseDialog() {
       return formDones.value[key] !== undefined && formDones.value[key] === 'success';
     });
   }
-  if(props.formName[0] === 'formFive'){
+  if(['formFive','formSeven'].includes(props.formName[0])){
     //TODO 改成api取得
-    getAddiForm('formFive').records.length === 0 ? allFormNoError = true : allFormNoError = false;
-  }
-  if(props.formName[0] === 'formSeven'){
-    //TODO 改成api取得
-    getAddiForm('formSeven').records.length === 0 ? allFormNoError = true : allFormNoError = false;
+    getAddiForm(props.formName[0]).records.length === 0 ? allFormNoError = true : allFormNoError = false;
   }
   modifyPass(props.formName, props.time, allFormNoError);
   showDialog.value = false;
@@ -166,10 +162,7 @@ function closeDialog() {
   showDialog.value = false;
 }
 
-function saveAdditionalForm(submittedData) {
-  emit('addtionalFormSubmit', submittedData);
-}
-
+//TODO 如果有需要紀錄重置完成狀態，可能需要類似allDone[`${formName}-${time}`]
 function resetDialogDone() {
   allDone.value = false; // Reset completion state
 }
