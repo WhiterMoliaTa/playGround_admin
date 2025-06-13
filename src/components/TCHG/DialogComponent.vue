@@ -117,11 +117,9 @@ const baseCheckRules = [
   (value) => !!value || '請確認'
 ];
 
-//Change meal-log button using this function
 const buttonColor = computed(() => {
   return (formName, time) => {
     const key = `${formName}-${time}`;
-    // Return the color from formDones if it exists, otherwise return "grey"
     return formDones.value[key] || "grey";
   };
 });

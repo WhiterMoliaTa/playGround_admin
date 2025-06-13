@@ -173,10 +173,9 @@ const slides = ref(testSlides);
 
 const jobs = ref(testMorningTCHGJobs);
 
-// Calculate time to pixels
-const pixel_per_hour = ref(200); // How many pixels per hour
-const START_HOUR = 7; // Our timeline starts at 7:00
-// Current time 
+const pixel_per_hour = ref(200);
+const START_HOUR = 7; // TODO 改成api呼叫去抓或是jobs抓第一筆時間
+
 const currentDateTime = ref(new Date().toLocaleString());
 
 //TODO 改成api呼叫
@@ -209,7 +208,6 @@ const carouselConfig = {
 
 const router = useRouter();
 
-// let timeInterval;
 const ifSet = ref(false);
 
 onMounted(() => {
@@ -228,7 +226,6 @@ onMounted(() => {
 //   clearInterval(timeInterval);
 // });
 
-// Position of the current time indicator
 const currentTimePosition = computed(() => {
   const hours = currentTime.value.getHours();
   const minutes = currentTime.value.getMinutes();
@@ -236,7 +233,7 @@ const currentTimePosition = computed(() => {
   return (hoursDecimal - START_HOUR) * pixel_per_hour.value;
 });
 
-const currentTime = ref(new Date("2025-06-09T08:30:00"));
+const currentTime = ref(new Date("2025-06-11T08:30:00"));
 const formattedCurrentTime = computed(() => {
   const hours = currentTime.value.getHours().toString().padStart(2, '0');
   const minutes = currentTime.value.getMinutes().toString().padStart(2, '0');
@@ -283,24 +280,19 @@ function getTimePosition(timeString) {
 }
 
 function getCompletionBarWidth(task) {
-  // Parse the task start time
   const [startHour, startMin] = task.startTime.split(':').map(Number);
   const startTimeDecimal = startHour + startMin / 60;
 
-  // Get current time as decimal
   const currentHour = currentTime.value.getHours();
   const currentMinute = currentTime.value.getMinutes();
   const currentTimeDecimal = currentHour + currentMinute / 60;
 
-  // Calculate normal completion percentage
   const normalWidth = (task.completion / task.needToComplete) * 100;
 
-  // If current time is past start time and completion is 0%, return at least 5%
   if (currentTimeDecimal >= startTimeDecimal && normalWidth === 0) {
-    return 5; // Minimum 5% width
+    return 5; // 如果當前時間在任務開始時間之後且任務尚未完成，則返回5%
   }
-
-  // Otherwise return the normal calculation
+  
   return normalWidth;
 }
 
@@ -360,7 +352,7 @@ function openTaskDetail(taskName) {
 
 function onResize() {
   windowSize.value = { x: window.innerWidth, y: window.innerHeight };
-  pixel_per_hour.value = 200 + windowSize.value.x / 18; // Adjust pixels per hour based on window width
+  pixel_per_hour.value = 200 + windowSize.value.x / 18; // TODO 改掉毫無邏輯的18
   itemsToShowByWindowSize()
 }
 

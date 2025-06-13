@@ -111,7 +111,7 @@ const showBreakfast = computed(() => props.time.includes('morning') || !props.ti
 const showLunch = computed(() => props.time.includes('noon') || !props.time);
 const showDinner = computed(() => props.time.includes('evening') || !props.time);
 
-// Local form data
+// Local Items
 const formItems = ref([]);
 
 // 可寫死
@@ -128,7 +128,6 @@ function openRemarkDialog(item) {
   showRemarksDialog.value = true;
 }
 
-// Load form data
 onMounted(() => {
   loadFormData();
 });
@@ -178,7 +177,7 @@ function tempSave() {
     form: JSON.parse(JSON.stringify(formItems.value))
   };
 
-  // 改成api呼叫
+  // TODO 改成api呼叫
   updateAddiForm('formOne', newFormData);
 }
 
@@ -201,7 +200,7 @@ function save() {
     form: JSON.parse(JSON.stringify(formItems.value))
   };
 
-  // 改成api呼叫
+  // TODO 改成api呼叫
   updateAddiForm('formOne', newFormData);
   emit('formDoneEvent', { formName: 'formOne', state: state });
   cancel();

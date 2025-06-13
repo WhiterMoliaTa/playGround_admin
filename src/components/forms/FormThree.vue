@@ -136,27 +136,22 @@ const props = defineProps({
 
 const emit = defineEmits(['save', 'cancel', 'formDoneEvent']);
 
-// Get form data access from parent
 const getAddiForm = inject('getAddiForm');
 const updateAddiForm = inject('updateAddiForm');
 
-// Time-based display
 const showBreakfast = computed(() => props.time.includes('morning'));
 const showLunch = computed(() => props.time.includes('noon'));
 const showDinner = computed(() => props.time.includes('evening'));
 
-// Local records
 const localRecords = ref([]);
 const timeDialog = ref({});
 
 const formDone = ref(false);
 
-// Load form data
 onMounted(() => {
   loadFormData();
 });
 
-// Watch for form config changes
 watch(() => props.formConfig, () => {
   loadFormData();
 }, { deep: true });
@@ -175,7 +170,6 @@ function loadFormData() {
         if (props.time.includes('noon') && record.lunch !== null) return true;
         if (props.time.includes('evening') && record.dinner !== null) return true;
 
-        // If no meal time check has been set yet, include this record for the current meal time
         return record.breakfast === null && record.lunch === null && record.dinner === null;
       });
       localRecords.value = filteredRecords.length > 0 ? filteredRecords : [createEmptyRecord()];
@@ -245,15 +239,12 @@ function removeRecord(index) {
 }
 
 function isRecordValid(record) {
-  // Check required fields
   if (!record.recycleTime || !record.ward) return false;
 
-  // Check that all dishes have both name and portion
   for (const dish of record.dishAndLeftoverPortion) {
     if (!dish.dishName || !dish.leftPortion) return false;
   }
 
-  // Check meal checkboxes based on visible columns
   if (showBreakfast.value && record.breakfast !== true) return false;
   if (showLunch.value && record.lunch !== true) return false;
   if (showDinner.value && record.dinner !== true) return false;
@@ -275,12 +266,11 @@ function tempSave() {
     records: JSON.parse(JSON.stringify(localRecords.value))
   };
 
-  // 改成api呼叫
+  // TODO 改成api呼叫
   updateAddiForm('formThree', newFormData);
 }
 
 function save() {
-  // Check if all records are valid
   const allValid = localRecords.value.every(record => isRecordValid(record));
 
   const newFormData = {
@@ -293,7 +283,7 @@ function save() {
     records: JSON.parse(JSON.stringify(localRecords.value))
   };
 
-  // 改成api呼叫
+  // TODO 改成api呼叫
   emit('formDoneEvent', { formName: 'formThree', state: allValid ? 'success' : 'error' });
   updateAddiForm('formThree', newFormData);
   cancel();

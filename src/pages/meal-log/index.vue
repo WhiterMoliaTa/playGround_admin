@@ -231,7 +231,7 @@ provide('modifyJobPass', (formName, time, pass) => {
 });
 
 
-// 改成api呼叫
+// TODO 改成api呼叫
 provide('updateAddiForm', (formName, newData) => {
   const form = forms.value[formName];
 
@@ -266,10 +266,8 @@ function canComplete(item, jobSection) {
 
   const currentItemIndex = currentJob.items.findIndex(i => i.id === item.id);
 
-  // If it's the first item, it's always completable
   if (currentItemIndex === 0) return true;
 
-  // Check if all previous items are completed
   return currentJob.items
     .slice(0, currentItemIndex)
     .every(prevItem => prevItem.checked);
@@ -296,7 +294,6 @@ function handleButtonClick(item, jobSection) {
   let currentForms = item.forms;
   let itemId = item.id;
 
-  // item.forms, job.section, item.id, item.checked
   if (currentForms && Object.keys(currentForms).length > 0 && !item.checked) {
     const formsCollection = {};
     if (currentForms.formName) {

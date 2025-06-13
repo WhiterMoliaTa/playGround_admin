@@ -141,19 +141,16 @@ const props = defineProps({
 
 const emit = defineEmits(['save', 'cancel', 'formDoneEvent']);
 
-// Get form data access from parent
 const getAddiForm = inject('getAddiForm');
 const updateAddiForm = inject('updateAddiForm');
 const formDone = ref(false);
 
 const timeDialog = ref({});
 
-// Time-based display
 const showBreakfast = computed(() => props.time.includes('morning') || !props.time);
 const showLunch = computed(() => props.time.includes('noon') || !props.time);
 const showDinner = computed(() => props.time.includes('evening') || !props.time);
 
-// Local form data
 const section1Items = ref([]);
 const section2Items = ref([]);
 
@@ -199,19 +196,16 @@ function checkClockAllDone() {
   formDone.value = sec1Done && sec2Done;
 };
 
-// Determine the size of the remarks column based on visible meal columns
 const getRemarksColSize = () => {
   const visibleColumns = [showBreakfast.value, showLunch.value, showDinner.value].filter(Boolean).length;
   // 12 - 5 (title column) - (2 * number of visible meal columns)
   return 12 - 5 - (4 * visibleColumns);
 };
 
-// Load form data
 onMounted(() => {
   loadFormData();
 });
 
-// Watch for form config changes
 watch(() => props.formConfig, () => {
   loadFormData();
 }, { deep: true });
@@ -257,7 +251,6 @@ function loadFormData() {
 
 function tempSave() {
 
-  // Create new form data
   const newFormData = {
     title: '出餐作業查檢表',
     passed: {
@@ -269,7 +262,7 @@ function tempSave() {
     section2: JSON.parse(JSON.stringify(section2Items.value))
   };
 
-  // 改成api呼叫
+  // TODO 改成api呼叫
   updateAddiForm('formTwo', newFormData);
 }
 
@@ -284,7 +277,7 @@ function save() {
     section1: JSON.parse(JSON.stringify(section1Items.value)),
     section2: JSON.parse(JSON.stringify(section2Items.value))
   };
-  // 改成api呼叫
+  // TODO 改成api呼叫
   updateAddiForm('formTwo', newFormData);
   emit('formDoneEvent', { formName: 'formTwo', state: 'success' });
   cancel();

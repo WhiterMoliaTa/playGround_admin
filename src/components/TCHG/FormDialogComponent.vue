@@ -102,7 +102,6 @@ const emit = defineEmits(['update:showForm', 'update:showFormDialog', 'submitFor
 
 const formData = ref({});
 
-// Initialize form data when config changes
 watch(
   () => props.formConfig,
   (newConfig) => {

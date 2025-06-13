@@ -59,8 +59,7 @@ const loading = ref(false);
 const usernameError = ref('');
 const passwordError = ref('');
 
-// Check for saved credentials on page load
-// 改成api呼叫
+// TODO 改成api呼叫
 onMounted(() => {
   const savedUsername = localStorage.getItem('tchg_username');
   if (savedUsername) {
@@ -69,16 +68,13 @@ onMounted(() => {
   }
 });
 
-// Validate form fields
 const validateForm = () => {
   let isValid = true;
 
-  // Reset error messages
   usernameError.value = '';
   passwordError.value = '';
 
-  // Validate username
-  // 改成api呼叫
+  // TODO 改成api呼叫
   if (!username.value) {
     usernameError.value = '請輸入帳號';
     isValid = false;
@@ -87,7 +83,6 @@ const validateForm = () => {
     isValid = false;
   }
 
-  // Validate password
   if (!password.value) {
     passwordError.value = '請輸入密碼';
     isValid = false;
@@ -96,34 +91,30 @@ const validateForm = () => {
   return isValid;
 };
 
-// Login handler
 const login = async () => {
   if (!validateForm()) return;
 
   loading.value = true;
 
   try {
-    // Simulate API call - replace with actual authentication
+    // TODO 改成api呼叫
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Save username if rememberMe is checked
     if (rememberMe.value) {
       localStorage.setItem('tchg_username', username.value);
     } else {
       localStorage.removeItem('tchg_username');
     }
 
-    // Mock successful login - replace with your auth logic
+    // TODO 跳轉前添加API呼叫
     router.push('/TCHGmealSys');
   } catch (error) {
     console.error('Login failed:', error);
-    // Handle login failure
   } finally {
     loading.value = false;
   }
 };
 
-// Forgot password handler
 const forgotPassword = () => {
   alert('忘記密碼功能尚未實作');
 };
