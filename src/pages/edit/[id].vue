@@ -92,7 +92,7 @@
                                     <v-btn icon small @click.stop="startEdit(index)" variant="text">
                                         <v-icon>mdi-pencil</v-icon>
                                     </v-btn>
-                                    <v-btn icon small variant="text" color="error" @click.stop="">
+                                    <v-btn icon small variant="text" color="error" @click.stop="deleteEvent(index)">
                                         <v-icon>mdi-delete</v-icon>
                                     </v-btn>
                                 </div>
@@ -508,7 +508,27 @@ function startEdit(index) {
     editEventData.value = JSON.parse(JSON.stringify(nodeEvents[index]));
     newFiles.value = [];
 }
-
+function deleteEvent(index){
+    testCaseEvents.splice(testCaseEvents.findIndex(event => event.eventId === nodeEvents[index].eventId), 1);
+    EventFiles.splice(EventFiles.findIndex(file => file.referenceId === nodeEvents[index].eventId), 1);
+    nodeEvents.splice(index, 1);
+    toast.success("事件已刪除", {
+        position: "bottom-center",
+        timeout: 2074,
+        closeOnClick: true,
+        pauseOnFocusLoss: false,
+        pauseOnHover: false,
+        draggable: true,
+        draggablePercent: 0.3,
+        showCloseButtonOnHover: false,
+        hideProgressBar: true,
+        closeButton: false,
+        icon: true,
+        rtl: false
+    });
+    SetCaseItem(); // 更新節點事件計數
+    
+}
 function cancelEdit() {
     editIndex.value = null;
     editEventData.value = null;
@@ -535,11 +555,12 @@ function saveEdit(index) {
 }
 
 function openFile(url) {
-    window.open(url, "_blank");
+    // window.open(url, "_blank");
+    
 }
 
-function removeFile(uuid) {
-    editEventData.value.files = editEventData.value.files.filter((f) => f.uuid !== uuid);
+function removeFile(fileId) {
+    editEventData.value.files = editEventData.value.files.filter((f) => f.fileId !== fileId);
 }
 
 function updateNewFiles(files) {
