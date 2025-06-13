@@ -77,7 +77,7 @@
         </v-row>
       </div>
     </v-card>
-    <!-- 這個方法有bug width會是v-app的width 不知道v-bottom-naciagtion的calc(100%-N)是怎麼抓N的達成只顯示在v-container裡面 -->
+    <!-- TODO 這個方法有bug width會是v-app的width 不知道v-bottom-naciagtion的calc(100%-N)是怎麼抓N的達成只顯示在v-container裡面 -->
     <header class="sticky-bottom-action">
       <v-btn variant="flat" class="border-md ml-10" color="white" @click="tempSaveDraft" rounded>暫存草稿</v-btn>
       <v-btn variant="flat" class="mr-10" :disabled="!isRootCompleted" @click="signDraft" rounded>簽章送出</v-btn>

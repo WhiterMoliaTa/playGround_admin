@@ -23,7 +23,6 @@
       <div class="d-flex align-center mt-2 mx-4 pa-1">
         <h1 class="text-h5 font-weight-bold">任務看板</h1>
         <v-spacer></v-spacer>
-        <!-- <div class="text-caption text-grey">首頁 / 任務看板</div> -->
         <span v-for="(breadcrumb, index) in breadcrumbs" :key="index">
           <router-link :to="breadcrumb.path">{{ breadcrumb.label }}</router-link>
           <span v-if="index < breadcrumbs.length - 1"> / </span>

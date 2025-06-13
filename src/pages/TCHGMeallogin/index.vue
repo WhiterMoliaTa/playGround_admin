@@ -1,23 +1,18 @@
 <template>
   <div class="tchg-meal-login-page">
-    <!-- Hospital logo and app title -->
     <div class="logo-container">
       <img src="./hospital-logo.png" alt="Hospital Logo" class="hospital-logo" />
     </div>
-
-    <!-- Login form card -->
     <v-card class="login-card">
       <v-card-title class="app-title">供膳衛生安全管理作業系統</v-card-title>
       <v-card-text>
         <v-form>
-          <!-- Username input -->
           <div class="form-group username-field">
             <label for="username">登入帳號</label>
             <v-text-field v-model="username" id="username" type="email" variant="underlined" density="comfortable"
               placeholder="example@mail.com.tw" hide-details class="mb-4"
               :error-messages="usernameError"></v-text-field>
           </div>
-          <!-- Password input -->
           <div class="form-group password-field">
             <label for="password">登入密碼</label>
             <v-text-field v-model="password" id="password" :type="showPassword ? 'text' : 'password'"
@@ -26,7 +21,6 @@
               @click:append-inner="showPassword = !showPassword" autocomplete="off">
             </v-text-field>
           </div>
-          <!-- Remember me checkbox -->
           <div class="remember-me">
             <v-checkbox v-model="rememberMe" density="compact" hide-details class="remember-me-checkbox">
               <template v-slot:label>
@@ -34,12 +28,11 @@
               </template>
             </v-checkbox>
           </div>
-          <!-- Login button -->
           <v-btn block color="#6369E8" height="48" rounded="xl" class="login-btn mt-6" :loading="loading"
             @click="login">
             登入
           </v-btn>
-          <!-- Forgot password link -->
+
           <div class="forgot-password text-center mt-4">
             <a href="#" @click.prevent="forgotPassword">忘記密碼?</a>
           </div>
@@ -47,7 +40,6 @@
       </v-card-text>
     </v-card>
 
-    <!-- Copyright info -->
     <div class="copyright">
       Copyright © 臺北市立聯合醫院所有
     </div>

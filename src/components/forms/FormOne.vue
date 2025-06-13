@@ -5,7 +5,8 @@
       <v-card-subtitle class="text-center pb-4">配膳線上督餐作業查檢表</v-card-subtitle>
       <v-container>
         <div>
-          <div>日期：2025/6/11 上午11:58:03</div>
+          <!-- TODO 這應該是動態的沒注意到 -->
+          <div>日期：2025/6/12 上午11:58:03</div>
           <div>時段：<span class="fillTime">{{ time === 'morning' ? '早餐' :
             time === 'noon' ? '午餐' : '晚餐' }}</span></div>
         </div>
@@ -15,7 +16,7 @@
         <!-- <v-col cols="2" v-if="showBreakfast" class="d-flex align-center justify-center">早餐</v-col>
         <v-col cols="2" v-if="showLunch" class="d-flex align-center justify-center">午餐</v-col>
         <v-col cols="2" v-if="showDinner" class="d-flex align-center justify-center">晚餐</v-col> -->
-        <!-- 依照需求改回去△ -->
+        <!-- TODO 依照需求改回去△ -->
         <v-col class="3"></v-col>
         <v-col :cols="getRemarksColSize()" class="d-flex align-center justify-center">備註</v-col>
       </v-row>
