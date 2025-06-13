@@ -1,5 +1,6 @@
 <template>
   <div class="meal-log-page" @scroll.passive="onScroll" ref="mealLogPage" v-resize="onResize">
+    <v-divider ref="scrollIntoViewElement" :thickness="0"></v-divider>
     <div class="d-flex justify-space-between align-center pa-2 mx-2">
       <h2>供膳管理日誌</h2>
       <nav>
@@ -47,8 +48,8 @@
                 }}</v-list-item-title>
               <div class="d-flex align-center" :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa') }">
                 <v-btn :key="`button-${index}-${item.id}`" hide-details variant="text" icon class="ma-0 pa-0"
-                   :disabled="!canComplete(item, job.section)" @click="handleButtonClick(item, job.section)">
-                   <!--TODO canComplete前一個section沒完成不能做下一個section -->
+                  :disabled="!canComplete(item, job.section)" @click="handleButtonClick(item, job.section)">
+                  <!--TODO canComplete前一個section沒完成不能做下一個section -->
                   <v-icon
                     :color="state[`button-${job.section}-${item.id}`] && item.checked ? state[`button-${job.section}-${item.id}`] : 'grey'">
                     mdi-check-circle</v-icon>
@@ -68,23 +69,24 @@
       </div>
       <div class="pa-4">
         <v-row class="associate-forms-row">
-          <v-col cols="5" v-for="(form, formName) in forms" :key="formName">
-            <div class="associate-form" variant="text" @click="openReadOnlyForm(formName)">{{ form.additionalForm.title
-              ||
-              formName
-              }}</div>
+          <v-col cols="5" md="2" v-for="(form, formName) in forms" :key="formName" class="associate-form-col"
+            :style="{'border-right': formName !== Object.keys(forms).at(-1) ? '2px dotted' : '' }">
+            <div class="associate-form" variant="text" @click="openReadOnlyForm(formName)">
+              {{ form.additionalForm.title || formName }}</div>
           </v-col>
         </v-row>
       </div>
     </v-card>
-    <div class="d-flex justify-space-around align-center draft-func-footer">
+    <!-- 這個方法有bug width會是v-app的width 不知道v-bottom-naciagtion的calc(100%-N)是怎麼抓N的達成只顯示在v-container裡面 -->
+    <header class="sticky-bottom-action">
       <v-btn variant="flat" class="border-md ml-10" color="white" @click="tempSaveDraft" rounded>暫存草稿</v-btn>
       <v-btn variant="flat" class="mr-10" :disabled="!isRootCompleted" @click="signDraft" rounded>簽章送出</v-btn>
       <v-btn variant="text" v-show="showBackToTop" icon :ripple="false" @click="backToTop" class="back-to-top">
         <v-icon class="back-to-top-icon">mdi-chevron-up-circle</v-icon>
       </v-btn>
-    </div>
+    </header>
   </div>
+  <!--TODO 只傳入time即可 -->
   <DialogComponent v-model:show="dialogState.show" :title="dialogState.title" :check-object="dialogState.checkObject"
     :check-boxs="dialogState.checkBoxs" :form-buttons="dialogState.formButtons"
     :additional-form="dialogState.additionalForm" :form-name="dialogState.formName"
@@ -137,6 +139,7 @@ const readForm = ref('');
 const showReadonlyForm = ref(false);
 const listStatusIcon = ref([]);
 const listStatusIconSize = ref(10);
+const scrollIntoViewElement = ref();
 
 const breadcrumbs = [
   { label: '首頁', path: '/' },
@@ -233,7 +236,7 @@ provide('updateAddiForm', (formName, newData) => {
   const form = forms.value[formName];
 
   if (form && form.additionalForm) {
-    form.additionalForm = {...newData};
+    form.additionalForm = { ...newData };
   }
 });
 
@@ -251,12 +254,10 @@ function onScroll(event) {
   const containerHeight = container.clientHeight;
   const scrollHeight = container.scrollHeight;
 
-  showBackToTop.value = scrollTop > (scrollHeight - containerHeight) * 0.3;
+  showBackToTop.value = scrollTop > (scrollHeight - containerHeight) * 0.7;
 }
 function backToTop() {
-  if (mealLogPage) {
-    mealLogPage.value.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  scrollIntoViewElement.value.$el.scrollIntoView({ behavior: 'smooth' });
 }
 
 function canComplete(item, jobSection) {
