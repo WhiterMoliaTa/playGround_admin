@@ -39,17 +39,6 @@
                   </label>
                 </div>
               </div>
-
-              <div v-else-if="field.type === 'depthOneNested'">
-                <label class="block mb-1">{{ field.label }}</label>
-                <div v-for="(nestedField, nestedIndex) in field.fields" :key="nestedIndex" class="ml-4">
-                  <label class="block mb-1">{{ nestedField.label }}</label>
-                  <input type="text" v-model="nestedField.value" class="border p-1 w-full" />
-                </div>
-                <div v-if="field.newAble" class="mt-2">
-                  <v-btn type="button" @click="field.fields.push({ label: '', value: '' })" class="px-2 py-1 bg-blue-500 text-white rounded">Add New</v-btn>
-                </div>
-              </div>
     
               <div v-else-if="field.type === 'datatable'">
                 <label class="block mb-1">{{ field.label }}</label>
@@ -113,7 +102,6 @@ const emit = defineEmits(['update:showForm', 'update:showFormDialog', 'submitFor
 
 const formData = ref({});
 
-// Initialize form data when config changes
 watch(
   () => props.formConfig,
   (newConfig) => {

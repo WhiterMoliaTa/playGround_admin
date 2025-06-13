@@ -87,11 +87,9 @@ const props = defineProps({
 
 const emit = defineEmits(['save', 'cancel', 'formDoneEvent']);
 
-// Inject methods from parent component
 const getAddiForm = inject('getAddiForm');
 const updateAddiForm = inject('updateAddiForm');
 
-// Local copy of records for editing
 const localRecords = ref([]);
 const timeDialog = ref({});
 
@@ -101,7 +99,6 @@ function checkValidRecord() {
   formDone.value = localRecords.value.every(record => isRecordNotEmpty(record));
 };
 
-// Initialize data
 onMounted(() => {
   loadFormData();
   checkValidRecord();
@@ -132,7 +129,6 @@ function addNewRecord() {
 }
 
 function removeRecord(index) {
-  // Don't remove the first record
   if (localRecords.value.length > 1) {
     localRecords.value.splice(index, 1);
   }
@@ -159,7 +155,7 @@ function tempSave() {
       records: filteredRecords
     };
   }
-  // 改成api呼叫
+  // TODO 改成api呼叫
   updateAddiForm('formSeven', newFormData);
 }
 
@@ -174,7 +170,7 @@ function save() {
   newFormData = [{
     records: filteredRecords
   }];
-  // 改成api呼叫
+  // TODO 改成api呼叫
   updateAddiForm('formSeven', newFormData);
   cancel();
 }

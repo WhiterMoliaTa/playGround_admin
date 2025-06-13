@@ -1,9 +1,9 @@
 :root {
-    --meal-log-bg-color: #bfe0ff;
+    --meal-log-bg-color: #bfe0ff !important;
 }
 
 .meal-log-page {
-    height: 100vh;
+    height: calc(100vh + 130px);
     overflow: scroll;
 }
 
@@ -47,8 +47,18 @@
     overflow-y: scroll;
 }
 
+.associate-forms-row .associate-form-col {
+    text-align: center;
+    margin: 8px 0px 8px 0px;
+    font-size: 0.9rem;
+}
+
 .associate-forms-row .v-col {
     text-align: center;
+    font-size: 0.9rem;
+    padding: 0;
+    padding-right: 10px;
+    margin: 8px
 }
 
 .associate-forms-row::-webkit-scrollbar {
@@ -68,16 +78,6 @@
     width: 2px;
     border-left: 4px dotted #ccc;
     height: 90%;
-}
-
-.draft-func-footer {
-    background-color: rgb(131, 131, 131);
-    position: sticky;
-    bottom: 0;
-    width: 100%;
-    height: 90px;
-    background-color: #eef2fe;
-    z-index: 10;
 }
 
 .meal-list-item-title {
@@ -112,6 +112,22 @@
     color: #43c3c5;
 }
 
+
+.sticky-bottom-action {
+    background-color: #bfe0ff;
+    display: flex;
+    justify-content: space-around;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    bottom: 0px;
+    z-index: 1004;
+    transform: translateY(0px);
+    position: fixed;
+    height: 58px;
+    left: 0px;
+    width: calc(100% + 0px);
+}
+
 /* TODO Visual Update that did not make in: */
 .signature-line {
     width: 200px;
@@ -120,7 +136,7 @@
     cursor: pointer;
 }
 
-/* Add visual indication for next task */
+/* visual indication for next task */
 .v-btn:not([disabled]) .v-icon[color="primary"] {
     animation: pulse 1.5s infinite;
 }

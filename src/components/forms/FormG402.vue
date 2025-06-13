@@ -140,9 +140,8 @@ function getStateIcon(state) {
 
 function switchState(sectionKey, itemIndex, mealTime) {
 
-  // Get the current item
   const item = props.formConfig.sections
-    .find(s => s.title === sectionKey).items[itemIndex];
+    .find(section => section.title === sectionKey).items[itemIndex];
 
   // Cycle through states: null -> 'good' -> 'ok' -> bad -> loop back to 'good'
   switch (item[mealTime]) {

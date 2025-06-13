@@ -1,23 +1,18 @@
 <template>
   <div class="tchg-meal-login-page">
-    <!-- Hospital logo and app title -->
     <div class="logo-container">
       <img src="./hospital-logo.png" alt="Hospital Logo" class="hospital-logo" />
     </div>
-
-    <!-- Login form card -->
     <v-card class="login-card">
       <v-card-title class="app-title">供膳衛生安全管理作業系統</v-card-title>
       <v-card-text>
         <v-form>
-          <!-- Username input -->
           <div class="form-group username-field">
             <label for="username">登入帳號</label>
             <v-text-field v-model="username" id="username" type="email" variant="underlined" density="comfortable"
               placeholder="example@mail.com.tw" hide-details class="mb-4"
               :error-messages="usernameError"></v-text-field>
           </div>
-          <!-- Password input -->
           <div class="form-group password-field">
             <label for="password">登入密碼</label>
             <v-text-field v-model="password" id="password" :type="showPassword ? 'text' : 'password'"
@@ -26,7 +21,6 @@
               @click:append-inner="showPassword = !showPassword" autocomplete="off">
             </v-text-field>
           </div>
-          <!-- Remember me checkbox -->
           <div class="remember-me">
             <v-checkbox v-model="rememberMe" density="compact" hide-details class="remember-me-checkbox">
               <template v-slot:label>
@@ -34,12 +28,11 @@
               </template>
             </v-checkbox>
           </div>
-          <!-- Login button -->
           <v-btn block color="#6369E8" height="48" rounded="xl" class="login-btn mt-6" :loading="loading"
             @click="login">
             登入
           </v-btn>
-          <!-- Forgot password link -->
+
           <div class="forgot-password text-center mt-4">
             <a href="#" @click.prevent="forgotPassword">忘記密碼?</a>
           </div>
@@ -47,7 +40,6 @@
       </v-card-text>
     </v-card>
 
-    <!-- Copyright info -->
     <div class="copyright">
       Copyright © 臺北市立聯合醫院所有
     </div>
@@ -67,8 +59,7 @@ const loading = ref(false);
 const usernameError = ref('');
 const passwordError = ref('');
 
-// Check for saved credentials on page load
-// 改成api呼叫
+// TODO 改成api呼叫
 onMounted(() => {
   const savedUsername = localStorage.getItem('tchg_username');
   if (savedUsername) {
@@ -77,16 +68,13 @@ onMounted(() => {
   }
 });
 
-// Validate form fields
 const validateForm = () => {
   let isValid = true;
 
-  // Reset error messages
   usernameError.value = '';
   passwordError.value = '';
 
-  // Validate username
-  // 改成api呼叫
+  // TODO 改成api呼叫
   if (!username.value) {
     usernameError.value = '請輸入帳號';
     isValid = false;
@@ -95,7 +83,6 @@ const validateForm = () => {
     isValid = false;
   }
 
-  // Validate password
   if (!password.value) {
     passwordError.value = '請輸入密碼';
     isValid = false;
@@ -104,34 +91,30 @@ const validateForm = () => {
   return isValid;
 };
 
-// Login handler
 const login = async () => {
   if (!validateForm()) return;
 
   loading.value = true;
 
   try {
-    // Simulate API call - replace with actual authentication
+    // TODO 改成api呼叫
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Save username if rememberMe is checked
     if (rememberMe.value) {
       localStorage.setItem('tchg_username', username.value);
     } else {
       localStorage.removeItem('tchg_username');
     }
 
-    // Mock successful login - replace with your auth logic
+    // TODO 跳轉前添加API呼叫
     router.push('/TCHGmealSys');
   } catch (error) {
     console.error('Login failed:', error);
-    // Handle login failure
   } finally {
     loading.value = false;
   }
 };
 
-// Forgot password handler
 const forgotPassword = () => {
   alert('忘記密碼功能尚未實作');
 };
