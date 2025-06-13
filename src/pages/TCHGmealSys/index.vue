@@ -269,6 +269,7 @@ const router = useRouter();
 const ifSet = ref(false);
 onMounted(() => {
   onResize();
+  //TODO 把這垃圾寫法改掉
   ifSet.value = sessionStorage.getItem("jobs") !== null;
   if (ifSet.value) {
     tasks.value = [
