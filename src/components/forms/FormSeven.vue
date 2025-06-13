@@ -69,7 +69,6 @@
 
 <script setup>
 import { ref, inject, onMounted, watch } from 'vue';
-import { isNotBlankUtil } from '../../utils/stringUtil.js';
 
 const props = defineProps({
   title: {
@@ -152,7 +151,7 @@ function tempSave() {
     newFormData = {
       title: props.title,
       passed: {
-        //反正有寫表代表有問題所以直接!props.time
+        //有紀錄代表有問題所以直接!props.time
         morning: !props.time.includes('morning'),
         noon: !props.time.includes('noon'),
         evening: !props.time.includes('evening')

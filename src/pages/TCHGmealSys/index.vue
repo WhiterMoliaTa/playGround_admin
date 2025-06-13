@@ -49,7 +49,7 @@
                 <ul class="task-list">
                   <li v-for="(task, taskIndex) in slide.tasks" :key="taskIndex">
                     <v-icon :class="task.status">mdi-check-circle</v-icon>
-                    {{ task.completed }}/{{ task.total }} {{ task.label }}
+                    {{ task.completed }}/{{ task.total }}
                   </li>
                 </ul>
               </v-card-text>
@@ -266,12 +266,12 @@ const carouselConfig = {
 const router = useRouter();
 
 // let timeInterval;
-const ifSet = ref(false);
+const jobs = ref();
 onMounted(() => {
   onResize();
   //TODO 把這垃圾寫法改掉
-  ifSet.value = sessionStorage.getItem("jobs") !== null;
-  if (ifSet.value) {
+  ifSet.value = sessionStorage.getItem("jobs");
+  if (jobs) {
     tasks.value = [
       {
         id: 1,
@@ -435,6 +435,74 @@ function getCompletionBarWidth(task) {
 
   // Otherwise return the normal calculation
   return normalWidth;
+}
+
+function calculateJobCompletions(jobsData) {
+  let updatedTask = [];
+  
+  jobsData.forEach(job => {
+    let checkedCount = job.items.filter(item => item.checked).length;
+    let totalCount = job.items.length;
+    let startTime = job.time.split(':')[0];
+    let endTime = job.time.split(':')[1];
+    
+    updatedTask.push({
+      title: job.title,
+      startTime: startTime,
+      endTime: endTime,
+      completion: checkedCount,
+      total: totalCount
+    });
+  });
+  
+  return updatedTask;
+}
+
+// Update your onMounted function
+onMounted(() => {
+  onResize();
+  
+  // Fetch jobs data
+  const jobsData = sessionStorage.getItem("jobs");
+  ifSet.value = jobsData ? true : false;
+  
+  if (jobsData) {
+    const parsedJobs = JSON.parse(jobsData);
+    const jobStats = calculateJobCompletions(parsedJobs);
+    
+    // Set current time for demo purposes
+    currentTime.value = new Date("2025-06-09T13:30:00");
+    
+    // Update slide completion status
+    updateSlideCompletion(jobStats);
+  }
+});
+
+// Add this function to update slide completion status
+function updateSlideCompletion(jobsData) {
+  // For each slide, check if all related jobs are complete
+  slides.value.forEach(slide => {
+    
+    if (relatedJobs.length > 0) {
+      const allJobItemsChecked = relatedJobs.every(job => 
+        job.items.every(item => item.checked)
+      );
+      
+      // Update slide tasks
+      slide.tasks.forEach(task => {
+        const matchingJob = relatedJobs.find(job => job.title.includes(task.label));
+        if (matchingJob) {
+          const checkedCount = matchingJob.items.filter(item => item.checked).length;
+          task.completed = checkedCount;
+          task.status = checkedCount === 0 ? 'white-dot' : 
+                        checkedCount === task.total ? 'green-dot' : 'yellow-dot';
+        }
+      });
+      
+      // Update slide completion status
+      slideDone.value[slide.id] = allJobItemsChecked;
+    }
+  });
 }
 
 function openTaskDetail(taskName) {

@@ -68,6 +68,7 @@ const usernameError = ref('');
 const passwordError = ref('');
 
 // Check for saved credentials on page load
+// 改成api呼叫
 onMounted(() => {
   const savedUsername = localStorage.getItem('tchg_username');
   if (savedUsername) {
@@ -85,6 +86,7 @@ const validateForm = () => {
   passwordError.value = '';
 
   // Validate username
+  // 改成api呼叫
   if (!username.value) {
     usernameError.value = '請輸入帳號';
     isValid = false;
