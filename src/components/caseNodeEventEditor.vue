@@ -2,18 +2,18 @@
     <div>
         <v-text-field label="事件標題" v-model="model.eventTitle" dense />
         <v-text-field label="事件日期" v-model="model.eventDate" type="date" dense />
-        <v-textarea label="事件描述" v-model="model.eventDescription" rows="3" dense />
+        <v-textarea label="事件描述" v-model="model.description" rows="3" dense />
 
         <!-- 檔案列表 -->
         <div class="my-3">
             <h4>現有檔案</h4>
             <div v-if="model.files && model.files.length > 0">
-                <div v-for="file in model.files" :key="file.uuid" class="mb-2 d-flex align-center">
+                <div v-for="file in model.files" :key="file.fileId" class="mb-2 d-flex align-center">
                     <v-btn variant="text" color="primary" @click="$emit('open-file', file.fileUrl)" class="mr-3" small>
                         <v-icon left>mdi-file-download</v-icon>
-                        {{ file.fileName }}
+                        {{ file.originalName }}
                     </v-btn>
-                    <v-btn icon small color="red" @click="$emit('remove-file', file.uuid)" variant="text">
+                    <v-btn icon small color="red" @click="$emit('remove-file', file.fileId)" variant="text">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </div>
