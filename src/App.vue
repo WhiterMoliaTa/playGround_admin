@@ -43,4 +43,7 @@ const menuItems = [
 .v-container:has(.tchg-meal-sys){
   padding: 0;
 }
+.v-container:has(.tchg-meal-login-page){
+  padding: 0;
+}
 </style>

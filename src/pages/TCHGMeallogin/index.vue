@@ -1,5 +1,5 @@
 <template>
-  <div class="login-page">
+  <div class="tchg-meal-login-page">
     <!-- Hospital logo and app title -->
     <div class="logo-container">
       <img src="./hospital-logo.png" alt="Hospital Logo" class="hospital-logo" />
@@ -35,11 +35,12 @@
             </v-checkbox>
           </div>
           <!-- Login button -->
-          <v-btn block color="#6369E8" height="48" class="login-btn mt-6" :loading="loading" @click="login">
+          <v-btn block color="#6369E8" height="48" rounded="xl" class="login-btn mt-6" :loading="loading"
+            @click="login">
             登入
           </v-btn>
           <!-- Forgot password link -->
-          <div class="forgot-password text-center mt-2">
+          <div class="forgot-password text-center mt-4">
             <a href="#" @click.prevent="forgotPassword">忘記密碼?</a>
           </div>
         </v-form>
@@ -67,6 +68,7 @@ const usernameError = ref('');
 const passwordError = ref('');
 
 // Check for saved credentials on page load
+// 改成api呼叫
 onMounted(() => {
   const savedUsername = localStorage.getItem('tchg_username');
   if (savedUsername) {
@@ -84,6 +86,7 @@ const validateForm = () => {
   passwordError.value = '';
 
   // Validate username
+  // 改成api呼叫
   if (!username.value) {
     usernameError.value = '請輸入帳號';
     isValid = false;
@@ -139,13 +142,13 @@ const forgotPassword = () => {
   padding-top: 0;
 }
 
-.login-page {
+.tchg-meal-login-page {
   height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 2rem 1rem;
+  padding: 1rem 1rem;
   background-color: #f5f7fa;
   position: relative;
   margin: 0 auto;
@@ -159,12 +162,9 @@ const forgotPassword = () => {
 }
 
 .hospital-logo {
-  /* width: 80px;
-  height: 80px; */
-  max-width: 300px;
-  max-height: 300px;
+  max-width: 100px;
+  max-height: 100px;
   object-fit: contain;
-  margin-bottom: 1rem;
 }
 
 .app-title {
@@ -173,7 +173,6 @@ const forgotPassword = () => {
   font-weight: 600;
   text-align: center;
   margin-bottom: 0.5rem;
-  margin-top: 2rem;
 }
 
 .login-card {
@@ -182,6 +181,7 @@ const forgotPassword = () => {
   padding: 1rem;
   background-color: white;
   box-shadow: 0 0 0.8em 0.1em rgba(133, 133, 133, 0.219);
+  height: fit-content;
 }
 
 .form-group {
@@ -190,7 +190,7 @@ const forgotPassword = () => {
 
 .form-group label {
   display: block;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   color: #4355b9;
   margin-bottom: 0.25rem;
 }
@@ -230,20 +230,47 @@ const forgotPassword = () => {
 }
 
 /* Mobile adjustments */
-@media (max-width: 500px) {
-  .login-page {
+@media (max-width: 320px) {
+  .tchg-meal-login-page {
     justify-content: center;
   }
 
-  .logo-container {
-    margin-top: -5rem;
+  .login-card {
+    width: 100%;
+    border-radius: 12px;
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 0 0.8em 0.1em rgba(133, 133, 133, 0.219);
+  }
+
+  .app-title {
+    color: #4355b9;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    padding: 0;
+  }
+
+  .hospital-logo {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: contain;
   }
 
   .copyright {
     position: absolute;
-    bottom: 1rem;
+    bottom: 0.1rem;
     width: 100%;
     text-align: center;
+  }
+}
+
+@media (max-width: 320px) and (min-height: 700px) {
+  .hospital-logo {
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: contain;
   }
 }
 </style>

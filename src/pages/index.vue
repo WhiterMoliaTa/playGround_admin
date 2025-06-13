@@ -34,10 +34,6 @@
     </v-card-title>
 
     <v-card-text>
-      <!-- <div class="d-flex justify-end mt-4">
-        <v-btn color="info" @click="expandAll" class="me-2">展開所有案件</v-btn>
-        <v-btn color="info" @click="collapseAll" class="me-4">收起所有案件</v-btn>
-      </div> -->
       <div style="overflow-x: auto;">
         <v-data-table :headers="headers" :items="cases" item-value="docId" v-model:expanded="expanded"
           class="elevation-1 pa-4">

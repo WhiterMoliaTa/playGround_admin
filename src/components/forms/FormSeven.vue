@@ -17,15 +17,11 @@
         <tbody>
           <tr v-for="(record, index) in localRecords" :key="index" class="text-center">
             <td>
-              <!-- <v-select v-model="record.company" :items="companyOptions" label="選擇廠商" variant="outlined"
-                density="compact" hide-details></v-select> -->
               <v-text-field v-model="record.comapany" @update:focused="checkValidRecord()" type="text" label="廠商"
                 variant="outlined" density="compact" hide-details></v-text-field>
             </td>
             <td>
               <div class="flex-column">
-                <!-- <v-text-field v-model="record.time" type="time" label="時間" variant="outlined" density="compact"
-                  hide-details class="mr-1"></v-text-field> -->
                 <v-text-field v-model="record.time" :active="timeDialog[`record-${index}`]"
                   :focused="timeDialog[`record-${index}`]" label="時間" readonly>
                   <v-dialog v-model="timeDialog[`record-${index}`]" activator="parent" width="auto">
@@ -73,12 +69,15 @@
 
 <script setup>
 import { ref, inject, onMounted, watch } from 'vue';
-import { isNotBlankUtil } from '../../utils/stringUtil.js';
 
 const props = defineProps({
   title: {
     type: String,
     default: '進貨廠商管理紀錄'
+  },
+  time: {
+    type: String,
+    default: ''
   },
   formConfig: {
     type: Object,
@@ -113,12 +112,13 @@ watch(() => props.formConfig, () => {
 }, { deep: true });
 
 function loadFormData() {
+  //TODO 改成api取得
   const additionalForm = getAddiForm('formSeven');
 
-  if (additionalForm && additionalForm.length > 0 && additionalForm[0].records) {
+  if (additionalForm && additionalForm.records) {
 
-    if (additionalForm[0].records.length > 0) {
-      localRecords.value = JSON.parse(JSON.stringify(additionalForm[0].records));
+    if (additionalForm.records.length > 0) {
+      localRecords.value = JSON.parse(JSON.stringify(additionalForm.records));
     } else {
       localRecords.value = [{ company: null, name: '', time: null, issues: '' }];
     }
@@ -132,9 +132,7 @@ function addNewRecord() {
 }
 
 function removeRecord(index) {
-  // if (index > 0) { // Don't remove the first record
-  //   localRecords.value.splice(index, 1);
-  // }
+  // Don't remove the first record
   if (localRecords.value.length > 1) {
     localRecords.value.splice(index, 1);
   }
@@ -150,10 +148,18 @@ function tempSave() {
   if (filteredRecords.length === 0) {
     filteredRecords = [{ company: null, name: '', time: null, issues: '' }];
   } else {
-    newFormData = [{
+    newFormData = {
+      title: props.title,
+      passed: {
+        //有紀錄代表有問題所以直接!props.time
+        morning: !props.time.includes('morning'),
+        noon: !props.time.includes('noon'),
+        evening: !props.time.includes('evening')
+      },
       records: filteredRecords
-    }];
+    };
   }
+  // 改成api呼叫
   updateAddiForm('formSeven', newFormData);
 }
 
@@ -168,6 +174,7 @@ function save() {
   newFormData = [{
     records: filteredRecords
   }];
+  // 改成api呼叫
   updateAddiForm('formSeven', newFormData);
   cancel();
 }

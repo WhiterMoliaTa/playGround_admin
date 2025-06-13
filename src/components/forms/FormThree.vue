@@ -4,7 +4,6 @@
       <v-card-title class="text-center pb-0">{{ title }}</v-card-title>
       <v-card-subtitle class="text-center pb-4">病人餐點回收及盤餘抽查記錄</v-card-subtitle>
       <v-container class="records-container">
-        <!-- Main Records Loop -->
         <div v-for="(record, recordIndex) in localRecords" :key="recordIndex" class="record-container mb-6">
           <v-card class="pa-3" variant="outlined">
             <!-- Meal Checkboxes -->
@@ -25,13 +24,6 @@
             </v-row>
             <v-row>
               <v-col cols="6">
-                <!-- <v-text-field
-                  v-model="record.recycleTime"
-                  label="回收時間"
-                  type="time"
-                  variant="outlined"
-                  density="compact"
-                ></v-text-field> -->
                 <v-text-field v-model="record.recycleTime" :active="timeDialog[`recycle-${recordIndex}`]"
                   :focused="timeDialog[`recycle-${recordIndex}`]" label="回收時間" readonly>
                   <v-dialog v-model="timeDialog[`recycle-${recordIndex}`]" activator="parent" width="auto">
@@ -170,11 +162,11 @@ watch(() => props.formConfig, () => {
 }, { deep: true });
 
 function loadFormData() {
+  //TODO 改成api取得
   let formData = getAddiForm('formThree');
-  console.log('Loaded form data:', formData);
 
-  if (formData && formData.length > 0) {
-    let firstForm = formData[0];
+  if (formData) {
+    let firstForm = formData;
     if (firstForm.records && Array.isArray(firstForm.records)) {
       let allRecords = JSON.parse(JSON.stringify(firstForm.records));
 
@@ -273,13 +265,17 @@ function tempSave() {
   // Check if all records are valid
   const allValid = localRecords.value.every(record => isRecordValid(record));
 
-  const newFormData = [{
+  const newFormData = {
     title: '病人餐點回收及盤餘抽查記錄',
-    passed: allValid,
+    passed: {
+      morning: showBreakfast.value && allValid,
+      noon: showLunch.value && allValid,
+      evening: showDinner.value && allValid
+    },
     records: JSON.parse(JSON.stringify(localRecords.value))
-  }];
+  };
 
-  // Update form data
+  // 改成api呼叫
   updateAddiForm('formThree', newFormData);
 }
 
@@ -287,13 +283,17 @@ function save() {
   // Check if all records are valid
   const allValid = localRecords.value.every(record => isRecordValid(record));
 
-  const newFormData = [{
+  const newFormData = {
     title: '病人餐點回收及盤餘抽查記錄',
-    passed: allValid,
+    passed: {
+      morning: showBreakfast.value && allValid,
+      noon: showLunch.value && allValid,
+      evening: showDinner.value && allValid
+    },
     records: JSON.parse(JSON.stringify(localRecords.value))
-  }];
+  };
 
-  // Update form data
+  // 改成api呼叫
   emit('formDoneEvent', { formName: 'formThree', state: allValid ? 'success' : 'error' });
   updateAddiForm('formThree', newFormData);
   cancel();
@@ -317,7 +317,7 @@ function cancel() {
 }
 
 .records-container {
-  max-height: 70vh;
+  max-height: 60vh;
   overflow-y: auto;
 }
 </style>

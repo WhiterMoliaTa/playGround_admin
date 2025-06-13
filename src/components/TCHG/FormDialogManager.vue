@@ -16,13 +16,6 @@
         @cancel="handleCancel" 
       />
     </div>
-    <!-- <div v-else-if="props.form === 'formOneAndTwo'">
-      <FormOneAndTwo :formConfig="formConfig" 
-        :time="props.time"
-        @save="handleSave" 
-        @cancel="handleCancel" 
-      />
-    </div> -->
     <div v-else-if="props.form === 'formThree'">
       <FormThree :formConfig="formConfig" 
         :time="props.time"
@@ -74,7 +67,6 @@
 </template>
 <script setup>
 import { computed } from 'vue';
-import FormOneAndTwo from '../forms/FormOneAndTwo.vue';
 import FormOne from '../forms/formOne.vue';
 import FormTwo from '../forms/formTwo.vue';
 import FormThree from '../forms/FormThree.vue';
@@ -121,7 +113,6 @@ function handleCancel() {
 }
 
 function handleFormDone(event) {
-  console.log(`FormDialogManager: Forwarding currentformDone event from ${event.formName}`);
   emit('currentformDone', {formName: event.formName, state: event.state});
 }
 

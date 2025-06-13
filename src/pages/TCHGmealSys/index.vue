@@ -20,11 +20,14 @@
       </v-menu>
     </v-app-bar>
     <div class="bg-grey-lighten-3 d-flex flex-column">
-      <!-- Page Header -->
       <div class="d-flex align-center mt-2 mx-4 pa-1">
         <h1 class="text-h5 font-weight-bold">任務看板</h1>
         <v-spacer></v-spacer>
-        <div class="text-caption text-grey">首頁 / 任務看板</div>
+        <!-- <div class="text-caption text-grey">首頁 / 任務看板</div> -->
+        <span v-for="(breadcrumb, index) in breadcrumbs" :key="index">
+          <router-link :to="breadcrumb.path">{{ breadcrumb.label }}</router-link>
+          <span v-if="index < breadcrumbs.length - 1"> / </span>
+        </span>
       </div>
       <v-divider color="warning" class="my-1"></v-divider>
       <v-row class="current-info-bar mb-4 mx-1 justify-space-around">
@@ -55,8 +58,9 @@
                 </ul>
               </v-card-text>
 
-              <v-btn variant="text" :color="slideDone[`${slide.id}`] ? 'yellow' : 'black'" class="font-weight-bold mb-3 start-button" @click="openTaskDetail(slide.id)">
-                {{ slideDone[`${slide.id}`]? '今日已完成' : '立即開始'}}
+              <v-btn variant="text" :color="slideDone[`${slide.id}`] ? 'yellow' : 'black'"
+                class="font-weight-bold mb-3 start-button" @click="openTaskDetail(slide.id)">
+                {{ slideDone[`${slide.id}`] ? '今日已完成' : '立即開始' }}
               </v-btn>
             </v-card>
           </div>
@@ -70,10 +74,9 @@
             <div class="text-subtitle-1 font-weight-bold">今日工作表</div>
           </div>
           <div class="text-h5 font-weight-bold d-flex flex-row align-end">
-            {{ ifSet ? 97 : totalCompletion }}<span class="text-h6 text-grey-darken-1">%</span>
+            {{ totalCompletionPercentage }}<span class="text-h6 text-grey-darken-1">%</span>
             <div class="text-caption text-grey-darken-1 mb-1">/ 任務完成度</div>
           </div>
-          <!-- Timeline -->
           <v-sheet class="timeline-container mt-6">
             <!-- Time markers -->
             <div class="timeline-header" :style="{ width: `${timelineWidth}px` }">
@@ -96,6 +99,7 @@
                 <div class="task-completion-task">{{ task.completion }}/{{ task.needToComplete }}</div>
               </div>
               <!-- Current time indicator -->
+              <!-- TODO currentTimePosition目前是寫死 -->
               <div class="current-time-indicator" :style="{ left: `${currentTimePosition}px` }">
                 <div class="time-bubble">{{ formattedCurrentTime }}</div>
                 <div class="time-line" :style="{ height: `${requreidHeight}px` }"></div>
@@ -107,19 +111,22 @@
             }"></v-divider>
             <div class="task-block"
               :style="{ width: `700px`, left: `30px`, transform: `translateY(${requreidHeight / 2 - 26}px)` }">
-              <div class="task-completion-bar" :style="ifSet ? { 'background-color': `${taskColor[5]}`, width: `60%` } : ``"></div>
-              <div class="task-completion-task">{{ ifSet ? '9/15' : '0/15'}}</div>
+              <div class="task-completion-bar"
+                :style="ifSet ? { 'background-color': `${taskColor[5]}`, width: `60%` } : ``"></div>
+              <div class="task-completion-task">{{ ifSet ? '9/15' : '0/15' }}</div>
             </div>
             <div class="task-block"
               :style="{ width: `930px`, left: `500px`, transform: `translateY(${requreidHeight / 2}px)` }">
-              <div class="task-completion-bar" :style="ifSet ? { 'background-color': `${taskColor[6]}`, width: `80%` } : ``"></div>
-              <div class="task-completion-task">{{ ifSet ? '18/21' : '0/21'}}</div>
+              <div class="task-completion-bar"
+                :style="ifSet ? { 'background-color': `${taskColor[6]}`, width: `80%` } : ``"></div>
+              <div class="task-completion-task">{{ ifSet ? '18/21' : '0/21' }}</div>
             </div>
           </v-sheet>
         </v-card-text>
       </v-card>
       <p class="ml-4 my-2">簽核表單</p>
-      <v-btn rounded-sm variant="flat" class="mb-2 mx-4 need-to-sign-btn" display="d-flex justify-space-around align-center">
+      <v-btn rounded-sm variant="flat" class="mb-2 mx-4 need-to-sign-btn"
+        display="d-flex justify-space-around align-center">
         <template v-slot:prepend>
           <div>
             <v-icon size="30" style="transform: scaleX(-1);">mdi-gavel</v-icon>
@@ -141,10 +148,13 @@
         </template>
         <template v-slot:append>
           <div class="sign-text-caption-background">
-            <span>{{ ifSet ? 26 : 21}}</span>
+            <span>{{ ifSet ? 26 : 21 }}</span>
           </div>
         </template>
       </v-btn>
+    </div>
+    <div class="copyright">
+      Copyright © 臺北市立聯合醫院所有
     </div>
   </div>
 </template>
@@ -157,8 +167,12 @@ import { useRouter } from 'vue-router'
 import 'vue3-carousel/carousel.css'
 import { Carousel, Slide, Navigation } from 'vue3-carousel'
 
+import { testMorningTCHGJobs } from '../../data/testTCHGMealJobs';
+
 const windowSize = ref({ x: 0, y: 0, });
 const slides = ref(testSlides);
+
+const jobs = ref(testMorningTCHGJobs);
 
 // Calculate time to pixels
 const pixel_per_hour = ref(200); // How many pixels per hour
@@ -166,90 +180,27 @@ const START_HOUR = 7; // Our timeline starts at 7:00
 // Current time 
 const currentDateTime = ref(new Date().toLocaleString());
 
+//TODO 改成api呼叫
 const branch = ref('院本部');
+//TODO 改成api呼叫
 const branches = ref(['院本部', '中興', '仁愛', '其他分院']);
+//TODO 改成api呼叫
 const timeMarkers = ref([
   '7:00', '7:30', '8:00', '8:30', '9:00', '9:30', '10:00', '10:30',
   '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00'
 ]);
+//TODO 改成api呼叫
 const taskColor = ['#f5945c', '#fec76f', '#465952', '#75ba75', '#71a3c1', '#FFBE0B', '#725E54'];
-// Total completion percentage
-const totalCompletion = ref(2);
+//TODO 改成api呼叫
+const totalCompletionPercentage = ref(0);
+const breadcrumbs = ref([
+  {label: '首頁', path: '/'},
+  {label: '任務看板', path: '/TCHGmealSys'}
+])
 
 const slideDone = ref({});
 
-const tasks = ref([
-  {
-    id: 1,
-    title: '晨點作業',
-    startTime: '07:00',
-    endTime: '07:40',
-    completion: 2,
-    needToComplete: 8,
-    status: 'active',
-    row: 1
-  },
-  {
-    id: 2,
-    title: '生鮮食材驗收及登錄',
-    startTime: '07:30',
-    endTime: '08:00',
-    completion: 0,
-    needToComplete: 1,
-    status: 'pending',
-    row: 2
-  },
-  {
-    id: 3,
-    title: '早餐配膳及回收作業',
-    startTime: '08:40',
-    endTime: '09:30',
-    completion: 0,
-    needToComplete: 6,
-    status: 'pending',
-    row: 3
-  },
-  {
-    id: 4,
-    title: '人數食材確認',
-    startTime: '08:00',
-    endTime: '10:00',
-    completion: 0,
-    needToComplete: 5,
-    status: 'pending',
-    row: 4
-  },
-  {
-    id: 5,
-    title: '午餐製作作業',
-    startTime: '10:00',
-    endTime: '10:50',
-    completion: 0,
-    needToComplete: 5,
-    status: 'pending',
-    row: 5
-  },
-  {
-    id: 6,
-    title: '午餐配膳作業',
-    startTime: '10:50',
-    endTime: '12:00',
-    completion: 0,
-    needToComplete: 4,
-    status: 'pending',
-    row: 6
-  },
-  {
-    id: 7,
-    title: '午餐回收清潔作業',
-    startTime: '12:00',
-    endTime: '14:00',
-    completion: 0,
-    needToComplete: 5,
-    status: 'pending',
-    row: 7
-  }
-]);
+const tasks = ref([]);
 
 const slidesToShow = ref(1.3);
 const carouselConfig = {
@@ -261,85 +212,12 @@ const router = useRouter();
 
 // let timeInterval;
 const ifSet = ref(false);
+
 onMounted(() => {
   onResize();
-  ifSet.value = sessionStorage.getItem("jobs") !== null;
-  if (ifSet.value) {
-    tasks.value = [
-      {
-        id: 1,
-        title: '晨點作業',
-        startTime: '07:00',
-        endTime: '07:40',
-        completion: 8,
-        needToComplete: 8,
-        status: 'active',
-        row: 1
-      },
-      {
-        id: 2,
-        title: '生鮮食材驗收及登錄',
-        startTime: '07:30',
-        endTime: '08:00',
-        completion: 1,
-        needToComplete: 1,
-        status: 'active',
-        row: 2
-      },
-      {
-        id: 3,
-        title: '早餐配膳及回收作業',
-        startTime: '08:40',
-        endTime: '09:30',
-        completion: 6,
-        needToComplete: 6,
-        status: 'pending',
-        row: 3
-      },
-      {
-        id: 4,
-        title: '人數食材確認',
-        startTime: '08:00',
-        endTime: '10:00',
-        completion: 3,
-        needToComplete: 5,
-        status: 'pending',
-        row: 4
-      },
-      {
-        id: 5,
-        title: '午餐製作作業',
-        startTime: '10:00',
-        endTime: '10:50',
-        completion: 4,
-        needToComplete: 5,
-        status: 'pending',
-        row: 5
-      },
-      {
-        id: 6,
-        title: '午餐配膳作業',
-        startTime: '10:50',
-        endTime: '12:00',
-        completion: 4,
-        needToComplete: 4,
-        status: 'pending',
-        row: 6
-      },
-      {
-        id: 7,
-        title: '午餐回收清潔作業',
-        startTime: '12:00',
-        endTime: '14:00',
-        completion: 4,
-        needToComplete: 5,
-        status: 'pending',
-        row: 7
-      }
-    ]
-    currentTime.value = new Date("2025-06-09T13:30:00");
-    slideDone.value['meal-log'] = true;
-  };
+  fetchJobsAndUpdateTasks();
+  updateTotalCompletion();
+  //TODO 讓currentTime每分鐘更新一次
 
 
   //   timeInterval = setInterval(() => {
@@ -367,21 +245,17 @@ const formattedCurrentTime = computed(() => {
 });
 
 const requreidHeight = ref(0);
-// Calculate task block positions and dimensions
 const taskBlocks = computed(() => {
   return tasks.value.map(task => {
-    // Parse times and calculate positions
     const [startHour, startMin] = task.startTime.split(':').map(Number);
     const [endHour, endMin] = task.endTime.split(':').map(Number);
 
     const startDecimal = startHour + startMin / 60;
     const endDecimal = endHour + endMin / 60;
 
-    // Calculate left position and width in pixels
     const left = (startDecimal - START_HOUR) * pixel_per_hour.value;
     const width = (endDecimal - startDecimal) * pixel_per_hour.value;
 
-    // Vertical positioning - 29px per row, with some margin
     const top = (task.row - 1) * 29;
 
     requreidHeight.value = top;
@@ -399,6 +273,7 @@ const timelineWidth = computed(() => {
   const lastTime = timeMarkers.value[timeMarkers.value.length - 1];
   const [lastHour, lastMin] = lastTime.split(':').map(Number);
   const lastTimeDecimal = lastHour + lastMin / 60;
+
   return (lastTimeDecimal - START_HOUR) * pixel_per_hour.value;
 });
 
@@ -428,6 +303,56 @@ function getCompletionBarWidth(task) {
 
   // Otherwise return the normal calculation
   return normalWidth;
+}
+
+function jobsToTask(jobsData) {
+  let updatedTask = [];
+  let idAndRow = 1;
+
+  jobsData.forEach(job => {
+    let checkedCount = job.items.filter(item => item.checked).length;
+    let totalCount = job.items.length;
+    let startTime = job.time.split('-')[0];
+    let endTime = job.time.split('-')[1];
+
+    updatedTask.push({
+      id: idAndRow,
+      title: job.title,
+      startTime: startTime,
+      endTime: endTime,
+      completion: checkedCount,
+      needToComplete: totalCount,
+      row: idAndRow,
+    });
+    idAndRow++;
+  });
+
+  return updatedTask;
+}
+
+function fetchJobsAndUpdateTasks() {
+  const jobsData = sessionStorage.getItem("mealJobs");
+
+  if (jobsData) {
+    const parsedJobs = JSON.parse(jobsData);
+    tasks.value = jobsToTask(parsedJobs);
+
+    //TODO 移除掉 這個是demo用而已所以寫死的currentTime
+    currentTime.value = new Date("2025-06-09T13:30:00");
+  } else {
+    tasks.value = jobsToTask(jobs.value);
+  }
+}
+
+function updateTotalCompletion() {
+  const totalTasks = tasks.value.reduce((sum, task) => sum + task.needToComplete, 0);
+  const completedTasks = tasks.value.reduce((sum, task) => sum + task.completion, 0);
+
+  if (totalTasks > 0) {
+    totalCompletionPercentage.value = Math.round((completedTasks / totalTasks) * 100);
+  } else {
+    totalCompletionPercentage.value = 0;
+  }
 }
 
 function openTaskDetail(taskName) {

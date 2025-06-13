@@ -15,6 +15,7 @@
         <!-- <v-col cols="2" v-if="showBreakfast" class="d-flex align-center justify-center">早餐</v-col>
         <v-col cols="2" v-if="showLunch" class="d-flex align-center justify-center">午餐</v-col>
         <v-col cols="2" v-if="showDinner" class="d-flex align-center justify-center">晚餐</v-col> -->
+        <!-- 依照需求改回去△ -->
         <v-col class="3"></v-col>
         <v-col :cols="getRemarksColSize()" class="d-flex align-center justify-center">備註</v-col>
       </v-row>
@@ -55,12 +56,6 @@
         </v-col>
 
         <v-col :cols="getRemarksColSize()" class="d-flex flex-column justify-center align-center">
-          <!-- <v-text-field
-            v-model="item.remarks"
-            variant="outlined"
-            density="compact"
-            hide-details
-          ></v-text-field> -->
           <v-btn variant="text" icon @click="openRemarkDialog(item)">
             <v-icon>mdi-dots-horizontal-circle</v-icon>
           </v-btn>
@@ -118,10 +113,9 @@ const showDinner = computed(() => props.time.includes('evening') || !props.time)
 // Local form data
 const formItems = ref([]);
 
-// Determine the size of the remarks column based on visible meal columns
+// 可寫死
 const getRemarksColSize = () => {
   const visibleColumns = [showBreakfast.value, showLunch.value, showDinner.value].filter(Boolean).length;
-  // 12 - 5 (title column) - (2 * number of visible meal columns)
   return 12 - 5 - (3 * visibleColumns);
 };
 
@@ -138,22 +132,24 @@ onMounted(() => {
   loadFormData();
 });
 
-// Watch for form config changes
 watch(() => props.formConfig, () => {
   loadFormData();
 }, { deep: true });
 
 function loadFormData() {
-  const formData = getAddiForm('formOne');
+  //TODO 改成api取得
+  let formData = getAddiForm('formOne');
 
-  if (formData && formData.length > 0) {
-    const firstForm = formData[0];
-
+  if (formData) {
+    let firstForm = formData;
     if (firstForm.form && Array.isArray(firstForm.form)) {
-      // Create a deep copy to avoid reference issues
       formItems.value = JSON.parse(JSON.stringify(firstForm.form));
+    } else {
+      //邏輯上應該是透過API呼叫所以才寫alert
+      alert('異常：無法取得表單資料');
     }
   } else {
+    //邏輯上應該是透過API呼叫所以才寫alert
     alert('異常：無法取得表單資料');
   }
   formDone.value = formItems.value.every(item => {
@@ -165,13 +161,23 @@ function loadFormData() {
 }
 
 function tempSave() {
-
-  const newFormData = [{
+  let formNoProblem = formItems.value.every(item => {
+    if (showBreakfast.value && item.breakfast !== true) return false;
+    if (showLunch.value && item.lunch !== true) return false;
+    if (showDinner.value && item.dinner !== true) return false;
+    return true;
+  });
+  const newFormData = {
     title: '配膳線上督餐作業查檢表',
+    passed: {
+      morning: showBreakfast.value && formNoProblem,
+      noon: showLunch.value && formNoProblem,
+      evening: showDinner.value && formNoProblem
+    },
     form: JSON.parse(JSON.stringify(formItems.value))
-  }];
+  };
 
-  // Update form data
+  // 改成api呼叫
   updateAddiForm('formOne', newFormData);
 }
 
@@ -182,16 +188,21 @@ function save() {
     if (showDinner.value && item.dinner !== true) return false;
     return true;
   });
-  let state = formNoProblem ? 'success' : 'error'; 
+  let state = formNoProblem ? 'success' : 'error';
 
-  const newFormData = [{
+  const newFormData = {
     title: '配膳線上督餐作業查檢表',
+    passed: {
+      morning: showBreakfast.value && formNoProblem,
+      noon: showLunch.value && formNoProblem,
+      evening: showDinner.value && formNoProblem
+    },
     form: JSON.parse(JSON.stringify(formItems.value))
-  }];
+  };
 
-  // Update form data
+  // 改成api呼叫
   updateAddiForm('formOne', newFormData);
-  emit('formDoneEvent', {formName:'formOne', state: state});
+  emit('formDoneEvent', { formName: 'formOne', state: state });
   cancel();
 }
 

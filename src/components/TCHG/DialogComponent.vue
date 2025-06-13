@@ -36,12 +36,6 @@
       </v-container>
     </v-card>
   </v-dialog>
-  <!-- <form-dialog-component
-        v-model:showForm="showFormDialog"
-        :form-config="formConfig"
-        :fillFormTime="new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' })"
-        @submitForm="saveAdditionalForm"
-    /> -->
   <form-dialog-manager v-model:showForm="showFormDialog" :form="form" :time="time" :form-config="formConfig"
     @currentformDone="updateFormDone($event, time)" />
 </template>
@@ -50,7 +44,6 @@
 import { ref, computed, watch, inject } from 'vue';
 import FormDialogComponent from './FormDialogComponent.vue';
 import FormDialogManager from './FormDialogManager.vue';
-import { fa } from 'vuetify/locale';
 
 const modifyPass = inject('modifyJobPass');
 const getAddiForm = inject('getAddiForm');
@@ -118,19 +111,6 @@ function updateAllDone() {
   allDone.value = checkFormAllDone && checkBoxAllDone;
 }
 
-function dbugs(place) {
-  console.log(`----${place}-----\n%O\n-------------`,
-    {
-      formRequired: props.formRequired,
-      formNames: props.formName,
-      allCheckboxesChecked: props.checkBoxs.every(cb => cb.checked),
-      formDones: { ...formDones.value },
-      formDonesLength: Object.values(formDones.value).length,
-      allDone: allDone.value
-    }
-  );
-}
-
 const emit = defineEmits(['update:show', 'addtionalFormSubmit']);
 
 const baseCheckRules = [
@@ -171,10 +151,12 @@ function ableToCloseDialog() {
     });
   }
   if(props.formName[0] === 'formFive'){
-    getAddiForm('formFive')[0].records.length === 0 ? allFormNoError = true : allFormNoError = false;
+    //TODO 改成api取得
+    getAddiForm('formFive').records.length === 0 ? allFormNoError = true : allFormNoError = false;
   }
   if(props.formName[0] === 'formSeven'){
-    getAddiForm('formSeven')[0].records.length === 0 ? allFormNoError = true : allFormNoError = false;
+    //TODO 改成api取得
+    getAddiForm('formSeven').records.length === 0 ? allFormNoError = true : allFormNoError = false;
   }
   modifyPass(props.formName, props.time, allFormNoError);
   showDialog.value = false;

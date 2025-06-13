@@ -131,7 +131,7 @@
 .time-marker {
   position: absolute;
   transform: translateX(-50%);
-  font-size: 12px;
+  font-size: 0.75rem;
   color: rgba(0, 0, 0, 0.6);
   top: 0;
 }
@@ -308,4 +308,11 @@
   border-radius: 50%;
   vertical-align: middle;
   line-height: 2rem;
+}
+
+.copyright {
+  color: #888;
+  font-size: 0.8rem;
+  margin-top: 2rem;
+  text-align: center;
 }
