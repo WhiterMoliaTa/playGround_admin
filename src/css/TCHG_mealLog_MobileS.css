@@ -4,7 +4,7 @@
     }
 
     .meal-log-page {
-        height: 130vh;
+        height: calc(100vh + 130px);
         overflow: scroll;
     }
 
@@ -49,7 +49,7 @@
 
     .associate-forms-row .associate-form-col {
         text-align: center;
-        margin: 8px;
+        margin: 8px 0px 8px 0px;
     }
 
     .associate-forms-row .v-col {
