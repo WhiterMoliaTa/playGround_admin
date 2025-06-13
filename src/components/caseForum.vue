@@ -69,30 +69,30 @@
             </div>
             <div class="content">
               <template v-if="discussion.lastComment">
-                <!-- {{ discussion.lastComment.content }} -->
-                <TruncateText :text="discussion.lastComment.content" :maxLength="50" />
-                <!-- 顯示留言附件 -->
-                <template v-if="discussion.lastCommentFiles && discussion.lastCommentFiles.length">
-                  <span
-                    v-for="(file, idx) in discussion.lastCommentFiles.slice(0, 3)"
-                    :key="file.fileId"
-                    class="comment-file ml-2"
-                  >
-                    <v-icon size="18" color="primary" style="vertical-align: middle;">mdi-paperclip</v-icon>
-                    <span style="font-size:0.95em;">{{ file.originalName }}</span>
-                  </span>
-                  <span
-                    v-if="discussion.lastCommentFiles.length > 3"
-                    class="comment-file ml-2"
-                    style="color: #888; font-size: 0.95em;"
-                  >
-                    +{{ discussion.lastCommentFiles.length - 3 }}
-                  </span>
-                </template>
-
+                <div class="last-comment-row">
+                  <TruncateText :text="discussion.lastComment.content" :maxLength="50" />
+                  <!-- 顯示留言附件 -->
+                  <template v-if="discussion.lastCommentFiles && discussion.lastCommentFiles.length">
+                    <span
+                      v-for="(file, idx) in discussion.lastCommentFiles.slice(0, 3)"
+                      :key="file.fileId"
+                      class="comment-file ml-2"
+                    >
+                      <v-icon size="18" color="primary" style="vertical-align: middle;">mdi-paperclip</v-icon>
+                      <span style="font-size:0.95em;">{{ file.originalName }}</span>
+                    </span>
+                    <span
+                      v-if="discussion.lastCommentFiles.length > 3"
+                      class="comment-file ml-2"
+                      style="color: #888; font-size: 0.95em;"
+                    >
+                      +{{ discussion.lastCommentFiles.length - 3 }}
+                    </span>
+                  </template>
+                </div>
               </template>
               <template v-else>
-                {{ discussion.content }}
+                <TruncateText :text="discussion.content" :maxLength="100" />
               </template>
             </div>
             <span v-if="discussion.lastComment" style="color:#888;font-size:0.92em;">
@@ -460,5 +460,17 @@ function onTagChange(val) {
 
 .ml-4 {
   margin-left: 16px;
+}
+
+.last-comment-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.last-comment-row .comment-file {
+  white-space: nowrap;
 }
 </style>
