@@ -113,7 +113,6 @@ function handleCancel() {
 }
 
 function handleFormDone(event) {
-  console.log(`FormDialogManager: Forwarding currentformDone event from ${event.formName}`);
   emit('currentformDone', {formName: event.formName, state: event.state});
 }
 

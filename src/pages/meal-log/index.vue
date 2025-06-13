@@ -121,7 +121,7 @@
 import { ref, computed, reactive, watch, onMounted, provide } from 'vue';
 import DialogComponent from '../../components/TCHG/DialogComponent.vue';
 import RemarksDialog from '../../components/TCHG/RemarksDialog.vue';
-import { testMorningTCHGJobs } from "../../data/testTCHGJobs";
+import { testMorningTCHGJobs } from "../../data/testTCHGMealJobs";
 import { testTCHGForms } from '../../data/testTCHGForms';
 import { defaultSignature } from '../../data/testSignature';
 import { useRouter } from 'vue-router'
@@ -199,8 +199,6 @@ const isRootCompleted = computed(() => {
 });
 
 provide('getAddiForm', (formName) => {
-  console.log(`Fetching additional form for: ${formName}`);
-  console.log(forms.value[formName]?.additionalForm || []);
   return forms.value[formName]?.additionalForm || [];
 });
 
@@ -213,7 +211,6 @@ provide('modifyJobPass', (formName, time, pass) => {
     }
     )
   );
-  console.log(`Job found: ${job ? job : 'none'}`);
   if (job) {
     const section = job.section;
     const item = job.items.find(item =>
@@ -223,7 +220,6 @@ provide('modifyJobPass', (formName, time, pass) => {
       item.forms.passed = pass;
       const key = `button-${section}-${item.id}`;
       state.value[key] = pass ? 'success ' : 'error';
-      console.log(`Job ${formName} in section ${section} updated to ${state.value[key]}.`);
       item.checked = true;
       updateCompletedCount();
     }
@@ -237,8 +233,6 @@ provide('updateAddiForm', (formName, newData) => {
 
   if (form && form.additionalForm) {
     form.additionalForm = {...newData};
-    console.log(`Form data`, {...newData});
-    console.log(`Form ${formName} updated with new data:`, form.additionalForm);
   }
 });
 
@@ -457,7 +451,7 @@ function saveSignatureAndSend() {
   sessionStorage.setItem('signatureTimestamp', signatureTimestamp.value);
   sessionStorage.setItem('signatureShift', shift.value);
   sessionStorage.setItem('signatureBranch', branch.value);
-  sessionStorage.setItem('jobs', JSON.stringify(jobs.value));
+  sessionStorage.setItem('mealJobs', JSON.stringify(jobs.value));
   backToMealSys();
   showSignatureDialog.value = false;
 }

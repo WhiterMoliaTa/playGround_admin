@@ -162,9 +162,8 @@ watch(() => props.formConfig, () => {
 }, { deep: true });
 
 function loadFormData() {
-  // 改成api取得
+  //TODO 改成api取得
   let formData = getAddiForm('formThree');
-  console.log('Loaded form data:', formData);
 
   if (formData) {
     let firstForm = formData;

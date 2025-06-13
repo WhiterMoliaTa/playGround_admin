@@ -195,7 +195,6 @@ function checkClockAllDone() {
     if (showDinner.value && !item.dinner) return false;
     return true;
   });
-  console.log(section2Items.value);
 
   formDone.value = sec1Done && sec2Done;
 };
@@ -218,7 +217,7 @@ watch(() => props.formConfig, () => {
 }, { deep: true });
 
 function loadFormData() {
-  // 改成api取得
+  //TODO 改成api取得
   const formData = getAddiForm('formTwo');
 
   if (formData) {

@@ -137,12 +137,11 @@ watch(() => props.formConfig, () => {
 }, { deep: true });
 
 function loadFormData() {
-  // 改成api取得
+  //TODO 改成api取得
   let formData = getAddiForm('formOne');
 
   if (formData) {
     let firstForm = formData;
-    console.log('formData', firstForm);
     if (firstForm.form && Array.isArray(firstForm.form)) {
       formItems.value = JSON.parse(JSON.stringify(firstForm.form));
     } else {

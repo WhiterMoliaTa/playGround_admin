@@ -111,19 +111,6 @@ function updateAllDone() {
   allDone.value = checkFormAllDone && checkBoxAllDone;
 }
 
-function dbugs(place) {
-  console.log(`----${place}-----\n%O\n-------------`,
-    {
-      formRequired: props.formRequired,
-      formNames: props.formName,
-      allCheckboxesChecked: props.checkBoxs.every(cb => cb.checked),
-      formDones: { ...formDones.value },
-      formDonesLength: Object.values(formDones.value).length,
-      allDone: allDone.value
-    }
-  );
-}
-
 const emit = defineEmits(['update:show', 'addtionalFormSubmit']);
 
 const baseCheckRules = [
@@ -164,11 +151,11 @@ function ableToCloseDialog() {
     });
   }
   if(props.formName[0] === 'formFive'){
-    // 改成api取得
+    //TODO 改成api取得
     getAddiForm('formFive').records.length === 0 ? allFormNoError = true : allFormNoError = false;
   }
   if(props.formName[0] === 'formSeven'){
-    // 改成api取得
+    //TODO 改成api取得
     getAddiForm('formSeven').records.length === 0 ? allFormNoError = true : allFormNoError = false;
   }
   modifyPass(props.formName, props.time, allFormNoError);

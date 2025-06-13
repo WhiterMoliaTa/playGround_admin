@@ -49,7 +49,7 @@
                 <ul class="task-list">
                   <li v-for="(task, taskIndex) in slide.tasks" :key="taskIndex">
                     <v-icon :class="task.status">mdi-check-circle</v-icon>
-                    {{ task.completed }}/{{ task.total }}
+                    {{ task.completed }}/{{ task.total }} {{ task.label }}
                   </li>
                 </ul>
               </v-card-text>
@@ -70,7 +70,7 @@
             <div class="text-subtitle-1 font-weight-bold">今日工作表</div>
           </div>
           <div class="text-h5 font-weight-bold d-flex flex-row align-end">
-            {{ ifSet ? 97 : totalCompletion }}<span class="text-h6 text-grey-darken-1">%</span>
+            {{ totalCompletion }}<span class="text-h6 text-grey-darken-1">%</span>
             <div class="text-caption text-grey-darken-1 mb-1">/ 任務完成度</div>
           </div>
           <v-sheet class="timeline-container mt-6">
@@ -95,7 +95,7 @@
                 <div class="task-completion-task">{{ task.completion }}/{{ task.needToComplete }}</div>
               </div>
               <!-- Current time indicator -->
-               <!-- currentTimePosition目前是寫死 -->
+              <!-- currentTimePosition目前是寫死 -->
               <div class="current-time-indicator" :style="{ left: `${currentTimePosition}px` }">
                 <div class="time-bubble">{{ formattedCurrentTime }}</div>
                 <div class="time-line" :style="{ height: `${requreidHeight}px` }"></div>
@@ -266,87 +266,17 @@ const carouselConfig = {
 const router = useRouter();
 
 // let timeInterval;
-const jobs = ref();
+const ifSet = ref(false);
+
 onMounted(() => {
   onResize();
+  fetchJobsAndUpdateTasks();
+  updateTotalCompletion();
   //TODO 把這垃圾寫法改掉
-  ifSet.value = sessionStorage.getItem("jobs");
-  if (jobs) {
-    tasks.value = [
-      {
-        id: 1,
-        title: '晨點作業',
-        startTime: '07:00',
-        endTime: '07:40',
-        completion: 8,
-        needToComplete: 8,
-        status: 'active',
-        row: 1
-      },
-      {
-        id: 2,
-        title: '生鮮食材驗收及登錄',
-        startTime: '07:30',
-        endTime: '08:00',
-        completion: 1,
-        needToComplete: 1,
-        status: 'active',
-        row: 2
-      },
-      {
-        id: 3,
-        title: '早餐配膳及回收作業',
-        startTime: '08:40',
-        endTime: '09:30',
-        completion: 6,
-        needToComplete: 6,
-        status: 'pending',
-        row: 3
-      },
-      {
-        id: 4,
-        title: '人數食材確認',
-        startTime: '08:00',
-        endTime: '10:00',
-        completion: 3,
-        needToComplete: 5,
-        status: 'pending',
-        row: 4
-      },
-      {
-        id: 5,
-        title: '午餐製作作業',
-        startTime: '10:00',
-        endTime: '10:50',
-        completion: 4,
-        needToComplete: 5,
-        status: 'pending',
-        row: 5
-      },
-      {
-        id: 6,
-        title: '午餐配膳作業',
-        startTime: '10:50',
-        endTime: '12:00',
-        completion: 4,
-        needToComplete: 4,
-        status: 'pending',
-        row: 6
-      },
-      {
-        id: 7,
-        title: '午餐回收清潔作業',
-        startTime: '12:00',
-        endTime: '14:00',
-        completion: 4,
-        needToComplete: 5,
-        status: 'pending',
-        row: 7
-      }
-    ]
-    currentTime.value = new Date("2025-06-09T13:30:00");
-    slideDone.value['meal-log'] = true;
-  };
+  // ifSet.value = sessionStorage.getItem("jobs");
+  //   currentTime.value = new Date("2025-06-09T13:30:00");
+  //   slideDone.value['meal-log'] = true;
+  // };
 
 
   //   timeInterval = setInterval(() => {
@@ -374,21 +304,17 @@ const formattedCurrentTime = computed(() => {
 });
 
 const requreidHeight = ref(0);
-// Calculate task block positions and dimensions
 const taskBlocks = computed(() => {
   return tasks.value.map(task => {
-    // Parse times and calculate positions
     const [startHour, startMin] = task.startTime.split(':').map(Number);
     const [endHour, endMin] = task.endTime.split(':').map(Number);
 
     const startDecimal = startHour + startMin / 60;
     const endDecimal = endHour + endMin / 60;
 
-    // Calculate left position and width in pixels
     const left = (startDecimal - START_HOUR) * pixel_per_hour.value;
     const width = (endDecimal - startDecimal) * pixel_per_hour.value;
 
-    // Vertical positioning - 29px per row, with some margin
     const top = (task.row - 1) * 29;
 
     requreidHeight.value = top;
@@ -406,6 +332,7 @@ const timelineWidth = computed(() => {
   const lastTime = timeMarkers.value[timeMarkers.value.length - 1];
   const [lastHour, lastMin] = lastTime.split(':').map(Number);
   const lastTimeDecimal = lastHour + lastMin / 60;
+
   return (lastTimeDecimal - START_HOUR) * pixel_per_hour.value;
 });
 
@@ -437,72 +364,52 @@ function getCompletionBarWidth(task) {
   return normalWidth;
 }
 
-function calculateJobCompletions(jobsData) {
+function jobsToTask(jobsData) {
   let updatedTask = [];
-  
+  let idAndRow = 1;
+
   jobsData.forEach(job => {
     let checkedCount = job.items.filter(item => item.checked).length;
     let totalCount = job.items.length;
-    let startTime = job.time.split(':')[0];
-    let endTime = job.time.split(':')[1];
-    
+    let startTime = job.time.split('-')[0];
+    let endTime = job.time.split('-')[1];
+
     updatedTask.push({
+      id: idAndRow,
       title: job.title,
       startTime: startTime,
       endTime: endTime,
       completion: checkedCount,
-      total: totalCount
+      needToComplete: totalCount,
+      row: idAndRow,
     });
+    idAndRow++;
   });
-  
+
   return updatedTask;
 }
 
-// Update your onMounted function
-onMounted(() => {
-  onResize();
-  
-  // Fetch jobs data
-  const jobsData = sessionStorage.getItem("jobs");
-  ifSet.value = jobsData ? true : false;
-  
+function fetchJobsAndUpdateTasks() {
+  const jobsData = sessionStorage.getItem("mealJobs");
+
   if (jobsData) {
     const parsedJobs = JSON.parse(jobsData);
-    const jobStats = calculateJobCompletions(parsedJobs);
-    
-    // Set current time for demo purposes
-    currentTime.value = new Date("2025-06-09T13:30:00");
-    
-    // Update slide completion status
-    updateSlideCompletion(jobStats);
-  }
-});
+    tasks.value = jobsToTask(parsedJobs);
 
-// Add this function to update slide completion status
-function updateSlideCompletion(jobsData) {
-  // For each slide, check if all related jobs are complete
-  slides.value.forEach(slide => {
-    
-    if (relatedJobs.length > 0) {
-      const allJobItemsChecked = relatedJobs.every(job => 
-        job.items.every(item => item.checked)
-      );
-      
-      // Update slide tasks
-      slide.tasks.forEach(task => {
-        const matchingJob = relatedJobs.find(job => job.title.includes(task.label));
-        if (matchingJob) {
-          const checkedCount = matchingJob.items.filter(item => item.checked).length;
-          task.completed = checkedCount;
-          task.status = checkedCount === 0 ? 'white-dot' : 
-                        checkedCount === task.total ? 'green-dot' : 'yellow-dot';
-        }
-      });
-      
-      // Update slide completion status
-      slideDone.value[slide.id] = allJobItemsChecked;
-    }
-  });
+    //TODO 移除掉 這個是demo用而已
+    currentTime.value = new Date("2025-06-09T13:30:00");
+  }
+}
+
+function updateTotalCompletion() {
+  const totalTasks = tasks.value.reduce((sum, task) => sum + task.needToComplete, 0);
+  const completedTasks = tasks.value.reduce((sum, task) => sum + task.completion, 0);
+  
+  if (totalTasks > 0) {
+    totalCompletion.value = Math.round((completedTasks / totalTasks) * 100);
+  } else {
+    totalCompletion.value = 0;
+  }
 }
 
 function openTaskDetail(taskName) {

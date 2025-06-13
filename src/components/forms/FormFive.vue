@@ -122,9 +122,8 @@ onMounted(() => {
 });
 
 function loadFormData() {
-  // 改成api取得
+  //TODO 改成api取得
   let additionalForm = getAddiForm('formFive');
-  console.log('additionalForm', additionalForm);
   if (additionalForm) {
     formData.value = additionalForm;
     const records = JSON.parse(JSON.stringify(formData.value.records));
