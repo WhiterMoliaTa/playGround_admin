@@ -163,8 +163,12 @@ import { useRouter } from 'vue-router'
 import 'vue3-carousel/carousel.css'
 import { Carousel, Slide, Navigation } from 'vue3-carousel'
 
+import { testMorningTCHGJobs } from '../../data/testTCHGMealJobs';
+
 const windowSize = ref({ x: 0, y: 0, });
 const slides = ref(testSlides);
+
+const jobs = ref(testMorningTCHGJobs);
 
 // Calculate time to pixels
 const pixel_per_hour = ref(200); // How many pixels per hour
@@ -184,78 +188,7 @@ const totalCompletion = ref(2);
 
 const slideDone = ref({});
 
-const tasks = ref([
-  {
-    id: 1,
-    title: '晨點作業',
-    startTime: '07:00',
-    endTime: '07:40',
-    completion: 2,
-    needToComplete: 8,
-    status: 'active',
-    row: 1
-  },
-  {
-    id: 2,
-    title: '生鮮食材驗收及登錄',
-    startTime: '07:30',
-    endTime: '08:00',
-    completion: 0,
-    needToComplete: 1,
-    status: 'pending',
-    row: 2
-  },
-  {
-    id: 3,
-    title: '早餐配膳及回收作業',
-    startTime: '08:40',
-    endTime: '09:30',
-    completion: 0,
-    needToComplete: 6,
-    status: 'pending',
-    row: 3
-  },
-  {
-    id: 4,
-    title: '人數食材確認',
-    startTime: '08:00',
-    endTime: '10:00',
-    completion: 0,
-    needToComplete: 5,
-    status: 'pending',
-    row: 4
-  },
-  {
-    id: 5,
-    title: '午餐製作作業',
-    startTime: '10:00',
-    endTime: '10:50',
-    completion: 0,
-    needToComplete: 5,
-    status: 'pending',
-    row: 5
-  },
-  {
-    id: 6,
-    title: '午餐配膳作業',
-    startTime: '10:50',
-    endTime: '12:00',
-    completion: 0,
-    needToComplete: 4,
-    status: 'pending',
-    row: 6
-  },
-  {
-    id: 7,
-    title: '午餐回收清潔作業',
-    startTime: '12:00',
-    endTime: '14:00',
-    completion: 0,
-    needToComplete: 5,
-    status: 'pending',
-    row: 7
-  }
-]);
+const tasks = ref([]);
 
 const slidesToShow = ref(1.3);
 const carouselConfig = {
@@ -272,11 +205,7 @@ onMounted(() => {
   onResize();
   fetchJobsAndUpdateTasks();
   updateTotalCompletion();
-  //TODO 把這垃圾寫法改掉
-  // ifSet.value = sessionStorage.getItem("jobs");
-  //   currentTime.value = new Date("2025-06-09T13:30:00");
-  //   slideDone.value['meal-log'] = true;
-  // };
+  //TODO 讓currentTime每分鐘更新一次
 
 
   //   timeInterval = setInterval(() => {
@@ -396,8 +325,10 @@ function fetchJobsAndUpdateTasks() {
     const parsedJobs = JSON.parse(jobsData);
     tasks.value = jobsToTask(parsedJobs);
 
-    //TODO 移除掉 這個是demo用而已
+    //TODO 移除掉 這個是demo用而已所以寫死的currentTime
     currentTime.value = new Date("2025-06-09T13:30:00");
+  } else {
+    tasks.value = jobsToTask(jobs.value);
   }
 }
 
