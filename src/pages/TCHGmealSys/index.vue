@@ -23,7 +23,11 @@
       <div class="d-flex align-center mt-2 mx-4 pa-1">
         <h1 class="text-h5 font-weight-bold">任務看板</h1>
         <v-spacer></v-spacer>
-        <div class="text-caption text-grey">首頁 / 任務看板</div>
+        <!-- <div class="text-caption text-grey">首頁 / 任務看板</div> -->
+        <span v-for="(breadcrumb, index) in breadcrumbs" :key="index">
+          <router-link :to="breadcrumb.path">{{ breadcrumb.label }}</router-link>
+          <span v-if="index < breadcrumbs.length - 1"> / </span>
+        </span>
       </div>
       <v-divider color="warning" class="my-1"></v-divider>
       <v-row class="current-info-bar mb-4 mx-1 justify-space-around">
@@ -70,7 +74,7 @@
             <div class="text-subtitle-1 font-weight-bold">今日工作表</div>
           </div>
           <div class="text-h5 font-weight-bold d-flex flex-row align-end">
-            {{ totalCompletion }}<span class="text-h6 text-grey-darken-1">%</span>
+            {{ totalCompletionPercentage }}<span class="text-h6 text-grey-darken-1">%</span>
             <div class="text-caption text-grey-darken-1 mb-1">/ 任務完成度</div>
           </div>
           <v-sheet class="timeline-container mt-6">
@@ -95,7 +99,7 @@
                 <div class="task-completion-task">{{ task.completion }}/{{ task.needToComplete }}</div>
               </div>
               <!-- Current time indicator -->
-              <!-- currentTimePosition目前是寫死 -->
+              <!-- TODO currentTimePosition目前是寫死 -->
               <div class="current-time-indicator" :style="{ left: `${currentTimePosition}px` }">
                 <div class="time-bubble">{{ formattedCurrentTime }}</div>
                 <div class="time-line" :style="{ height: `${requreidHeight}px` }"></div>
@@ -176,15 +180,23 @@ const START_HOUR = 7; // Our timeline starts at 7:00
 // Current time 
 const currentDateTime = ref(new Date().toLocaleString());
 
+//TODO 改成api呼叫
 const branch = ref('院本部');
+//TODO 改成api呼叫
 const branches = ref(['院本部', '中興', '仁愛', '其他分院']);
+//TODO 改成api呼叫
 const timeMarkers = ref([
   '7:00', '7:30', '8:00', '8:30', '9:00', '9:30', '10:00', '10:30',
   '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00'
 ]);
+//TODO 改成api呼叫
 const taskColor = ['#f5945c', '#fec76f', '#465952', '#75ba75', '#71a3c1', '#FFBE0B', '#725E54'];
-// Total completion percentage
-const totalCompletion = ref(2);
+//TODO 改成api呼叫
+const totalCompletionPercentage = ref(0);
+const breadcrumbs = ref([
+  {label: '首頁', path: '/'},
+  {label: '任務看板', path: '/TCHGmealSys'}
+])
 
 const slideDone = ref({});
 
@@ -335,11 +347,11 @@ function fetchJobsAndUpdateTasks() {
 function updateTotalCompletion() {
   const totalTasks = tasks.value.reduce((sum, task) => sum + task.needToComplete, 0);
   const completedTasks = tasks.value.reduce((sum, task) => sum + task.completion, 0);
-  
+
   if (totalTasks > 0) {
-    totalCompletion.value = Math.round((completedTasks / totalTasks) * 100);
+    totalCompletionPercentage.value = Math.round((completedTasks / totalTasks) * 100);
   } else {
-    totalCompletion.value = 0;
+    totalCompletionPercentage.value = 0;
   }
 }
 

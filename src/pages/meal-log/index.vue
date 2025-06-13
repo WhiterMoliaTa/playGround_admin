@@ -48,7 +48,7 @@
               <div class="d-flex align-center" :style="{ 'background-color': (item.id % 2 ? '#fff' : '#e0f7fa') }">
                 <v-btn :key="`button-${index}-${item.id}`" hide-details variant="text" icon class="ma-0 pa-0"
                    :disabled="!canComplete(item, job.section)" @click="handleButtonClick(item, job.section)">
-                   <!--TODO 防section跟section之間的canComplete -->
+                   <!--TODO canComplete前一個section沒完成不能做下一個section -->
                   <v-icon
                     :color="state[`button-${job.section}-${item.id}`] && item.checked ? state[`button-${job.section}-${item.id}`] : 'grey'">
                     mdi-check-circle</v-icon>
@@ -140,7 +140,8 @@ const listStatusIconSize = ref(10);
 
 const breadcrumbs = [
   { label: '首頁', path: '/' },
-  { label: '供膳管理日誌', path: '/meal-log' }
+  { label: '任務看板', path: '/TCHGmealSys' },
+  { label: '供膳管理日誌', path: '/meal-log' },
 ]
 const branch = ref('院本部');
 const branches = ['院本部', '中興', '仁愛', '其他分院'];
