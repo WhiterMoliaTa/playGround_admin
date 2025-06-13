@@ -2,28 +2,13 @@
   <v-container>
     <v-row class="d-flex align-center mb-4">
       <v-col cols="12" sm="9" class="d-flex align-center">
-        <v-text-field
-          v-model="searchKeyword"
-          label="搜尋討論（標題或內容）"
-          clearable
-          hide-details
-          variant="outlined"
-          style="max-width: 320px; margin-right: 12px;"
-        />
-        <v-select
-          v-model="sortType"
-          hide-details
-          variant="outlined"
-          :items="[
-            { title: '留言最多', value: 'mostComment' },
-            { title: '最新發表', value: 'newest' },
-            { title: '留言最少', value: 'leastComment' }
-          ]"
-          label="排序"
-          dense
-          outlined
-          style="max-width: 140px;"
-        />
+        <v-text-field v-model="searchKeyword" label="搜尋討論（標題或內容）" clearable hide-details variant="outlined"
+          style="max-width: 320px; margin-right: 12px;" />
+        <v-select v-model="sortType" hide-details variant="outlined" :items="[
+          { title: '留言最多', value: 'mostComment' },
+          { title: '最新留言', value: 'newest' },
+          { title: '留言最少', value: 'leastComment' }
+        ]" label="排序" dense outlined style="max-width: 140px;" />
         <!-- 標籤篩選按鈕與選單 -->
         <v-menu v-model="tagMenu" :close-on-content-click="false" offset-y>
           <template #activator="{ props }">
@@ -33,32 +18,15 @@
           </template>
           <v-list>
             <v-list-item>
-              <v-select
-                v-model="selectedTagFilters"
-                :items="tagFilterOptions"
-                label="選擇標籤"
-                multiple
-                clearable
-                hide-details
-                chips
-                style="min-width: 200px;"
-              />
+              <v-select v-model="selectedTagFilters" :items="tagFilterOptions" label="選擇標籤" multiple clearable
+                hide-details chips style="min-width: 200px;" />
             </v-list-item>
           </v-list>
         </v-menu>
         <!-- 已選標籤 chip -->
         <div class="ml-2" style="display: flex; align-items: center;">
-          <v-chip
-            v-for="tag in selectedTagFilters"
-            :key="tag"
-            color="primary"
-            size="small"
-            class="ma-1"
-            label
-            variant="tonal"
-            closable
-            @click:close="removeTagFilter(tag)"
-          >
+          <v-chip v-for="tag in selectedTagFilters" :key="tag" color="primary" size="small" class="ma-1" label
+            variant="tonal" closable @click:close="removeTagFilter(tag)">
             {{ tag }}
           </v-chip>
         </div>
@@ -92,16 +60,8 @@
               <div class="discussion-title" style="display: flex; align-items: center;">
                 {{ discussion.title }}
                 <template v-if="discussion.tags && discussion.tags.length">
-                  <v-chip
-                    v-for="tagObj in discussion.tagsObj"
-                    :key="tagObj.tagId"
-                    :color="tagObj.color || 'primary'"
-                    size="small"
-                    class="ma-1 ml-2"
-                    label
-                    variant="tonal"
-                    style="vertical-align: middle;"
-                  >
+                  <v-chip v-for="tagObj in discussion.tagsObj" :key="tagObj.tagId" :color="tagObj.color || 'primary'"
+                    size="small" class="ma-1 ml-2" label variant="tonal" style="vertical-align: middle;">
                     {{ tagObj.name }}
                   </v-chip>
                 </template>
@@ -109,15 +69,35 @@
             </div>
             <div class="content">
               <template v-if="discussion.lastComment">
-                {{ discussion.lastComment.content }}<br>
-                <span style="color:#888;font-size:0.92em;">
-                  {{ discussion.lastComment.createdBy }} / {{ timeAgo(discussion.lastComment.createdTime) }}
-                </span>
+                <!-- {{ discussion.lastComment.content }} -->
+                <TruncateText :text="discussion.lastComment.content" :maxLength="50" />
+                <!-- 顯示留言附件 -->
+                <template v-if="discussion.lastCommentFiles && discussion.lastCommentFiles.length">
+                  <span
+                    v-for="(file, idx) in discussion.lastCommentFiles.slice(0, 3)"
+                    :key="file.fileId"
+                    class="comment-file ml-2"
+                  >
+                    <v-icon size="18" color="primary" style="vertical-align: middle;">mdi-paperclip</v-icon>
+                    <span style="font-size:0.95em;">{{ file.originalName }}</span>
+                  </span>
+                  <span
+                    v-if="discussion.lastCommentFiles.length > 3"
+                    class="comment-file ml-2"
+                    style="color: #888; font-size: 0.95em;"
+                  >
+                    +{{ discussion.lastCommentFiles.length - 3 }}
+                  </span>
+                </template>
+
               </template>
               <template v-else>
                 {{ discussion.content }}
               </template>
             </div>
+            <span v-if="discussion.lastComment" style="color:#888;font-size:0.92em;">
+              {{ discussion.lastComment.createdBy }} / {{ timeAgo(discussion.lastComment.createdTime) }}
+            </span>
           </div>
 
           <!-- 右邊 meta -->
@@ -146,25 +126,10 @@
           <v-form ref="form" v-model="formValid">
             <v-text-field v-model="newDiscussion.title" label="標題" :rules="[v => !!v || '標題不可為空']" required />
             <v-textarea v-model="newDiscussion.content" label="內容" rows="4" :rules="[v => !!v || '內容不可為空']" required />
-            <v-combobox
-              v-model="newDiscussion.tag"
-              :items="tagSelectOptions"
-              label="標籤（可輸入新標籤或選擇現有）"
-              clearable
-              hide-selected
-              allow-overflow
-              small-chips
-              @update:modelValue="onTagChange"
-            />
-            <v-select
-              v-model="newDiscussion.tagColor"
-              :items="tagColorOptions"
-              label="標籤顏色"
-              item-title="label"
-              item-value="value"
-              clearable
-              :disabled="isTagColorDisabled"
-            />
+            <v-combobox v-model="newDiscussion.tag" :items="tagSelectOptions" label="標籤（可輸入新標籤或選擇現有）" clearable
+              hide-selected allow-overflow small-chips @update:modelValue="onTagChange" />
+            <v-select v-model="newDiscussion.tagColor" :items="tagColorOptions" label="標籤顏色" item-title="label"
+              item-value="value" clearable :disabled="isTagColorDisabled" />
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -181,6 +146,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { forumTestData } from '../data/testForum'
+import TruncateText from './truncateText.vue'
 
 const router = useRouter()
 
@@ -289,10 +255,13 @@ const discussionsWithMeta = computed(() => {
 
     // 找到最新留言
     let lastComment = null
+    let lastCommentFiles = []
     if (relatedComments.length > 0) {
       lastComment = relatedComments.reduce((a, b) =>
         new Date(a.createdTime) > new Date(b.createdTime) ? a : b
       )
+      // 取得該留言的檔案
+      lastCommentFiles = files.value.filter(f => f.referenceId === lastComment.commentId && f.status === 'Alive')
     }
 
     // 新增：取得標籤
@@ -304,8 +273,10 @@ const discussionsWithMeta = computed(() => {
       avatarUrl: d.avatarUrl || '',
       workTitle: d.workTitle || '',
       lastComment,
+      lastCommentFiles, // 新增：最後留言的檔案
       tags: discussionTags.map(t => t.name),
-      tagsObj: discussionTags, // 新增：傳遞整個 tag 物件
+      tagsObj: discussionTags,
+      lastActivityTime: lastComment ? lastComment.createdTime : d.createdTime
     }
   })
 
@@ -315,7 +286,8 @@ const discussionsWithMeta = computed(() => {
   } else if (sortType.value === 'leastComment') {
     arr = arr.sort((a, b) => a.commentCount - b.commentCount)
   } else if (sortType.value === 'newest') {
-    arr = arr.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime))
+    // 依據最新留言（若無留言則用討論建立時間）
+    arr = arr.sort((a, b) => new Date(b.lastActivityTime) - new Date(a.lastActivityTime))
   }
   return arr
 })

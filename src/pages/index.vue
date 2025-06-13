@@ -88,7 +88,7 @@
                       <v-btn variant="text" size="small" icon @click="editItem(item)">
                         <v-icon color="warning">mdi-pencil</v-icon>
                       </v-btn>
-                      <v-btn variant="text" size="small" icon>
+                      <v-btn variant="text" size="small" icon @click="deleteItem(item)">
                         <v-icon color="error">mdi-delete</v-icon>
                       </v-btn>
                     </template>
@@ -297,9 +297,7 @@ const viewItem = (item) => {
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import dayjs from 'dayjs'
-import { max } from 'lodash'
-import { after } from 'lodash'
-import { floor } from 'lodash'
+import { floor } from 'lodash' // Only import what's used
 const router = useRouter()
 const editItem = (item) => {
   router.push(`/edit/${item.uuid}`)
@@ -404,7 +402,6 @@ const exportCSV = () => {
     }
   }
 
-  // 這邊算兩類型的案件總數
   const beforeCount = Object.values(group["管服"] ?? {}).reduce((acc, cur) => acc + cur.count, 0)
   const afterCount = Object.values(group["法人"] ?? {}).reduce((acc, cur) => acc + cur.count, 0)
 
@@ -415,11 +412,9 @@ const exportCSV = () => {
 
   const rows = []
 
-  var beforeEven = 0
-  var afterEven = 0
-  var count = 0
+  let beforeEven = 0
+  let afterEven = 0
   diagnosisSet.forEach(diagnosis => {
-    console.log(count)
     const beforeData = group["管服"]?.[diagnosis] ?? { total: 0, count: 0 }
     const afterData = group["法人"]?.[diagnosis] ?? { total: 0, count: 0 }
 
@@ -435,13 +430,15 @@ const exportCSV = () => {
     const totalCount = beforeData.count + afterData.count
     rows.push(`${diagnosis}(${totalCount}案),${afterAvgText},${beforeAvgText}`)
   })
-  console.log(`${beforeEven}/${beforeCount}`)
-  rows.push(`總計(${beforeCount + afterCount}案),${floor(afterEven / afterCount)},${floor(beforeEven / beforeCount)}`)
+
+  // Guard against division by zero
+  const beforeAvgTotal = beforeCount > 0 ? floor(beforeEven / beforeCount) : 0
+  const afterAvgTotal = afterCount > 0 ? floor(afterEven / afterCount) : 0
+  rows.push(`總計(${beforeCount + afterCount}案),${afterAvgTotal},${beforeAvgTotal}`)
 
   const header = `案件類型,法人成立後(${afterCount}案),法人成立前(${beforeCount}案)`
 
   const csvContent = [header, ...rows].join('\n')
-  console.log(csvContent)
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -595,15 +592,31 @@ const showCaseView = () => {
   viewCaseView.value = true
 }
 import { testCaseEvents, EventFiles } from '../data/testCaseEvent';
+import { forumTestData } from '../data/testForum';
 
 const EventFilesLen = (caseId) => {
   // 先找出此案件底下所有事件的 uuid
   const eventUuids = testCaseEvents
     .filter(event => event.caseId === caseId)
-    .map(event => event.referenceId);
-
-  // 再統計這些事件的檔案總數
-  return EventFiles.filter(file => eventUuids.includes(file.eventId)).length;
+    .map(event => event.eventId);
+  // console.log('案件', caseId, '相關的事件 UUIDs:', eventUuids);
+  // 找出此案件底下所有論壇討論與留言的 id
+  const forumDiscussionIds = forumTestData.discussions
+    .filter(discussion => discussion.caseId === caseId)
+    .map(discussion => discussion.discussionId);
+  // console.log('案件', caseId, '相關的論壇討論 IDs:', forumDiscussionIds);
+  const forumCommentIds = forumTestData.comments
+    .filter(comment => forumDiscussionIds.includes(comment.discussionId))
+    .map(comment => comment.commentId);
+  // console.log('案件', caseId, '相關的論壇留言 IDs:', forumCommentIds);
+  // 統一所有要比對的 referenceId
+  const allReferenceIds = [...eventUuids, ...forumDiscussionIds, ...forumCommentIds];
+  // console.log('案件', caseId, '相關的 referenceIds:', allReferenceIds);
+  // 統計所有相關檔案數量（事件檔案 + 論壇檔案）
+  const eventFilesCount = EventFiles.filter(file => allReferenceIds.includes(file.referenceId)).length;
+  const forumFilesCount = forumTestData.files.filter(file => allReferenceIds.includes(file.referenceId)).length;
+  // console.log('事件檔案數量:', eventFilesCount, '論壇檔案數量:', forumFilesCount);
+  return eventFilesCount + forumFilesCount;
 };
 
 </script>

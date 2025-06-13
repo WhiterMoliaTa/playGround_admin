@@ -2,6 +2,7 @@ export const forumTestData = {
   discussions: [
     {
       discussionId: "d1",
+      caseId: "case-001",
       title: "關於新功能的討論",
       content: "我們正在開發一個新的功能，請大家分享意見。",
       createdTime: "2025-06-10T10:00:00Z",
@@ -12,6 +13,7 @@ export const forumTestData = {
     },
     {
       discussionId: "d2",
+            caseId: "case-001",
       title: "系統維護通知",
       content: "系統將於週末進行維護，請提前備份資料。",
       createdTime: "2025-06-08T09:00:00Z",
@@ -22,6 +24,7 @@ export const forumTestData = {
     },
     {
       discussionId: "d3",
+            caseId: "case-001",
       title: "新手上路指南",
       content: "歡迎新同事加入，這裡有一份快速上手指南。",
       createdTime: "2025-06-05T15:20:00Z",
